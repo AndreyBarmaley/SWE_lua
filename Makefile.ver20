@@ -1,0 +1,23 @@
+# makefile
+#
+
+SDL2_CFLAGS     := $(shell pkg-config SDL2 --cflags)
+SDL2_LIBS       := $(shell pkg-config SDL2 --libs)
+
+ifndef SDL2_CFLAGS
+SDL2_CFLAGS     := $(shell sdl2-config --cflags)
+endif
+
+ifndef SDL2_LIBS
+SDL2_LIBS       := $(shell sdl2-config --libs)
+endif
+
+ENGINE_CFLAGS   := $(SDL2_CFLAGS) $(shell pkg-config SDL2_ttf --cflags) $(shell pkg-config SDL2_image --cflags)
+ENGINE_LIBS     := $(SDL2_LIBS) $(shell pkg-config SDL2_ttf --libs) $(shell pkg-config SDL2_image --libs)
+
+ifndef DISABLE_AUDIO
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) $(shell pkg-config SDL2_mixer --cflags)
+ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config SDL2_mixer --libs)
+endif
+
+CFLAGS 		:= $(CFLAGS) -UOLDENGINE

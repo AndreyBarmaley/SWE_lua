@@ -1,0 +1,23 @@
+# makefile
+#
+
+SDL_CFLAGS     := $(shell pkg-config SDL --cflags)
+SDL_LIBS       := $(shell pkg-config SDL --libs)
+
+ifndef SDL_CFLAGS
+SDL_CFLAGS     := $(shell sdl-config --cflags)
+endif
+
+ifndef SDL_LIBS
+SDL_LIBS       := $(shell sdl-config --libs)
+endif
+
+ENGINE_CFLAGS   := $(SDL_CFLAGS) $(shell pkg-config SDL_ttf --cflags) $(shell pkg-config SDL_image --cflags)
+ENGINE_LIBS     := $(SDL_LIBS) $(shell pkg-config SDL_ttf --libs) $(shell pkg-config SDL_image --libs) -lSDL_gfx -lpng
+
+ifndef DISABLE_AUDIO
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) $(shell pkg-config SDL_mixer --cflags)
+ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config SDL_mixer --libs)
+endif
+
+CFLAGS		:= $(CFLAGS) -DOLDENGINE
