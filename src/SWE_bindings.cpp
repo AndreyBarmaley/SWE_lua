@@ -358,9 +358,9 @@ int SWE_set_debug(lua_State* L)
 
 // library interface
 const struct luaL_Reg SWE_functions[] = {
-    { "Init", SWE_init }, 		// [table swe_window], string title, int width, int height
+    { "DisplayInit", SWE_init },	// [table swe_window], string title, int width, int height
     { "Dump", SWE_dump }, 		// [void], void or object
-    { "Loop", SWE_loop }, 		// [int winresult], table: window
+    { "MainLoop", SWE_loop }, 		// [int winresult], table: window
     { "CursorShow", SWE_cursor_show },	// [void], void
     { "CursorHide", SWE_cursor_hide },	// [void], void
     { "CursorLoad", SWE_cursor_load },	// [void], table swe_texture, int offsetx, int offsety

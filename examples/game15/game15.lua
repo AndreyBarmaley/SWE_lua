@@ -3,7 +3,7 @@ require 'SWE'
 local fullscreen = false
 local debug = false
 
-local win = SWE.Init("Game15", 320, 240, fullscreen, debug)
+local win = SWE.DisplayInit("Game15", 320, 240, fullscreen, debug)
 -- SWE.Dump()
 
 if not win then
@@ -226,4 +226,4 @@ for i = 1, 15 do
     bits[i] = CreateBit(t.posx, t.posy, 55, 55, i)
 end
 
-SWE.Loop(win)
+SWE.MainLoop(win)

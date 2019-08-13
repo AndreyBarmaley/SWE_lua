@@ -3,7 +3,7 @@ require 'SWE'
 local fullscreen = false
 local debug = true
 
-local win = SWE.Init("Lua SWE", 640, 480, fullscreen, debug)
+local win = SWE.DisplayInit("Lua SWE", 640, 480, fullscreen, debug)
 
 if not win then
     print("SWE init error")
@@ -121,4 +121,4 @@ end
 win3 = nil
 collectgarbage()
 
-SWE.Loop(win)
+SWE.MainLoop(win)
