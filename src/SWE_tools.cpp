@@ -50,8 +50,9 @@ std::string SWE_Tools::toFullFileName(LuaState & ll, const std::string & file)
     if(0 == Systems::dirname(file).compare("./"))
     {
         ll.pushTable("SWE.ARGS");
-        ll.getFieldTableIndex("0", -1);
-        res = Systems::concatePath(Systems::dirname(ll.getTopString()), file);
+        ll.getFieldTableIndex("0", -1, false);
+	if(ll.isTopString())
+    	    res = Systems::concatePath(Systems::dirname(ll.getTopString()), file);
         ll.stackPop(2);
     }
     return res;
