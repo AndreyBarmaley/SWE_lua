@@ -61,12 +61,6 @@ SWE_Texture* SWE_Texture::get(LuaState & ll, int tableIndex, const char* funcNam
         return NULL;
     }
 
-    if(0 != ll.popFieldTableIndex("__name", tableIndex).compare("swe_texture"))
-    {
-        ERROR(funcName << ": " << "not object: " << "swe_texture");
-        return NULL;
-    }   
-
     if(! ll.getFieldTableIndex("userdata", tableIndex).isTopUserData())
     {
         ERROR(funcName << ": " << "not userdata: " << ll.getTopTypeName());
@@ -304,7 +298,6 @@ int SWE_texture_create_rect(lua_State* L)
     }
 
     ll.pushTable();
-    ll.pushString("swe_texture").setFieldTableIndex("__name", -2);
 
     // userdata
     ll.pushString("userdata");
@@ -356,7 +349,6 @@ int SWE_texture_create_text(lua_State* L)
     ARGB colorBack = 5 > params ? Color(Color::Transparent).getARGB() : ll.toIntegerIndex(5);
 
     ll.pushTable();
-    ll.pushString("swe_texture").setFieldTableIndex("__name", -2);
 
     // userdata
     ll.pushString("userdata");
@@ -397,7 +389,6 @@ int SWE_texture_create_image(lua_State* L)
     }
 
     ll.pushTable();
-    ll.pushString("swe_texture").setFieldTableIndex("__name", -2);
 
     // userdata
     ll.pushString("userdata");
@@ -461,7 +452,6 @@ int SWE_texture_create(lua_State* L)
     LuaState ll(L);
 
     ll.pushTable();
-    ll.pushString("swe_texture").setFieldTableIndex("__name", -2);
 
     // userdata
     ll.pushString("userdata");

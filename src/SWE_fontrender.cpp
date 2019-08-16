@@ -35,12 +35,6 @@ SWE_FontRender* SWE_FontRender::get(LuaState & ll, int tableIndex, const char* f
         return NULL;
     }
 
-    if(0 != ll.popFieldTableIndex("__name", tableIndex).compare("swe_fontrender"))
-    {
-        ERROR(funcName << ": " << "not object: " << "swe_fontrender");
-        return NULL;
-    }
-
     if(! ll.getFieldTableIndex("userdata", tableIndex).isTopUserData())
     {
         ERROR(funcName << ": " << "not userdata: " << ll.getTopTypeName());
@@ -94,7 +88,6 @@ int SWE_fontrender_create_ttf(lua_State* L)
     }
 
     ll.pushTable();
-    ll.pushString("swe_fontrender").setFieldTableIndex("__name", -2);
 
     // userdata
     ll.pushString("userdata");
@@ -152,7 +145,6 @@ int SWE_fontrender_create_psf(lua_State* L)
     }
 
     ll.pushTable();
-    ll.pushString("swe_fontrender").setFieldTableIndex("__name", -2);
 
     // userdata
     ll.pushString("userdata");

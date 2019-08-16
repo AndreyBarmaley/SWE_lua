@@ -90,8 +90,10 @@ namespace SWE_Scene
 {
     int		window_add(LuaState &);
     bool	window_push(LuaState &, SWE_Window*);
+    bool	window_remove(LuaState &, SWE_Window*);
     SWE_Window* window_getindex(LuaState &, int);
 
+    void	clean(LuaState &);
     void	registers(LuaState &);
 }
 

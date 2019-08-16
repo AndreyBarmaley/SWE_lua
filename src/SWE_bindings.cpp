@@ -20,6 +20,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <unistd.h>
+
 #include "engine.h"
 #include "display_scene.h"
 
@@ -32,7 +34,7 @@
 #include "SWE_binarybuf.h"
 #include "SWE_fontrender.h"
 
-#define SWE_LUA_VERSION 20190802
+#define SWE_LUA_VERSION 20190814
 
 int SWE_window_create(lua_State*);
 
@@ -40,15 +42,6 @@ int SWE_init(lua_State* L)
 {
     // params: string title, int width, int height, bool fullscreen, bool debug
     LuaState ll(L);
-
-    // check also initialized
-    if(! Display::size().isEmpty())
-    {
-	// return display window
-	SWE_Window* win = SWE_Scene::window_getindex(ll, 1);
-	SWE_Scene::window_push(ll, win);
-	return 1;
-    }
 
     int params = ll.stackSize();
     if(3 > params || ! ll.isStringIndex(1) ||
@@ -66,6 +59,17 @@ int SWE_init(lua_State* L)
     bool debug = 5 > params ? true : ll.toBooleanIndex(5);
 
     Engine::setDebugMode(debug);
+
+    // check also initialized
+    if(Display::size() == Size(width, height))
+    {
+	// return display window
+	SWE_Window* win = SWE_Scene::window_getindex(ll, 1);
+	SWE_Scene::window_push(ll, win);
+	return 1;
+    }
+
+    SWE_Scene::clean(ll);
 
     bool res = Display::init(title, Size(width, height), fullscreen);
     if(res)
@@ -227,6 +231,23 @@ int SWE_system_memory_usage(lua_State* L)
     return 1;
 }
 
+int SWE_system_current_directory(lua_State* L)
+{
+    // params: string directory
+    LuaState ll(L);
+
+    ll.pushTable("SWE");
+    ll.getFieldTableIndex("getcwd", -1, false);
+
+    if(! ll.isTopString())
+    {
+	ERROR("SWE.getcwd not found");
+	ll.pushString("./");
+    }
+
+    return 1;
+}
+
 int SWE_system_read_directory(lua_State* L)
 {
     // params: string directory
@@ -259,6 +280,25 @@ int SWE_system_read_directory(lua_State* L)
     }
 
     return 1;
+}
+
+int SWE_system_dirname_basename(lua_State* L)
+{
+    // params: string directory
+    LuaState ll(L);
+
+    if(! ll.isTopString())
+    {
+	ERROR("string not found");
+	return 0;
+    }
+
+    std::string path = ll.getTopString();
+
+    ll.pushString(Systems::dirname(path));
+    ll.pushString(Systems::basename(path));
+
+    return 2;
 }
 
 int SWE_render_screenshot(lua_State* L)
@@ -334,12 +374,11 @@ int SWE_push_event(lua_State* L)
 {
     // params: int code, pointer data, table window
     LuaState ll(L);
-
     int params = ll.stackSize();
 
     int code = ll.toIntegerIndex(1);
     const void* data = 2 > params ? NULL : ll.toPointerIndex(2);
-    SWE_Window* win = 3 > params ? NULL : SWE_Window::get(ll, 3, __FUNCTION__);
+    SWE_Window* win = 3 > params || ! ll.isTableIndex(3) ? NULL : SWE_Window::get(ll, 3, __FUNCTION__);
 
     DisplayScene::pushEvent(win, code, const_cast<void*>(data));
 
@@ -372,7 +411,9 @@ const struct luaL_Reg SWE_functions[] = {
     { "DisplayDirty", SWE_display_dirty }, 			// [void], void
     { "RenderScreenshot", SWE_render_screenshot }, 		// [bool], string filename
     { "LuaRegisterDirectory", SWE_register_directory }, 	// [bool], string directory
+    { "SystemCurrentDirectory", SWE_system_current_directory },	// [string], void
     { "SystemReadDirectory", SWE_system_read_directory },	// [table list], string directory
+    { "SystemDirnameBasename", SWE_system_dirname_basename },	// [string], string
     { "SystemMemoryUsage", SWE_system_memory_usage },		// [integer memoryusage], void
     { "StringEncodeToUTF8", SWE_string_encode_utf8 },		// [ string], string str, string from charset
     { NULL, NULL }
@@ -404,6 +445,17 @@ extern "C" {
     ll.pushTable(0, 1).pushFunction(SWE_quit).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2);
 
+    // set getpwd
+#ifdef __MINGW32CE__
+    ERROR("getcwd: setup error");
+    ll.pushString("./");
+#else
+    char* pwd = get_current_dir_name();
+    ll.pushString(pwd);
+    free(pwd);
+#endif
+    ll.setFieldTableIndex("getcwd", -2);
+
     // SWE.Audio
     SWE_Audio::registers(ll);
     // SWE.Color
@@ -422,6 +474,7 @@ extern "C" {
     bool res = Engine::init();
     if(! res) ERROR("engine init failed");
 
+    DEBUG("version: " << SWE_LUA_VERSION);
     return 1;
  }
 }

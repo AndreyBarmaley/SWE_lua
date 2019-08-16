@@ -49,12 +49,6 @@ SWE_BinaryBuf* SWE_BinaryBuf::get(LuaState & ll, int tableIndex, const char* fun
         return NULL;
     }
 
-    if(0 != ll.popFieldTableIndex("__name", tableIndex).compare("swe_binarybuf"))
-    {
-        ERROR(funcName << ": " << "not object: " << "swe_binarybuf");
-        return NULL;
-    }   
-
     if(! ll.getFieldTableIndex("userdata", tableIndex).isTopUserData())
     {
         ERROR(funcName << ": " << "not userdata: " << ll.getTopTypeName());
@@ -654,7 +648,6 @@ int SWE_binarybuf_create(lua_State* L)
     LuaState ll(L);
 
     ll.pushTable();
-    ll.pushString("swe_binarybuf").setFieldTableIndex("__name", -2);
 
     // userdata
     ll.pushString("userdata");

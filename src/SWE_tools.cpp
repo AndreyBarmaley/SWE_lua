@@ -46,15 +46,23 @@ std::string SWE_Tools::convertEncoding(LuaState & ll, const std::string & str)
 
 std::string SWE_Tools::toFullFileName(LuaState & ll, const std::string & file)
 {
-    std::string res = file;
-    if(0 == Systems::dirname(file).compare("./"))
+    if(! ll.pushTable("SWE").isTopTable())
     {
-        ll.pushTable("SWE.ARGS");
-        ll.getFieldTableIndex("0", -1, false);
-	if(ll.isTopString())
-    	    res = Systems::concatePath(Systems::dirname(ll.getTopString()), file);
-        ll.stackPop(2);
+        ERROR("table not found" << ": " << "swe");
+	ll.stackPop();
+	return file;
     }
+
+    if(! ll.getFieldTableIndex("getcwd", -1, false).isTopString())
+    {
+	ll.stackPop();
+	return file;
+    }
+
+    std::string getcwd = ll.getTopString();
+    std::string res = Systems::concatePath(getcwd, file);
+
+    ll.stackPop(2);
     return res;
 }
 

@@ -36,12 +36,14 @@ SWE_Window::SWE_Window(lua_State* L, Window* parent)
     : Window(parent), ll(L)
 {
     resetState(FlagModality);
+    setState(FlagKeyHandle);
 }
 
 SWE_Window::SWE_Window(lua_State* L, const Point & pos, const Size & winsz, Window* parent)
     : Window(pos, winsz, parent), ll(L)
 {
     resetState(FlagModality);
+    setState(FlagKeyHandle);
     setVisible(true);
 }
 
@@ -365,12 +367,6 @@ SWE_Window* SWE_Window::get(LuaState & ll, int tableIndex, const char* funcName)
     {
         ERROR("table not found" << ": " << tableIndex);
         return NULL;
-    }
-
-    if(0 != ll.popFieldTableIndex("__name", tableIndex).compare("swe_window"))
-    {
-	ERROR(funcName << ": " << "not object: " << "swe_window");
-	return NULL;
     }
 
     if(! ll.getFieldTableIndex("userdata", tableIndex).isTopUserData())
@@ -722,6 +718,63 @@ bool SWE_Scene::window_push(LuaState & ll, SWE_Window* v)
     return false;
 }
 
+bool SWE_Scene::window_remove(LuaState & ll, SWE_Window* v)
+{
+    if(! v)
+	return false;
+
+    if(! ll.pushTable("SWE.Scene").isTopTable())
+    {
+	ERROR("table not found" << ": " << "swe_scene");
+	ll.stackPop();
+	return false;
+    }
+
+    // iterate SWE.Scene
+    ll.pushNil();
+
+    while(ll.nextTableIndex(-2))
+    {
+	// key: index -2, value: table -1
+	if(ll.isTopTable())
+	{
+	    if(ll.getFieldTableIndex("userdata", -1).isTopUserData())
+	    {
+		auto ptr = static_cast<SWE_Window**>(ll.getTopUserData());
+		if(ptr && *ptr == v)
+		{
+		    // stack: remove userdata, value table
+		    ll.stackPop(2);
+		    DEBUG("index: " << ll.getTopInteger());
+
+		    // remove value from table
+		    ll.pushNil().setTableIndex(-3);
+    
+		    // stack: SWE.Scene
+		    ll.stackPop();
+		    return true;
+		}
+	    }
+	    else
+	    {
+		ERROR("not userdata: " << ll.getTopTypeName());
+	    }
+
+	    // pop userdata
+	    ll.stackPop();
+	}
+
+	// pop value
+	ll.stackPop();
+    }
+
+    // pop tables
+    ll.stackPop();
+    DEBUG("not found");
+
+    return false;
+}
+
 int SWE_Scene::window_add(LuaState & ll)
 {
     // stack: swe_window...
@@ -733,23 +786,27 @@ int SWE_Scene::window_add(LuaState & ll)
     }
 
     ll.pushNil();
-    int index = 0;
+    int index = 1;
 
     // iterate SWE.Scene: find empty
     while(ll.nextTableIndex(-2))
     {
 	// key: index -2, value: empty -1
-	if(ll.isTopNil())
+	if(ll.isIntegerIndex(-2))
 	{
-	    // value, key, scene, swe_window
-	    index = ll.toIntegerIndex(-2);
-	    ll.stackPop(2);
-	    break;
+
+	    if(index < ll.toIntegerIndex(-2))
+	    {
+		// value, key, scene, swe_window
+		ll.stackPop(2);
+		break;
+	    }
+
+	    index++;
 	}
 
 	// pop value
 	ll.stackPop();
-	index++;
     }
 
     // scene, swe_window
@@ -783,6 +840,20 @@ SWE_Window* SWE_Scene::window_getindex(LuaState & ll, int index)
     ll.stackPop();
 
     return NULL;
+}
+
+void SWE_Scene::clean(LuaState & ll)
+{
+    if(! ll.pushTable("SWE.Scene").isTopTable())
+    {
+	ERROR("table not found" << ": " << "swe_scene");
+	return;
+    }
+
+    int count = ll.countFieldsTableIndex(-1);
+
+    for(int it = 0; it < count; ++it)
+	ll.pushInteger(it).pushNil().setTableIndex(-3);
 }
 
 const struct luaL_Reg SWE_window_functions[] = {
@@ -832,7 +903,6 @@ int SWE_window_create(lua_State* L)
 	parent = SWE_Scene::window_getindex(ll, 1);
 
     ll.pushTable();
-    ll.pushString("swe_window").setFieldTableIndex("__name", -2);
 
     // userdata
     ll.pushString("userdata");
@@ -871,6 +941,7 @@ int SWE_window_destroy(lua_State* L)
 	if(ptr && *ptr)
 	{
 	    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+	    // auto remove SWE_Scene::window_remove(ll, *ptr);
 
 	    delete *ptr;
 	    *ptr = NULL;
@@ -928,6 +999,10 @@ SWE_Polygon::SWE_Polygon(lua_State* L, const Points & pts, Window* parent)
     setPosition(area);
 
     fillPoints(poly);
+
+    setState(FlagKeyHandle);
+    resetState(FlagModality);
+
     setVisible(true);
 }
 
@@ -1132,7 +1207,6 @@ int SWE_polygon_create(lua_State* L)
     }
 
     ll.pushTable();
-    ll.pushString("swe_window").setFieldTableIndex("__name", -2);
 
     // userdata
     ll.pushString("userdata");
@@ -1161,6 +1235,7 @@ int SWE_polygon_destroy(lua_State* L)
         if(ptr && *ptr)
         {
             DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+	    // auto remove SWE_Scene::window_remove(ll, *ptr);
     
             delete *ptr;
             *ptr = NULL;
