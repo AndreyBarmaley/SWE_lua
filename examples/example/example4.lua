@@ -138,7 +138,7 @@ function list.SetItemSelected(val)
 end
 
 function list.ItemSelectedAction(item)
-    if type(val) == "table" then
+    if type(item) == "table" then
 	if item.isdir then
 	    -- send: change dirs
 	    SWE.PushEvent(3333, nil, list)
