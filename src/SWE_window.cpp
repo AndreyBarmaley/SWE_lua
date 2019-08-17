@@ -609,8 +609,8 @@ int SWE_window_render_texture(lua_State* L)
     int srch = ll.toIntegerIndex(6);
     int dstx = ll.toIntegerIndex(7);
     int dsty = ll.toIntegerIndex(8);
-    int dstw = 9 > param ? srcw : ll.toIntegerIndex(9);
-    int dsth = 9 > param ? srch : ll.toIntegerIndex(10);
+    int dstw = 9 > params ? srcw : ll.toIntegerIndex(9);
+    int dsth = 9 > params ? srch : ll.toIntegerIndex(10);
 
     SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
     SWE_Texture* ptr = SWE_Texture::get(ll, 2, __FUNCTION__);
