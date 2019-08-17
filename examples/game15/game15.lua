@@ -141,7 +141,7 @@ local btnX = SWE.Window(275, 10, 36, 36, win)
 
 btnX.RenderWindow = function()
     btnX:RenderClear(SWE.Color.DimGray)
-    btnX:RenderRect(SWE.Color.Red, 0, 0, win.width, win.height)
+    btnX:RenderRect(SWE.Color.Red, 0, 0, btnX.width, btnX.height)
     btnX:RenderText(frs28, "X", SWE.Color.Yellow, btnX.width / 2, btnX.height / 2, SWE.Align.Center, SWE.Align.Center)
     return true
 end

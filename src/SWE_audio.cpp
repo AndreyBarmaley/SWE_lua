@@ -176,16 +176,32 @@ int SWE_sound_play(lua_State* L)
 }
 
 const struct luaL_Reg SWE_audio_functions[] = {
-    { "MixerVolume", SWE_mixer_volume },	// [int], int volume
-    { "MixerReset", SWE_mixer_reset },		// [void], void
-    { "MusicIsPlaying", SWE_music_isplaying },	// [bool], void
-    { "MusicPause", SWE_music_pause },		// [void], void
-    { "MusicResume", SWE_music_resume },	// [void], void
-    { "MusicPlay", SWE_music_play },		// [bool], string file
-    { "MusicPlayBuf", SWE_music_playbuf },	// [bool], table binarybuf
-    { "SoundIsPlaying", SWE_sound_isplaying },	// [bool], void
-    { "SoundPlay", SWE_sound_play },		// [bool], string file
-    { "SoundPlayBuf", SWE_sound_playbuf },	// [bool], table binarybuf
+/*
+------------------
+-- This is my module doing ...
+------------------
+module("SWE.Audio")
+*/
+
+/*
+------------------
+-- My MixerVolume function.
+-- @name MixerVolume
+-- @type function
+-- @param set volume (number)
+------------------
+function MixerVolume(number)
+*/
+    { "MixerVolume", SWE_mixer_volume },       // [int], int volume
+    { "MixerReset", SWE_mixer_reset },         // [void], void
+    { "MusicIsPlaying", SWE_music_isplaying }, // [bool], void
+    { "MusicPause", SWE_music_pause },         // [void], void
+    { "MusicResume", SWE_music_resume },       // [void], void
+    { "MusicPlay", SWE_music_play },           // [bool], string file
+    { "MusicPlayBuf", SWE_music_playbuf },     // [bool], table binarybuf
+    { "SoundIsPlaying", SWE_sound_isplaying }, // [bool], void
+    { "SoundPlay", SWE_sound_play },           // [bool], string file
+    { "SoundPlayBuf", SWE_sound_playbuf },     // [bool], table binarybuf
     { NULL, NULL }
 };
 

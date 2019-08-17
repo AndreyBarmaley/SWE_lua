@@ -20,6 +20,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <unistd.h>
 #include "engine.h"
 
 extern "C" {
@@ -35,7 +36,7 @@ int main(int argc, char** argv)
     try
 #endif
     {
-	LogWrapper::init("SWE_test", argv[0]);
+	LogWrapper::init("SWE_lua", argv[0]);
 
 	const char* start = 1 < argc ? argv[1] : Systems::environment("SWE_START");
 	if(! start) start = "start.lua";
@@ -55,11 +56,13 @@ int main(int argc, char** argv)
 
         luaopen_SWE(ll.L());
 
-	ll.pushTable("SWE.ARGS");
-	for(int it = 0; it < argc; ++it) if(argv[it])
-	    ll.pushString(argv[it]).setFieldTableIndex(String::number(it), -2);
+#ifdef __MINGW32CE__
+	VERBOSE("DIRNAME: " << Systems::dirname(argv[0]));
+	ll.stackDump();
+	ll.pushString(Systems::dirname(argv[0]));
+	ll.setFieldTableIndex("getcwd", -2);
+#endif
 
-	ll.stackPop();
         ll.doFile(file);
 
         if(ll.isTopString())

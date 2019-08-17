@@ -57,6 +57,7 @@ public:
     static SWE_Window* get(LuaState &, int tableIndex, const char* funcName);
 };
 
+/// \cond PointComp
 struct PointComp
 {
     bool operator() (const Point & lhs, const Point & rhs) const

@@ -1,9 +1,16 @@
 require 'SWE'
 
 local fullscreen = false
-local debug = true
+local dbgmsg = false
 
-local win = SWE.DisplayInit("Lua SWE Commander", 240, 320, fullscreen, debug)
+local win = SWE.DisplayInit("Lua SWE Commander", 240, 320, fullscreen, dbgmsg)
+
+if not win then
+    print("SWE init error")
+    os.exit(-1)
+else
+    SWE.CursorHide()
+end
 
 local start = nil
 local frs14 = SWE.FontRender("terminus.ttf", 14, true)
@@ -140,10 +147,15 @@ end
 function list.ItemSelectedAction(item)
     if type(item) == "table" then
 	if item.isdir then
-	    -- send: change dirs
-	    SWE.PushEvent(3333, nil, list)
+	    if list.current == ".." then
+		local dirname, basename = SWE.SystemDirnameBasename(list.cwd)
+		list.FillItems(dirname)
+	    else
+		list.FillItems(SWE.SystemConcatePath(list.cwd, list.current))
+	    end
+    	    SWE.DisplayDirty()
 	else
-	    start = item.label
+	    start = SWE.SystemConcatePath(list.cwd, list.current)
 	    win:SetVisible(false)
 	end
     end
@@ -161,6 +173,10 @@ function list.FillItems(cwd)
     for i = 1, #list.items do
 	list.items[i]:SetVisible(false)
 	list.items[i] = nil
+    end
+
+    if #dirs == 0 or dirs[1] ~= ".." then
+	table.insert(dirs, 1, "..")
     end
 
     for i = 1, #dirs do
@@ -222,6 +238,7 @@ function list.KeyPressEvent(key)
 	return true
     elseif SWE.Key.RETURN == key then
 	list.ItemSelectedAction(list.items[list.selIndex])
+	return true
     end
     return false
 end
@@ -243,15 +260,7 @@ function list.ScrollDownEvent(x,y)
 end
 
 function list.SystemUserEvent(a,b)
-    if a == 3333 then
-	if list.current == ".." then
-	    local dirname, basename = SWE.SystemDirnameBasename(list.cwd)
-	    list.FillItems(dirname)
-	else
-	    list.FillItems(list.cwd .. "/" .. list.current)
-	end
-    	SWE.DisplayDirty()
-    elseif a == 3334 then
+    if a == 3334 then
     	SWE.DisplayDirty()
     end
 end

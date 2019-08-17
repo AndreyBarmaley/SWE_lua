@@ -622,7 +622,7 @@ const struct luaL_Reg SWE_binarybuf_functions[] = {
     { "Base64Encode", SWE_binarybuf_base64_encode },	// [string base64], table binarybuf
     { "ReadFromFile", SWE_binarybuf_readfile },		// [bool], table binarybuf, string filename
     { "SaveToFile", SWE_binarybuf_savefile },		// [bool], table binarybuf, string filename
-    { "ToString", SWE_binarybuf_tostring },		// [string base64], table binarybuf
+    { "ToString", SWE_binarybuf_tostring },		// [string], table binarybuf
     { "SetByte", SWE_binarybuf_setbyte },		// [bool], table binarybuf, int offset, int byte
     { "GetByte", SWE_binarybuf_getbyte },		// [int byte], table binarybuf, int offset
     { "SetBytes", SWE_binarybuf_setbytes },		// [bool], table binarybuf, int offset, table binarybuf, int offset, int size

@@ -35,6 +35,7 @@
 #include "SWE_fontrender.h"
 
 #define SWE_LUA_VERSION 20190814
+#define SWE_LUA_LICENSE "GPL3"
 
 int SWE_window_create(lua_State*);
 
@@ -282,6 +283,22 @@ int SWE_system_read_directory(lua_State* L)
     return 1;
 }
 
+int SWE_system_concate_path(lua_State* L)
+{
+    // params: string list
+    LuaState ll(L);
+    int params = ll.stackSize();
+    StringList list;
+
+    for(int it = 1; it <= params; ++it)
+	if(ll.isStringIndex(it))
+	    list.push_back(ll.toStringIndex(it));
+
+    ll.pushString(Systems::concatePath(list));
+
+    return 1;
+}
+
 int SWE_system_dirname_basename(lua_State* L)
 {
     // params: string directory
@@ -414,6 +431,7 @@ const struct luaL_Reg SWE_functions[] = {
     { "SystemCurrentDirectory", SWE_system_current_directory },	// [string], void
     { "SystemReadDirectory", SWE_system_read_directory },	// [table list], string directory
     { "SystemDirnameBasename", SWE_system_dirname_basename },	// [string], string
+    { "SystemConcatePath", SWE_system_concate_path },		// [string], string list
     { "SystemMemoryUsage", SWE_system_memory_usage },		// [integer memoryusage], void
     { "StringEncodeToUTF8", SWE_string_encode_utf8 },		// [ string], string str, string from charset
     { NULL, NULL }
@@ -439,6 +457,7 @@ extern "C" {
 
     // set version
     ll.pushInteger(SWE_LUA_VERSION).setFieldTableIndex("version", -2);
+    ll.pushString(SWE_LUA_LICENSE).setFieldTableIndex("license", -2);
     // set functions
     ll.setFunctionsTableIndex(SWE_functions, -1);
     // set metatable: __gc
@@ -446,15 +465,12 @@ extern "C" {
     ll.setMetaTableIndex(-2);
 
     // set getpwd
-#ifdef __MINGW32CE__
-    ERROR("getcwd: setup error");
-    ll.pushString("./");
-#else
+#ifndef __MINGW32CE__
     char* pwd = get_current_dir_name();
     ll.pushString(pwd);
     free(pwd);
-#endif
     ll.setFieldTableIndex("getcwd", -2);
+#endif
 
     // SWE.Audio
     SWE_Audio::registers(ll);
@@ -474,7 +490,7 @@ extern "C" {
     bool res = Engine::init();
     if(! res) ERROR("engine init failed");
 
-    DEBUG("version: " << SWE_LUA_VERSION);
+    DEBUG("usage " << LUA_RELEASE << ", " << "init version: " << SWE_LUA_VERSION);
     return 1;
  }
 }

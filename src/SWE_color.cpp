@@ -49,7 +49,7 @@ int SWE_color_tostring(lua_State* L)
 }
 
 const struct luaL_Reg SWE_colors_functions[] = {
-    { "ToString", SWE_color_tostring },		// [string], int color
+    { "ToString", SWE_color_tostring },	// [string], int key
     { NULL, NULL }
 };
 

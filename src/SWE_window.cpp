@@ -435,6 +435,13 @@ int SWE_window_set_result(lua_State* L)
     return 0;
 }
 
+/**
+ * @name:	SWE.Window
+ * @brief:	SetVisible(boolean)
+ *		функция управления видимостью объекта на сцене 
+ * @param:	boolean флаг
+ * return:	none
+ */
 int SWE_window_set_visible(lua_State* L)
 {
     // params: swe_window, bool
@@ -485,12 +492,14 @@ int SWE_window_render_rect(lua_State* L)
     // params: swe_window, color, posx, posy, width, height, bool
 
     LuaState ll(L);
+    int params = ll.stackSize();
+
     ARGB color = ll.toIntegerIndex(2);
     int posx = ll.toIntegerIndex(3);
     int posy = ll.toIntegerIndex(4);
     int width = ll.toIntegerIndex(5);
     int height = ll.toIntegerIndex(6);
-    int filled = ll.toBooleanIndex(7);
+    int filled = 7 > params ? false : ll.toBooleanIndex(7);
 
     SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
     
@@ -562,11 +571,13 @@ int SWE_window_render_cyrcle(lua_State* L)
     // params: swe_window, color, px, py, int radius, bool filled
 
     LuaState ll(L);
+    int params = ll.stackSize();
+
     ARGB color = ll.toIntegerIndex(2);
     int posx = ll.toIntegerIndex(3);
     int posy = ll.toIntegerIndex(4);
     int radius = ll.toIntegerIndex(5);
-    bool filled = ll.toBooleanIndex(6);
+    bool filled = 6 > params ? false : ll.toBooleanIndex(6);
 
     SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
     
@@ -590,14 +601,16 @@ int SWE_window_render_texture(lua_State* L)
     // params: swe_window, swe_texture, [srcx, srcy, srcw, srch], [dstx, dsty, dstw, dsth]
 
     LuaState ll(L);
+    int params = ll.stackSize();
+
     int srcx = ll.toIntegerIndex(3);
     int srcy = ll.toIntegerIndex(4);
     int srcw = ll.toIntegerIndex(5);
     int srch = ll.toIntegerIndex(6);
     int dstx = ll.toIntegerIndex(7);
     int dsty = ll.toIntegerIndex(8);
-    int dstw = ll.toIntegerIndex(9);
-    int dsth = ll.toIntegerIndex(10);
+    int dstw = 9 > param ? srcw : ll.toIntegerIndex(9);
+    int dsth = 9 > param ? srch : ll.toIntegerIndex(10);
 
     SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
     SWE_Texture* ptr = SWE_Texture::get(ll, 2, __FUNCTION__);
@@ -857,15 +870,16 @@ void SWE_Scene::clean(LuaState & ll)
 }
 
 const struct luaL_Reg SWE_window_functions[] = {
-    { "SetVisible",     SWE_window_set_visible },
-    { "SetPosition",    SWE_window_set_position },
+    { "SetVisible",     SWE_window_set_visible },      // table window, bool flag
+    { "SetResult",      SWE_window_set_result },       // table window, int code
+    { "SetPosition",    SWE_window_set_position },     // table: window. point pos
     { "RenderClear",    SWE_window_render_clear },     // table: window, enum: color
     { "RenderRect",     SWE_window_render_rect },      // table: window, enum: color, rect, bool
     { "RenderLine",     SWE_window_render_line },      // table: window, enum: color, point, point
     { "RenderCyrcle",   SWE_window_render_cyrcle },    // table: window, enum: color, point, int, bool
     { "RenderPoint",    SWE_window_render_point },     // table: window, enum: color, point
     { "RenderTexture",  SWE_window_render_texture },   // table: window, table: texture, rect, rect
-    { "RenderText",     SWE_window_render_text },      // table: window, table: fontrender, color, point
+    { "RenderText",     SWE_window_render_text },      // table: window, table: fontrender, string, color, point
     // virtual
     { "WindowCreateEvent", SWE_window_empty },
     { "MousePressEvent",   SWE_window_empty },
@@ -1008,6 +1022,7 @@ SWE_Polygon::SWE_Polygon(lua_State* L, const Points & pts, Window* parent)
 
 enum { StatusNew = 0, StatusOpen = 1, StatusClosed = 2 };
 
+/// \cond StatusPoint
 struct StatusPoint
 {
     int val;
@@ -1019,6 +1034,7 @@ struct StatusPoint
     void setClosed(void) { val = StatusClosed; }
 };
 
+/// \cond PointHasher
 struct PointHasher
 {
     size_t operator() (const Point & pt) const
