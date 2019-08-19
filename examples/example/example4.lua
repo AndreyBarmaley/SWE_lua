@@ -1,4 +1,4 @@
-require 'SWE'
+-- require 'SWE'
 
 local fullscreen = false
 local dbgmsg = false
@@ -8,8 +8,6 @@ local win = SWE.DisplayInit("Lua SWE Commander", 240, 320, fullscreen, dbgmsg)
 if not win then
     print("SWE init error")
     os.exit(-1)
-else
-    SWE.CursorHide()
 end
 
 local start = nil
@@ -24,8 +22,19 @@ function ToInt(x)
 end
 
 function win.RenderWindow()
+    local memusage = ToInt(SWE.SystemMemoryUsage() / 1024)
+    local txMUK = SWE.Texture.Text(frs14, "mem: " .. tostring(memusage) .. "K", SWE.Color.Blue)
+
     win:RenderClear(SWE.Color.Silver)
     win:RenderRect(SWE.Color.Red, 0, 0, win.width, win.height)
+
+    win:RenderTexture(txMUK, 0, 0, txMUK.width, txMUK.height,
+			(win.width - txMUK.width) / 2, win.height - txMUK.height - 3)
+
+    -- force free texture
+    txMUK = nil
+    collectgarbage()
+
     return true
 end
 
@@ -50,30 +59,63 @@ function exit.MouseClickEvent(x,y,btn)
     return true
 end
 
-function CreateListItem(x, y, w, h, parent, label, isdir)
+function ShrinkLongName(name, smax)
+    local len = string.len(name)
+    if len > smax then
+	local rem = len - (smax + 1)
+	local left = ToInt((len - rem) / 2)
+	local right = smax - (left + 1)
+	return string.sub(name, 1, left) .. "~" .. string.sub(name, len - right)
+    end
+    return name
+end
+
+function PrettySize(sz)
+
+    local szlen= string.len(tostring(sz))
+    if szlen > 11 then
+	return tostring(ToInt(sz / 1073741824)) .. "G"
+    elseif szlen > 8 then
+	return tostring(ToInt(sz / 1048576)) .. "M"
+    elseif szlen > 5 then
+	return tostring(ToInt(sz / 1024)) .. "K"
+    end
+    return tostring(sz)
+end
+
+function CreateListItem(x, y, w, h, parent, path, isdir)
     local item = SWE.Window(x, y, w, h, parent)
-    local dirname, basename = SWE.SystemDirnameBasename(label)
+    local dirname, basename = SWE.SystemDirnameBasename(path)
     item.label = basename
     item.isdir = isdir
     item.iscur = false
 
     item.RenderWindow = function()
         item:RenderClear(SWE.Color.MidnightBlue)
+	local str = ShrinkLongName(item.label, ToInt(item.width / frs14.fixedWidth) - 8)
+	local color = nil
+	local info = nil
 	if item.isdir then
+	    str = "/" .. str
+	    info = "<DIR>"
 	    if item.iscur then
     		item:RenderClear(SWE.Color.Yellow)
-    		item:RenderText(frs14, "/" .. item.label, SWE.Color.MidnightBlue, 10, item.height / 2, SWE.Align.Left, SWE.Align.Center)
+    		color = SWE.Color.MidnightBlue
 	    else
-    		item:RenderText(frs14, "/" .. item.label, SWE.Color.White, 10, item.height / 2, SWE.Align.Left, SWE.Align.Center)
+    		color = SWE.Color.White
 	    end
 	else
+	    local stat = SWE.SystemFileStat(path)
+	    info = PrettySize(stat.size)
 	    if item.iscur then
     		item:RenderClear(SWE.Color.Yellow)
-    		item:RenderText(frs14, item.label, SWE.Color.MidnightBlue, 10, item.height / 2, SWE.Align.Left, SWE.Align.Center)
+    		color = SWE.Color.MidnightBlue
 	    else
-    		item:RenderText(frs14, item.label, SWE.Color.Yellow, 10, item.height / 2, SWE.Align.Left, SWE.Align.Center)
+    		color = SWE.Color.Yellow
 	    end
 	end
+    	item:RenderText(frs14, str, color, 5, item.height / 2, SWE.Align.Left, SWE.Align.Center)
+    	item:RenderText(frs14, info, color, item.width - 2, item.height / 2, SWE.Align.Right, SWE.Align.Center)
         return true
     end
 
@@ -89,10 +131,8 @@ function CreateListItem(x, y, w, h, parent, label, isdir)
     item.SystemUserEvent = function(a,b)
 	if a == 3331 then
 	    item.iscur = false
-	end
-	if a == 3332 then
+	elseif a == 3332 then
 	    item.iscur = true
-	    list.current = item.label
 	    -- send: list redraw
 	    SWE.PushEvent(3334, nil, list)
 	end
@@ -105,6 +145,7 @@ function GetDirsFiles(cwd)
     local names = SWE.SystemReadDirectory(cwd)
     local dirs = {}
     local files = {}
+    local dotIndex = nil
 
     for k,v in pairs(names) do
 	if v == "file" then
@@ -112,9 +153,16 @@ function GetDirsFiles(cwd)
 		string.find(k, "%.lua$") then
 		table.insert(files, k)
 	    end
-	else
+	elseif v == "directory" then
 	    table.insert(dirs, k)
+	    if string.find(k, "%.%.") then
+		dotIndex = #dirs
+	    end
 	end
+    end
+
+    if not dotIndex then
+	table.insert(dirs, 1, SWE.SystemConcatePath(cwd, ".."))
     end
 
     return dirs, files
@@ -132,11 +180,23 @@ function list.SetItemSelected(val)
     elseif type(val) == "table" then
 	-- send: remove all selected
 	SWE.PushEvent(3331, nil, nil)
-	-- send: item only selected
-	SWE.PushEvent(3332, nil, val)
 
 	for k,v in pairs(list.items) do
-	    if val.label == v.label then
+	    if v.label == val.label then
+		-- send: item only selected
+	        SWE.PushEvent(3332, nil, v)
+		list.selIndex = k
+		break
+	    end
+	end
+    elseif type(val) == "string" then
+	-- send: remove all selected
+	SWE.PushEvent(3331, nil, nil)
+
+	for k,v in pairs(list.items) do
+	    if v.label == val then
+		-- send: item only selected
+	        SWE.PushEvent(3332, nil, v)
 		list.selIndex = k
 		break
 	    end
@@ -146,25 +206,25 @@ end
 
 function list.ItemSelectedAction(item)
     if type(item) == "table" then
+	local current = list.items[list.selIndex].label
 	if item.isdir then
-	    if list.current == ".." then
+	    if current == ".." then
 		local dirname, basename = SWE.SystemDirnameBasename(list.cwd)
-		list.FillItems(dirname)
+		list.FillItems(dirname,basename)
 	    else
-		list.FillItems(SWE.SystemConcatePath(list.cwd, list.current))
+		list.FillItems(SWE.SystemConcatePath(list.cwd, current))
 	    end
-    	    SWE.DisplayDirty()
 	else
-	    start = SWE.SystemConcatePath(list.cwd, list.current)
+	    start = SWE.SystemConcatePath(list.cwd, current)
 	    win:SetVisible(false)
 	end
     end
 end
 
-function list.FillItems(cwd)
+function list.FillItems(cwd,old)
     local itemHeight = frs14.lineHeight + 4
-    list.cwd = cwd
 
+    list.cwd = cwd
     local dirs, files = GetDirsFiles(list.cwd)
 
     table.sort(dirs)
@@ -173,10 +233,6 @@ function list.FillItems(cwd)
     for i = 1, #list.items do
 	list.items[i]:SetVisible(false)
 	list.items[i] = nil
-    end
-
-    if #dirs == 0 or dirs[1] ~= ".." then
-	table.insert(dirs, 1, "..")
     end
 
     for i = 1, #dirs do
@@ -196,7 +252,12 @@ function list.FillItems(cwd)
     list.topIndex = 1
     list.maxItems = math.min(ToInt((list.height - 20) / itemHeight), #list.items)
     list.lastIndex = #list.items - list.maxItems + 1
-    list.SetItemSelected(1)
+
+    if old ~= nil then
+	list.SetItemSelected(old)
+    else
+	list.SetItemSelected(1)
+    end
 
     if list.lastIndex < 1 then
 	list.lastIndex = 1
@@ -219,9 +280,22 @@ function list.ItemsDisposition()
 end
 
 function list.KeyPressEvent(key)
-    if SWE.Key.LEFT == key then
-    	SWE.DisplayDirty()
+    -- goto first
+    if SWE.Key.LEFT == key and 1 < list.selIndex then
+	list.SetItemSelected(1)
+	list.topIndex = 1
+	list:RenderWindow()
 	return true
+    -- goto last
+    elseif SWE.Key.RIGHT == key and list.selIndex < #list.items then
+	list.SetItemSelected(#list.items)
+	list.topIndex = #list.items - list.maxItems + 1
+	if list.topIndex < 1 then
+	    list.topIndex = 1
+	end
+	list:RenderWindow()
+	return true
+    -- goto up
     elseif SWE.Key.UP == key and 1 < list.selIndex then
 	list.SetItemSelected(list.selIndex - 1)
 	if list.selIndex < list.topIndex then
@@ -229,6 +303,7 @@ function list.KeyPressEvent(key)
 	end
 	list:RenderWindow()
 	return true
+    -- goto down
     elseif SWE.Key.DOWN == key and list.selIndex < #list.items then
 	list.SetItemSelected(list.selIndex + 1)
 	if list.selIndex > list.topIndex + list.maxItems - 1 then
@@ -263,17 +338,6 @@ function list.SystemUserEvent(a,b)
     if a == 3334 then
     	SWE.DisplayDirty()
     end
-end
-
-function ShrinkLongName(name, smax)
-    local len = string.len(name)
-    if len > smax then
-	local rem = len - (smax + 1)
-	local left = ToInt((len - rem) / 2)
-	local right = smax - (left + 1)
-	return string.sub(name, 1, left) .. "~" .. string.sub(name, len - right)
-    end
-    return name
 end
 
 function list.RenderWindow()

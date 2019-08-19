@@ -415,6 +415,49 @@
     "groupTitle": "SWE"
   },
   {
+    "type": "stat info for directory/file",
+    "url": "SWE.SystemFileStat(string)",
+    "title": "SWE.SystemFileStat",
+    "group": "SWE",
+    "name": "SystemFileStat",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "path",
+            "description": "<p>path to object (file or directory)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "table",
+            "optional": false,
+            "field": "stat",
+            "description": "<p>table stat info</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local stat = SWE.SystemFileInfo(\"/var/tmp/screenshot.png\")\n\n.... dump stat\n| mode  | 33204      | \n| gid   | 1000       | \n| atime | 1565677681 | \n| uid   | 1000       | \n| nlink | 1          | \n| size  | 404930     | \n| mtime | 1565677681 | \n| ctime | 1565677681 | \n| isdir | false      |",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
     "type": "get memory usage",
     "url": "SWE.SystemMemoryUsage()",
     "title": "SWE.SystemMemoryUsage",
@@ -5195,6 +5238,23 @@
     "groupTitle": "SWE_Window_Events"
   },
   {
+    "type": "window event: single event constructor",
+    "url": "SWE.Window.WindowCreate()",
+    "title": "SWE.Window.WindowCreate",
+    "group": "SWE_Window_Events",
+    "name": "MouseFocusEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.WindowCreateEvent = function(f)\n\tprint(\"win created\")\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window_Events"
+  },
+  {
     "type": "window event: gain focus of leave",
     "url": "SWE.Window.MouseFocusEvent(focus)",
     "title": "SWE.Window.MouseFocusEvent",
@@ -5230,23 +5290,6 @@
       {
         "title": "usage",
         "content": "    win.MouseFocusEvent = function(f)\n\tprint(\"focus:\",f)\n\treturn true\n    end",
-        "type": "json"
-      }
-    ],
-    "version": "0.0.0",
-    "filename": "./api/apidoc_window.js",
-    "groupTitle": "SWE_Window_Events"
-  },
-  {
-    "type": "window event: single event constructor",
-    "url": "SWE.Window.WindowCreate()",
-    "title": "SWE.Window.WindowCreate",
-    "group": "SWE_Window_Events",
-    "name": "MouseFocusEvent",
-    "examples": [
-      {
-        "title": "usage",
-        "content": "    win.WindowCreateEvent = function(f)\n\tprint(\"win created\")\n    end",
         "type": "json"
       }
     ],
@@ -5613,5 +5656,33 @@
     "version": "0.0.0",
     "filename": "./api/apidoc_window.js",
     "groupTitle": "SWE_Window_Virtual"
+  },
+  {
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "optional": false,
+            "field": "varname1",
+            "description": "<p>No type.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "varname2",
+            "description": "<p>With type.</p>"
+          }
+        ]
+      }
+    },
+    "type": "",
+    "url": "",
+    "version": "0.0.0",
+    "filename": "./doc/main.js",
+    "group": "_opt_svn_my_projects_SDL_projects_luaSWE_doc_main_js",
+    "groupTitle": "_opt_svn_my_projects_SDL_projects_luaSWE_doc_main_js",
+    "name": ""
   }
 ]

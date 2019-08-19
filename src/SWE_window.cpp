@@ -435,13 +435,6 @@ int SWE_window_set_result(lua_State* L)
     return 0;
 }
 
-/**
- * @name:	SWE.Window
- * @brief:	SetVisible(boolean)
- *		функция управления видимостью объекта на сцене 
- * @param:	boolean флаг
- * return:	none
- */
 int SWE_window_set_visible(lua_State* L)
 {
     // params: swe_window, bool

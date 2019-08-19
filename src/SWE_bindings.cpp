@@ -21,6 +21,7 @@
  ***************************************************************************/
 
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include "engine.h"
 #include "display_scene.h"
@@ -34,7 +35,7 @@
 #include "SWE_binarybuf.h"
 #include "SWE_fontrender.h"
 
-#define SWE_LUA_VERSION 20190814
+#define SWE_LUA_VERSION 20190818
 #define SWE_LUA_LICENSE "GPL3"
 
 int SWE_window_create(lua_State*);
@@ -318,6 +319,41 @@ int SWE_system_dirname_basename(lua_State* L)
     return 2;
 }
 
+int SWE_system_file_stat(lua_State* L)
+{
+    // params: string directory
+    LuaState ll(L);
+
+    if(! ll.isTopString())
+    {
+	ERROR("string not found");
+	return 0;
+    }
+
+    std::string path = ll.getTopString();
+    struct stat st;
+
+    if(0 > stat(path.c_str(), & st))
+    {
+        ERROR("error stat for:" << path);
+	ll.pushNil();
+	return 1;
+    }
+
+    ll.pushTable();
+    ll.pushInteger(st.st_mode).setFieldTableIndex("mode", -2);
+    ll.pushInteger(st.st_uid).setFieldTableIndex("uid", -2);
+    ll.pushInteger(st.st_gid).setFieldTableIndex("gid", -2);
+    ll.pushInteger(st.st_size).setFieldTableIndex("size", -2);
+    ll.pushInteger(st.st_atime).setFieldTableIndex("atime", -2);
+    ll.pushInteger(st.st_mtime).setFieldTableIndex("mtime", -2);
+    ll.pushInteger(st.st_ctime).setFieldTableIndex("ctime", -2);
+    ll.pushInteger(st.st_nlink).setFieldTableIndex("nlink", -2);
+    ll.pushBoolean(Systems::isDirectory(path)).setFieldTableIndex("isdir", -2);
+
+    return 1;
+}
+
 int SWE_render_screenshot(lua_State* L)
 {
     // params: string filename
@@ -430,6 +466,7 @@ const struct luaL_Reg SWE_functions[] = {
     { "LuaRegisterDirectory", SWE_register_directory }, 	// [bool], string directory
     { "SystemCurrentDirectory", SWE_system_current_directory },	// [string], void
     { "SystemReadDirectory", SWE_system_read_directory },	// [table list], string directory
+    { "SystemFileStat", SWE_system_file_stat },			// [table], string filename
     { "SystemDirnameBasename", SWE_system_dirname_basename },	// [string], string
     { "SystemConcatePath", SWE_system_concate_path },		// [string], string list
     { "SystemMemoryUsage", SWE_system_memory_usage },		// [integer memoryusage], void

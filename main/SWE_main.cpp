@@ -57,8 +57,6 @@ int main(int argc, char** argv)
         luaopen_SWE(ll.L());
 
 #ifdef __MINGW32CE__
-	VERBOSE("DIRNAME: " << Systems::dirname(argv[0]));
-	ll.stackDump();
 	ll.pushString(Systems::dirname(argv[0]));
 	ll.setFieldTableIndex("getcwd", -2);
 #endif
