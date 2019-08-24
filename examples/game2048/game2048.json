@@ -1,0 +1,21 @@
+[
+    { "left": null, "right": 2, "up": null, "down": 5, "posx": 5, "posy": 5 },
+    { "left": 1, "right": 3, "up": null, "down": 6, "posx": 60, "posy": 5 },
+    { "left": 2, "right": 4, "up": null, "down": 7, "posx": 115, "posy": 5 },
+    { "left": 3, "right": null, "up": null, "down": 8, "posx": 170, "posy": 5 },
+
+    { "left": null, "right": 6, "up": 1, "down": 9, "posx": 5, "posy": 60 },
+    { "left": 5, "right": 7, "up": 2, "down": 10, "posx": 60, "posy": 60 },
+    { "left": 6, "right": 8, "up": 3, "down": 11, "posx": 115, "posy": 60 },
+    { "left": 7, "right": null, "up": 4, "down": 12, "posx": 170, "posy": 60 },
+
+    { "left": null, "right": 10, "up": 5, "down": 13, "posx": 5, "posy": 115 },
+    { "left": 9, "right": 11, "up": 6, "down": 14, "posx": 60, "posy": 115 },
+    { "left": 10, "right": 12, "up": 7, "down": 15, "posx": 115, "posy": 115 },
+    { "left": 11, "right": null, "up": 8, "down": 16, "posx": 170, "posy": 115 },
+
+    { "left": null, "right": 14, "up": 9, "down": null, "posx": 5, "posy": 170 },
+    { "left": 13, "right": 15, "up": 10, "down": null, "posx": 60, "posy": 170 },
+    { "left": 14, "right": 16, "up": 11, "down": null, "posx": 115, "posy": 170 },
+    { "left": 15, "right": null, "up": 12, "down": null, "posx": 170, "posy": 170 }
+]

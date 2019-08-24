@@ -27,6 +27,7 @@
 #include "display_scene.h"
 
 #include "SWE_keys.h"
+#include "SWE_rect.h"
 #include "SWE_tools.h"
 #include "SWE_audio.h"
 #include "SWE_color.h"
@@ -34,8 +35,10 @@
 #include "SWE_texture.h"
 #include "SWE_binarybuf.h"
 #include "SWE_fontrender.h"
+#include "SWE_netstream.h"
+#include "SWE_randomhit.h"
 
-#define SWE_LUA_VERSION 20190818
+#define SWE_LUA_VERSION 20190822
 #define SWE_LUA_LICENSE "GPL3"
 
 int SWE_window_create(lua_State*);
@@ -349,7 +352,15 @@ int SWE_system_file_stat(lua_State* L)
     ll.pushInteger(st.st_mtime).setFieldTableIndex("mtime", -2);
     ll.pushInteger(st.st_ctime).setFieldTableIndex("ctime", -2);
     ll.pushInteger(st.st_nlink).setFieldTableIndex("nlink", -2);
+
+    bool isdir = Systems::isDirectory(path);
+    std::string access = StringFormat("%1%2%3%4%5%6%7%8%9%10").arg(isdir ? "d" : "-").
+	arg(st.st_mode & S_IRUSR ? "r" : "-").arg(st.st_mode & S_IWUSR ? "w" : "-").arg(st.st_mode & S_IXUSR ? "x" : "-").
+	arg(st.st_mode & S_IRGRP ? "r" : "-").arg(st.st_mode & S_IWGRP ? "w" : "-").arg(st.st_mode & S_IXGRP ? "x" : "-").
+	arg(st.st_mode & S_IROTH ? "r" : "-").arg(st.st_mode & S_IWOTH ? "w" : "-").arg(st.st_mode & S_IXOTH ? "x" : "-");
+
     ll.pushBoolean(Systems::isDirectory(path)).setFieldTableIndex("isdir", -2);
+    ll.pushString(access).setFieldTableIndex("access", -2);
 
     return 1;
 }
@@ -480,6 +491,12 @@ extern "C" {
  {
     LuaState ll(L);
 
+    if(ll.version() < 502)
+    {
+	ERROR("minimum Lua API version 5.2");
+	return 0;
+    }
+
     ll.pushTable("SWE");
     ll.getFieldTableIndex("version", -1, false);
 
@@ -523,6 +540,16 @@ extern "C" {
     SWE_Texture::registers(ll);
     // SWE.BinaryBuf
     SWE_BinaryBuf::registers(ll);
+    // SWE.NetStream
+    SWE_NetStream::registers(ll);
+    // SWE.RandomHit
+    SWE_RandomHit::registers(ll);
+    // SWE.Point
+    SWE_Point::registers(ll);
+    // SWE.Size
+    SWE_Size::registers(ll);
+    // SWE.Rect
+    SWE_Rect::registers(ll);
 
     bool res = Engine::init();
     if(! res) ERROR("engine init failed");

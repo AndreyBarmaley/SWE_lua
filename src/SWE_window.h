@@ -28,10 +28,17 @@
 
 struct lua_State;
 
+int SWE_window_create(lua_State*);
+int SWE_window_destroy(lua_State*);
+
 class SWE_Window : public Window
 {
+    Texture	tooltip;
+
 protected:
     LuaState	ll;
+
+    const Texture* tooltipTexture(void) const override { return & tooltip; }
 
     void	windowCreateEvent(void) override;
     bool	mousePressEvent(const ButtonEvent &) override;
@@ -53,6 +60,9 @@ public:
     SWE_Window(lua_State*, const Point &, const Size &, Window* parent);
 
     void        renderWindow(void) override;
+
+    void        toolTipInit(const std::string &, const FontRender &, const Color & fn, const Color & bg, const Color & rt);
+    void        toolTipInit(const std::string &);
 
     static SWE_Window* get(LuaState &, int tableIndex, const char* funcName);
 };

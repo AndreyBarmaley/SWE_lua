@@ -141,3 +141,40 @@ end
 test_binarybuf()
 test_color()
 test_json()
+
+local pt = SWE.Point(101, 102)
+local sz = SWE.Size(103, 104)
+local rt = SWE.Rect(101, 102, 103, 104)
+
+SWE.Dump(pt)
+SWE.Dump(sz)
+SWE.Dump(rt)
+
+print(pt:ToString())
+print(sz:ToString())
+print(rt:ToString())
+
+print(pt:Unpack())
+print(sz:Unpack())
+print(rt:Unpack())
+
+local hit = SWE.RandomHit(33)
+print(hit:ToString())
+
+for i = 1,100 do
+    local check = hit:Check()
+end
+
+local check = hit:Check()
+print(hit:ToString())
+
+for i = 2,100 do
+    local check = hit:Check()
+end
+
+local check = hit:Check()
+print(hit:ToString())
+
+for i = 2,100 do
+    local check = hit:Check()
+end

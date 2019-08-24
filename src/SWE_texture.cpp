@@ -24,46 +24,20 @@
 #include "SWE_tools.h"
 #include "SWE_texture.h"
 
-int SWE_texture_create(lua_State*);
 int SWE_texture_create_rect(lua_State*);
 int SWE_texture_create_text(lua_State*);
-int SWE_texture_destroy(lua_State*);
-
-SWE_Texture::SWE_Texture(lua_State* L) : ll(L)
-{
-}
-
-SWE_Texture::SWE_Texture(lua_State* L, const Texture & tx)
-    : Texture(tx), ll(L)
-{
-}
-
-SWE_Texture SWE_Texture::renderRect(lua_State* L, const ARGB & rectCol, const ARGB & fillCol, const Size & rtsz, int thickness)
-{
-    return SWE_Texture(L, Display::renderRect(Color(rectCol), Color(fillCol), rtsz, thickness));
-}
-
-SWE_Texture SWE_Texture::renderText(lua_State* L, const FontRender & frs, const UnicodeString & text, const ARGB & textCol, const ARGB & backCol)
-{
-    return SWE_Texture(L, Display::renderText(frs, text, Color(textCol), Color(backCol)));
-}
-
-SWE_Texture SWE_Texture::renderText(lua_State* L, const FontRender & frs, const UCString & text)
-{
-    return SWE_Texture(L, Display::renderText(frs, text));
-}
 
 SWE_Texture* SWE_Texture::get(LuaState & ll, int tableIndex, const char* funcName)
 {
     if(! ll.isTableIndex(tableIndex))
     {
-        ERROR("table not found" << ": " << tableIndex);
+        ERROR("table not found, index: " << tableIndex);
         return NULL;
     }
 
     if(! ll.getFieldTableIndex("userdata", tableIndex).isTopUserData())
     {
-        ERROR(funcName << ": " << "not userdata: " << ll.getTopTypeName());
+        ERROR(funcName << ": " << "not userdata, index: " << tableIndex << ", " << ll.getTopTypeName());
         return NULL;
     }
     
@@ -73,17 +47,45 @@ SWE_Texture* SWE_Texture::get(LuaState & ll, int tableIndex, const char* funcNam
     return ptr ? *ptr : NULL;
 }
 
+////////////////
+int SWE_texture_save_tofile(lua_State* L)
+{
+    LuaState ll(L);
+
+    bool res = false;
+    SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
+
+    if(tx)
+    {
+	std::string file = ll.toStringIndex(2);
+	res = tx->save(file);
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
+
+    ll.pushBoolean(res);
+    return 1;
+}
+
 int SWE_texture_render_clear(lua_State* L)
 {
     // params: swe_texture, color
 
     LuaState ll(L);
-    ARGB argb = ll.toIntegerIndex(2);
+
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.texture");
+        return 0;
+    }
 
     SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
 
     if(tx)
     {
+	ARGB argb = ll.toIntegerIndex(2);
 	Display::renderClear(Color(argb), *tx);
     }
     else
@@ -99,19 +101,26 @@ int SWE_texture_render_rect(lua_State* L)
     // params: swe_texture, color, posx, posy, width, height, bool
 
     LuaState ll(L);
-    int params = ll.stackSize();
 
-    ARGB argb = ll.toIntegerIndex(2);
-    int posx = ll.toIntegerIndex(3);
-    int posy = ll.toIntegerIndex(4);
-    int width = ll.toIntegerIndex(5);
-    int height = ll.toIntegerIndex(6);
-    int filled = 7 > params ? false : ll.toBooleanIndex(7);
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.texture");
+        return 0;
+    }
 
     SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
     
     if(tx)
     {
+	int params = ll.stackSize();
+
+	ARGB argb = ll.toIntegerIndex(2);
+	int posx = ll.toIntegerIndex(3);
+	int posy = ll.toIntegerIndex(4);
+	int width = ll.toIntegerIndex(5);
+	int height = ll.toIntegerIndex(6);
+	int filled = 7 > params ? false : ll.toBooleanIndex(7);
+
 	if(filled)
 	    Display::renderColor(Color(argb), *tx, Rect(posx, posy, width, height));
 	else
@@ -130,14 +139,21 @@ int SWE_texture_render_point(lua_State* L)
     // params: swe_texture, color, posx. posy
 
     LuaState ll(L);
-    ARGB argb = ll.toIntegerIndex(2);
-    int posx = ll.toIntegerIndex(3);
-    int posy = ll.toIntegerIndex(4);
+
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.texture");
+        return 0;
+    }
 
     SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
     
     if(tx)
     {
+	ARGB argb = ll.toIntegerIndex(2);
+	int posx = ll.toIntegerIndex(3);
+	int posy = ll.toIntegerIndex(4);
+
 	Display::renderPoint(Color(argb), *tx, Point(posx, posy));
     }
     else
@@ -153,16 +169,23 @@ int SWE_texture_render_line(lua_State* L)
     // params: swe_texture, color, pt1x, pt1y, pt2x, pt2y
 
     LuaState ll(L);
-    ARGB argb = ll.toIntegerIndex(2);
-    int posx1 = ll.toIntegerIndex(3);
-    int posy1 = ll.toIntegerIndex(4);
-    int posx2 = ll.toIntegerIndex(5);
-    int posy2 = ll.toIntegerIndex(6);
+
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.texture");
+        return 0;
+    }
 
     SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
     
     if(tx)
     {
+	ARGB argb = ll.toIntegerIndex(2);
+	int posx1 = ll.toIntegerIndex(3);
+	int posy1 = ll.toIntegerIndex(4);
+	int posx2 = ll.toIntegerIndex(5);
+	int posy2 = ll.toIntegerIndex(6);
+
 	Display::renderLine(Color(argb), *tx, Point(posx1, posy1), Point(posx2, posy2));
     }
     else
@@ -178,18 +201,25 @@ int SWE_texture_render_cyrcle(lua_State* L)
     // params: swe_texture, color, px, py, int radius, bool filled
 
     LuaState ll(L);
-    int params = ll.stackSize();
 
-    ARGB argb = ll.toIntegerIndex(2);
-    int posx = ll.toIntegerIndex(3);
-    int posy = ll.toIntegerIndex(4);
-    int radius = ll.toIntegerIndex(5);
-    bool filled = 6 > params ? false : ll.toBooleanIndex(6);
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.texture");
+        return 0;
+    }
 
     SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
     
     if(tx)
     {
+	int params = ll.stackSize();
+
+	ARGB argb = ll.toIntegerIndex(2);
+	int posx = ll.toIntegerIndex(3);
+	int posy = ll.toIntegerIndex(4);
+	int radius = ll.toIntegerIndex(5);
+	bool filled = 6 > params ? false : ll.toBooleanIndex(6);
+
 	Points points = Tools::renderCircle(Point(posx, posy), radius, filled);
 
 	for(auto it = points.begin(); it != points.end(); ++it)
@@ -208,23 +238,30 @@ int SWE_texture_render_texture(lua_State* L)
     // params: swe_texture, swe_texture, [srcx, srcy, srcw, srch], [dstx, dsty, dstw, dsth]
 
     LuaState ll(L);
-    int params = ll.stackSize();
 
-    int srcx = ll.toIntegerIndex(3);
-    int srcy = ll.toIntegerIndex(4);
-    int srcw = ll.toIntegerIndex(5);
-    int srch = ll.toIntegerIndex(6);
-    int dstx = ll.toIntegerIndex(7);
-    int dsty = ll.toIntegerIndex(8);
-    int dstw = 9 > params ? srcw : ll.toIntegerIndex(9);
-    int dsth = 9 > params ? srch : ll.toIntegerIndex(10);
+    if(! ll.isTableIndex(1) || ! ll.isTableIndex(2))
+    {
+        ERROR("table not found" << ", " << "swe.texture");
+        return 0;
+    }
 
     SWE_Texture* tx1 = SWE_Texture::get(ll, 1, __FUNCTION__);
     SWE_Texture* tx2 = SWE_Texture::get(ll, 2, __FUNCTION__);
     
     if(tx1 && tx2)
     {
-	Display::renderTexture(*tx1, Rect(srcx, srcy, srcw, srch), *tx2, Rect(dstx, dsty, dstw, dsth));
+	int params = ll.stackSize();
+
+	int srcx = ll.toIntegerIndex(3);
+	int srcy = ll.toIntegerIndex(4);
+	int srcw = ll.toIntegerIndex(5);
+	int srch = ll.toIntegerIndex(6);
+	int dstx = ll.toIntegerIndex(7);
+	int dsty = ll.toIntegerIndex(8);
+	int dstw = 9 > params ? srcw : ll.toIntegerIndex(9);
+	int dsth = 9 > params ? srch : ll.toIntegerIndex(10);
+
+	Display::renderTexture(*tx2, Rect(srcx, srcy, srcw, srch), *tx1, Rect(dstx, dsty, dstw, dsth));
     }
     else
     {
@@ -277,6 +314,7 @@ int SWE_texture_render_text(lua_State* L)
 }
 
 const struct luaL_Reg SWE_texture_functions[] = {
+    { "SaveToFile",     SWE_texture_save_tofile },   	// [boolean], table: texture, string
     { "RenderClear",    SWE_texture_render_clear },     // table: texture, enum: color
     { "RenderRect",     SWE_texture_render_rect },      // table: texture, enum: color, rect, bool
     { "RenderLine",     SWE_texture_render_line },      // table: texture, enum: color, point, point
@@ -299,8 +337,7 @@ int SWE_texture_create_rect(lua_State* L)
 	! ll.isNumberIndex(4) || ! ll.isNumberIndex(5))
     {
         ERROR("require minimum params: " << "int color, int color, int width, int height");
-        ll.pushNil();
-        return 1;
+        return 0;
     }
 
     ll.pushTable();
@@ -321,10 +358,10 @@ int SWE_texture_create_rect(lua_State* L)
     int height = ll.toIntegerIndex(5);
     int thickness = 6 > params ? 1 : ll.toIntegerIndex(6);
 
-    *ptr = new SWE_Texture(L);
-    **ptr = SWE_Texture::renderRect(L, Color(colorRect), Color(colorFill), Size(width, height), thickness);
+    *ptr = new SWE_Texture(Display::renderRect(Color(colorRect), Color(colorFill), Size(width, height), thickness));
 
     // add values
+    ll.pushString("__type").pushString("swe.texture").setTableIndex(-3);
     ll.pushString("width").pushInteger((*ptr)->width()).setTableIndex(-3);
     ll.pushString("height").pushInteger((*ptr)->height()).setTableIndex(-3);
     ll.pushString("alpha").pushInteger((*ptr)->alphaMod()).setTableIndex(-3);
@@ -345,8 +382,7 @@ int SWE_texture_create_text(lua_State* L)
     if(4 > params || ! ll.isTableIndex(2) || ! ll.isStringIndex(3) || ! ll.isIntegerIndex(4))
     {
         ERROR("require minimum params: " << "table fontrender, string, int color");
-        ll.pushNil();
-        return 1;
+        return 0;
     }
 
     SWE_FontRender* frs = SWE_FontRender::get(ll, 2, __FUNCTION__);
@@ -366,10 +402,10 @@ int SWE_texture_create_text(lua_State* L)
     ll.setMetaTableIndex(-2).setTableIndex(-3);
 
     // SWE_Texture init
-    *ptr = new SWE_Texture(L);
-    **ptr = SWE_Texture::renderText(L, *frs, text, Color(colorText), Color(colorBack));
+    *ptr = new SWE_Texture(Display::renderText(*frs, text, Color(colorText), Color(colorBack)));
 
     // add values
+    ll.pushString("__type").pushString("swe.texture").setTableIndex(-3);
     ll.pushString("width").pushInteger((*ptr)->width()).setTableIndex(-3);
     ll.pushString("height").pushInteger((*ptr)->height()).setTableIndex(-3);
     ll.pushString("alpha").pushInteger((*ptr)->alphaMod()).setTableIndex(-3);
@@ -390,8 +426,7 @@ int SWE_texture_create_image(lua_State* L)
     if(! ll.isStringIndex(2))
     {
         ERROR("require minimum params: " << "string (image file)");
-        ll.pushNil();
-        return 1;
+        return 0;
     }
 
     ll.pushTable();
@@ -430,15 +465,16 @@ int SWE_texture_create_image(lua_State* L)
 	    }
 
 	    sf.blit(Rect(cropx, cropy, cropw, croph), crop.rect(), crop);
-	    *ptr = new SWE_Texture(L, Display::createTexture(crop));
+	    *ptr = new SWE_Texture(Display::createTexture(crop));
 	}
 	else
-	    *ptr = new SWE_Texture(L);
+	    *ptr = new SWE_Texture();
     }
     else
-	*ptr = new SWE_Texture(L, Display::createTexture(filename));
+	*ptr = new SWE_Texture(Display::createTexture(filename));
 
     // add values
+    ll.pushString("__type").pushString("swe.texture").setTableIndex(-3);
     ll.pushString("width").pushInteger((*ptr)->width()).setTableIndex(-3);
     ll.pushString("height").pushInteger((*ptr)->height()).setTableIndex(-3);
     ll.pushString("alpha").pushInteger((*ptr)->alphaMod()).setTableIndex(-3);
@@ -474,15 +510,16 @@ int SWE_texture_create(lua_State* L)
 	int tw = ll.toIntegerIndex(2);
 	int th = ll.toIntegerIndex(3);
 
-	*ptr = new SWE_Texture(L, Display::createTexture(Size(tw, th)));
+	*ptr = new SWE_Texture(Display::createTexture(Size(tw, th)));
     }
     else
     // SWE_Texture: empty
     {
-	*ptr = new SWE_Texture(L);
+	*ptr = new SWE_Texture();
     }
 
     // add values
+    ll.pushString("__type").pushString("swe.texture").setTableIndex(-3);
     ll.pushString("width").pushInteger((*ptr)->width()).setTableIndex(-3);
     ll.pushString("height").pushInteger((*ptr)->height()).setTableIndex(-3);
     ll.pushString("alpha").pushInteger((*ptr)->alphaMod()).setTableIndex(-3);

@@ -27,21 +27,16 @@
 
 struct lua_State;
 
+int SWE_texture_create(lua_State*);
+int SWE_texture_destroy(lua_State*);
+
 class SWE_Texture : public Texture
 {
-protected:
-    LuaState	ll;
-
 public:
-    SWE_Texture(lua_State*);
-    SWE_Texture(lua_State*, const Texture &);
-
-    static SWE_Texture renderRect(lua_State*, const ARGB & rectCol, const ARGB & fillCol, const Size &, int thickness);
-    static SWE_Texture renderText(lua_State*, const FontRender &, const UnicodeString &, const ARGB & textCol, const ARGB & backCol);
-    static SWE_Texture renderText(lua_State*, const FontRender &, const UCString &);
+    SWE_Texture() {}
+    SWE_Texture(const Texture & tx) : Texture(tx) {}
 
     static SWE_Texture* get(LuaState &, int tableIndex, const char* funcName);
-
     static void registers(LuaState & ll);
 };
 

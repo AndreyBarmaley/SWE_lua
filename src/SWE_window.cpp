@@ -27,8 +27,6 @@
 #include "SWE_fontrender.h"
 #include "SWE_window.h"
 
-int SWE_window_create(lua_State*);
-int SWE_window_destroy(lua_State*);
 int SWE_polygon_create(lua_State*);
 int SWE_polygon_destroy(lua_State*);
 
@@ -36,15 +34,26 @@ SWE_Window::SWE_Window(lua_State* L, Window* parent)
     : Window(parent), ll(L)
 {
     resetState(FlagModality);
-    setState(FlagKeyHandle);
 }
 
 SWE_Window::SWE_Window(lua_State* L, const Point & pos, const Size & winsz, Window* parent)
     : Window(pos, winsz, parent), ll(L)
 {
     resetState(FlagModality);
-    setState(FlagKeyHandle);
     setVisible(true);
+}
+
+void SWE_Window::toolTipInit(const std::string & str)
+{
+    toolTipInit(str, FontRenderSystem(), Color::Black, Color::Wheat, Color::MidnightBlue);
+}
+
+void SWE_Window::toolTipInit(const std::string & str, const FontRender & frs, const Color & fncolor, const Color & bgcolor, const Color & rtcolor)
+{
+    Texture text = Display::renderText(frs, str, fncolor);
+    tooltip = Display::renderRect(rtcolor, bgcolor, text.size() + Size(6, 6));
+
+    Display::renderTexture(text, text.rect(), tooltip, Rect(Point(3, 3), text.size()));
 }
 
 void SWE_Window::renderWindow(void)
@@ -365,13 +374,13 @@ SWE_Window* SWE_Window::get(LuaState & ll, int tableIndex, const char* funcName)
 {
     if(! ll.isTableIndex(tableIndex))
     {
-        ERROR("table not found" << ": " << tableIndex);
+        ERROR("table not found, index: " << tableIndex);
         return NULL;
     }
 
     if(! ll.getFieldTableIndex("userdata", tableIndex).isTopUserData())
     {
-	ERROR(funcName << ": " << "not userdata: " << ll.getTopTypeName());
+	ERROR(funcName << ": " << "not userdata, index: " << tableIndex << ", " << ll.getTopTypeName());
 	return NULL;
     }
 
@@ -393,13 +402,20 @@ int SWE_window_set_position(lua_State* L)
     // params: swe_window, posx, posy
 
     LuaState ll(L);
-    int posx = ll.toIntegerIndex(2);
-    int posy = ll.toIntegerIndex(3);
+
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.window");
+        return 0;
+    }
 
     SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
 
     if(win)
     {
+	int posx = ll.toIntegerIndex(2);
+	int posy = ll.toIntegerIndex(3);
+
 	win->setPosition(Point(posx, posy));
 
 	// userdata, posy, posx, swe_window...
@@ -419,12 +435,19 @@ int SWE_window_set_result(lua_State* L)
     // params: swe_window, int
 
     LuaState ll(L);
-    bool result = ll.toIntegerIndex(2);
+
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.window");
+        return 0;
+    }
 
     SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
 
     if(win)
     {
+	bool result = ll.toIntegerIndex(2);
+
 	win->setResultCode(result);
     }
     else
@@ -440,16 +463,80 @@ int SWE_window_set_visible(lua_State* L)
     // params: swe_window, bool
 
     LuaState ll(L);
-    bool visible = ll.toBooleanIndex(2);
+
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.window");
+        return 0;
+    }
 
     SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
 
     if(win)
     {
+	bool visible = ll.toBooleanIndex(2);
+
 	win->setVisible(visible);
 
 	// userdata, bool, swe_window...
 	ll.pushBoolean(visible).setFieldTableIndex("visible", 1);
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
+
+    return 0;
+}
+
+int SWE_window_set_modality(lua_State* L)
+{
+    // params: swe_window, bool
+
+    LuaState ll(L);
+
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.window");
+        return 0;
+    }
+
+    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+
+    if(win)
+    {
+	bool modality = ll.toBooleanIndex(2);
+	win->setState(FlagModality, modality);
+
+	ll.pushBoolean(modality).setFieldTableIndex("modality", 1);
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
+
+    return 0;
+}
+int SWE_window_set_keyhandle(lua_State* L)
+{
+    // params: swe_window, bool
+
+    LuaState ll(L);
+
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.window");
+        return 0;
+    }
+
+    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+
+    if(win)
+    {
+	bool keyhandle = ll.toBooleanIndex(2);
+	win->setState(FlagKeyHandle, keyhandle);
+
+	ll.pushBoolean(keyhandle).setFieldTableIndex("keyhandle", 1);
     }
     else
     {
@@ -464,12 +551,18 @@ int SWE_window_render_clear(lua_State* L)
     // params: swe_window, color
 
     LuaState ll(L);
-    ARGB color = ll.toIntegerIndex(2);
+
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.window");
+        return 0;
+    }
 
     SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
 
     if(win)
     {
+	ARGB color = ll.toIntegerIndex(2);
 	win->renderClear(Color(color));
     }
     else
@@ -485,19 +578,26 @@ int SWE_window_render_rect(lua_State* L)
     // params: swe_window, color, posx, posy, width, height, bool
 
     LuaState ll(L);
-    int params = ll.stackSize();
 
-    ARGB color = ll.toIntegerIndex(2);
-    int posx = ll.toIntegerIndex(3);
-    int posy = ll.toIntegerIndex(4);
-    int width = ll.toIntegerIndex(5);
-    int height = ll.toIntegerIndex(6);
-    int filled = 7 > params ? false : ll.toBooleanIndex(7);
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.window");
+        return 0;
+    }
 
     SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
     
     if(win)
     {
+	int params = ll.stackSize();
+
+        ARGB color = ll.toIntegerIndex(2);
+	int posx = ll.toIntegerIndex(3);
+        int posy = ll.toIntegerIndex(4);
+	int width = ll.toIntegerIndex(5);
+        int height = ll.toIntegerIndex(6);
+	int filled = 7 > params ? false : ll.toBooleanIndex(7);
+
 	if(filled)
 	    win->renderColor(Color(color), Rect(posx, posy, width, height));
 	else
@@ -516,14 +616,21 @@ int SWE_window_render_point(lua_State* L)
     // params: swe_window, color, posx. posy
 
     LuaState ll(L);
-    ARGB color = ll.toIntegerIndex(2);
-    int posx = ll.toIntegerIndex(3);
-    int posy = ll.toIntegerIndex(4);
+
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.window");
+        return 0;
+    }
 
     SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
     
     if(win)
     {
+	ARGB color = ll.toIntegerIndex(2);
+        int posx = ll.toIntegerIndex(3);
+	int posy = ll.toIntegerIndex(4);
+
 	win->renderPoint(Color(color), Point(posx, posy));
     }
     else
@@ -539,16 +646,23 @@ int SWE_window_render_line(lua_State* L)
     // params: swe_window, color, pt1x, pt1y, pt2x, pt2y
 
     LuaState ll(L);
-    ARGB color = ll.toIntegerIndex(2);
-    int posx1 = ll.toIntegerIndex(3);
-    int posy1 = ll.toIntegerIndex(4);
-    int posx2 = ll.toIntegerIndex(5);
-    int posy2 = ll.toIntegerIndex(6);
+
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.window");
+        return 0;
+    }
 
     SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
     
     if(win)
     {
+	ARGB color = ll.toIntegerIndex(2);
+        int posx1 = ll.toIntegerIndex(3);
+        int posy1 = ll.toIntegerIndex(4);
+	int posx2 = ll.toIntegerIndex(5);
+        int posy2 = ll.toIntegerIndex(6);
+
 	win->renderLine(Color(color), Point(posx1, posy1), Point(posx2, posy2));
     }
     else
@@ -564,18 +678,24 @@ int SWE_window_render_cyrcle(lua_State* L)
     // params: swe_window, color, px, py, int radius, bool filled
 
     LuaState ll(L);
-    int params = ll.stackSize();
 
-    ARGB color = ll.toIntegerIndex(2);
-    int posx = ll.toIntegerIndex(3);
-    int posy = ll.toIntegerIndex(4);
-    int radius = ll.toIntegerIndex(5);
-    bool filled = 6 > params ? false : ll.toBooleanIndex(6);
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.window");
+        return 0;
+    }
 
     SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
     
     if(win)
     {
+        int params = ll.stackSize();
+
+        ARGB color = ll.toIntegerIndex(2);
+        int posx = ll.toIntegerIndex(3);
+        int posy = ll.toIntegerIndex(4);
+        int radius = ll.toIntegerIndex(5);
+        bool filled = 6 > params ? false : ll.toBooleanIndex(6);
 	Points points = Tools::renderCircle(Point(posx, posy), radius, filled);
 
 	for(auto it = points.begin(); it != points.end(); ++it)
@@ -594,22 +714,29 @@ int SWE_window_render_texture(lua_State* L)
     // params: swe_window, swe_texture, [srcx, srcy, srcw, srch], [dstx, dsty, dstw, dsth]
 
     LuaState ll(L);
-    int params = ll.stackSize();
 
-    int srcx = ll.toIntegerIndex(3);
-    int srcy = ll.toIntegerIndex(4);
-    int srcw = ll.toIntegerIndex(5);
-    int srch = ll.toIntegerIndex(6);
-    int dstx = ll.toIntegerIndex(7);
-    int dsty = ll.toIntegerIndex(8);
-    int dstw = 9 > params ? srcw : ll.toIntegerIndex(9);
-    int dsth = 9 > params ? srch : ll.toIntegerIndex(10);
+    if(! ll.isTableIndex(1) || ! ll.isTableIndex(2))
+    {
+        ERROR("table not found" << ", " << "swe.window");
+        return 0;
+    }
 
     SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
     SWE_Texture* ptr = SWE_Texture::get(ll, 2, __FUNCTION__);
     
     if(win && ptr)
     {
+        int params = ll.stackSize();
+
+        int srcx = ll.toIntegerIndex(3);
+        int srcy = ll.toIntegerIndex(4);
+        int srcw = ll.toIntegerIndex(5);
+        int srch = ll.toIntegerIndex(6);
+        int dstx = ll.toIntegerIndex(7);
+        int dsty = ll.toIntegerIndex(8);
+        int dstw = 9 > params ? srcw : ll.toIntegerIndex(9);
+        int dsth = 9 > params ? srch : ll.toIntegerIndex(10);
+
 	win->renderTexture(*ptr, Rect(srcx, srcy, srcw, srch), Rect(dstx, dsty, dstw, dsth));
     }
     else
@@ -673,7 +800,7 @@ bool SWE_Scene::window_push(LuaState & ll, SWE_Window* v)
 
     if(! ll.pushTable("SWE.Scene").isTopTable())
     {
-	ERROR("table not found" << ": " << "swe_scene");
+	ERROR("table not found" << ": " << "swe.scene");
 	// stack + nil
 	return false;
     }
@@ -731,7 +858,7 @@ bool SWE_Scene::window_remove(LuaState & ll, SWE_Window* v)
 
     if(! ll.pushTable("SWE.Scene").isTopTable())
     {
-	ERROR("table not found" << ": " << "swe_scene");
+	ERROR("table not found" << ": " << "swe.scene");
 	ll.stackPop();
 	return false;
     }
@@ -787,7 +914,7 @@ int SWE_Scene::window_add(LuaState & ll)
 
     if(! ll.pushTable("SWE.Scene").isTopTable())
     {
-	ERROR("table not found" << ": " << "swe_scene");
+	ERROR("table not found" << ": " << "swe.scene");
 	return 0;
     }
 
@@ -852,7 +979,7 @@ void SWE_Scene::clean(LuaState & ll)
 {
     if(! ll.pushTable("SWE.Scene").isTopTable())
     {
-	ERROR("table not found" << ": " << "swe_scene");
+	ERROR("table not found" << ": " << "swe.scene");
 	return;
     }
 
@@ -865,6 +992,8 @@ void SWE_Scene::clean(LuaState & ll)
 const struct luaL_Reg SWE_window_functions[] = {
     { "SetVisible",     SWE_window_set_visible },      // table window, bool flag
     { "SetResult",      SWE_window_set_result },       // table window, int code
+    { "SetModality",    SWE_window_set_modality },     // table window, int code
+    { "SetKeyHandle",   SWE_window_set_keyhandle },    // table window, int code
     { "SetPosition",    SWE_window_set_position },     // table: window. point pos
     { "RenderClear",    SWE_window_render_clear },     // table: window, enum: color
     { "RenderRect",     SWE_window_render_rect },      // table: window, enum: color, rect, bool
@@ -921,11 +1050,14 @@ int SWE_window_create(lua_State* L)
     ll.setMetaTableIndex(-2).setTableIndex(-3);
 
     // add values
+    ll.pushString("__type").pushString("swe.window").setTableIndex(-3);
     ll.pushString("posx").pushInteger((*ptr)->position().x).setTableIndex(-3);
     ll.pushString("posy").pushInteger((*ptr)->position().y).setTableIndex(-3);
     ll.pushString("width").pushInteger((*ptr)->width()).setTableIndex(-3);
     ll.pushString("height").pushInteger((*ptr)->height()).setTableIndex(-3);
     ll.pushString("visible").pushBoolean((*ptr)->isVisible()).setTableIndex(-3);
+    ll.pushString("modality").pushBoolean(false).setTableIndex(-3);
+    ll.pushString("keyhandle").pushBoolean(false).setTableIndex(-3);
 
     if(ptr && *ptr)
 	DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << (*ptr)->toString() << "]");
@@ -970,6 +1102,8 @@ int SWE_window_destroy(lua_State* L)
 const struct luaL_Reg SWE_polygon_functions[] = {
     { "SetResult",      SWE_window_set_result },
     { "SetVisible",     SWE_window_set_visible },
+    { "SetModality",    SWE_window_set_modality },
+    { "SetKeyHandle",   SWE_window_set_keyhandle },
     { "SetPosition",    SWE_window_set_position },
     { "RenderClear",    SWE_window_render_clear },     // table: window, enum: color
     { "RenderRect",     SWE_window_render_rect },      // table: window, enum: color, rect, bool
@@ -1225,6 +1359,11 @@ int SWE_polygon_create(lua_State* L)
     ll.pushTable(0, 1);
     ll.pushFunction(SWE_window_destroy).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2).setTableIndex(-3);
+
+    ll.pushString("__type").pushString("swe.window").setTableIndex(-3);
+    ll.pushString("visible").pushBoolean((*ptr)->isVisible()).setTableIndex(-3);
+    ll.pushString("modality").pushBoolean(false).setTableIndex(-3);
+    ll.pushString("keyhandle").pushBoolean(false).setTableIndex(-3);
 
     // set functions
     ll.setFunctionsTableIndex(SWE_polygon_functions, -1);

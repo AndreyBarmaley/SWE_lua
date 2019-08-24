@@ -4,31 +4,11 @@ local fullscreen = false
 local debug = false
 
 local win = SWE.DisplayInit("Game15", 320, 240, fullscreen, debug)
--- SWE.Dump()
 
 if not win then
     print("SWE init error")
     os.exit(-1)
 end
-
-
--- virtual functions
--- ["WindowCreateEvent"] = (void)
--- ["MousePressEvent"] = (x,y,btn)
--- ["MouseReleaseEvent"] = (x,y,btn)
--- ["MouseMotionEvent"] = (x,y,btn)
--- ["MouseClickEvent"] = press(x,y,btn), release(x,y,btn)
--- ["MouseFocusEvent"] = (bool)
--- ["KeyPressEvent"] = (int)
--- ["KeyReleaseEvent"] = (int)
--- ["ScrollUpEvent"] = (x,y)
--- ["ScrollDownEvent"] = (x,y)
--- ["SystemUserEvent"] = (int, void*)
--- ["SystemTickEvent"] = (int ms)
---
--- functions
--- ["SetVisible"] = (true)
--- ["SetPosition"] = (x,y)
 
 local orders = SWE.JsonParse(SWE.BinaryBuf.ReadFromFile("game15.json"):ToString())
 local frs14 = SWE.FontRender("terminus.ttf", 14, true)
@@ -85,8 +65,10 @@ function BitsCanMove()
     return keys
 end
 
-function CreateBit(x, y, w, h, order)
-    local bit = SWE.Window(x, y, w, h, win)
+function CreateBit(order)
+    local t = orders[order]
+    local bit = SWE.Window(t.posx, t.posy, 55, 55, win)
+
     bit.label = tostring(order)
     bit.order = order
 
@@ -222,8 +204,7 @@ end
 
 -- fill bits
 for i = 1, 15 do
-    local t = orders[i]
-    bits[i] = CreateBit(t.posx, t.posy, 55, 55, i)
+    bits[i] = CreateBit(i)
 end
 
 SWE.MainLoop(win)

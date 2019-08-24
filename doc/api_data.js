@@ -342,6 +342,29 @@ define({ "api": [
     "groupTitle": "SWE"
   },
   {
+    "type": "set debug mode",
+    "url": "SWE.SetDebug(boolean)",
+    "title": "SWE.SetDebug",
+    "group": "SWE",
+    "name": "SetDebug",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "boolean",
+            "optional": false,
+            "field": "debug",
+            "description": "<p>debug mode</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
     "type": "get current directory",
     "url": "SWE.SystemCurrentDirectory()",
     "title": "SWE.SystemCurrentDirectory",
@@ -449,7 +472,7 @@ define({ "api": [
     "examples": [
       {
         "title": "usage",
-        "content": "local stat = SWE.SystemFileInfo(\"/var/tmp/screenshot.png\")\n\n.... dump stat\n| mode  | 33204      | \n| gid   | 1000       | \n| atime | 1565677681 | \n| uid   | 1000       | \n| nlink | 1          | \n| size  | 404930     | \n| mtime | 1565677681 | \n| ctime | 1565677681 | \n| isdir | false      |",
+        "content": "local stat = SWE.SystemFileStat(\"/var/tmp/screenshot.png\")\n\n.... dump stat\n| mode  | 33204      | \n| gid   | 1000       | \n| uid   | 1000       | \n| nlink | 1          | \n| size  | 404930     | \n| atime | 1565677681 | \n| mtime | 1565677681 | \n| ctime | 1565677681 | \n| isdir | false      |",
         "type": "json"
       }
     ],
@@ -507,7 +530,7 @@ define({ "api": [
             "type": "table",
             "optional": false,
             "field": "result",
-            "description": "<p>table result, name, type</p>"
+            "description": "<p>table result, full path name, type</p>"
           }
         ]
       }
@@ -515,7 +538,7 @@ define({ "api": [
     "examples": [
       {
         "title": "usage",
-        "content": "local names = SWE.SystemReadDirectory(\"/var/tmp\")\n\n.... dump names\n| \"world.log\" | \"file\"      |\n| \"hello.log\" | \"file\"      |\n| \"mc-root\"   | \"directory\" |",
+        "content": "local names = SWE.SystemReadDirectory(\"/var/tmp\")\n\n.... dump names\n| \"/var/tmp/world.log\" | \"file\"      |\n| \"/var/tmp/hello.log\" | \"file\"      |\n| \"/var/tmp/mc-root\"   | \"directory\" |",
         "type": "json"
       }
     ],
@@ -859,8 +882,31 @@ define({ "api": [
     "groupTitle": "SWE_BinaryBuf"
   },
   {
+    "type": "binarybuf clear",
+    "url": "SWE.BinaryBuf.Clear(table)",
+    "title": "SWE.BinaryBuf.Clear",
+    "group": "SWE_BinaryBuf",
+    "name": "Clear",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>binarybuf object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_binarybuf.js",
+    "groupTitle": "SWE_BinaryBuf"
+  },
+  {
     "type": "binarybuf constructor",
-    "url": "SWE.BinaryBuf(),(string),(userdata,number)",
+    "url": "SWE.BinaryBuf(),(string),(number),(userdata,number)",
     "title": "SWE.BinaryBuf",
     "group": "SWE_BinaryBuf",
     "name": "Constructor",
@@ -1224,6 +1270,63 @@ define({ "api": [
         ]
       }
     },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_binarybuf.js",
+    "groupTitle": "SWE_BinaryBuf"
+  },
+  {
+    "type": "convert binarybuf to hex string",
+    "url": "SWE.BinaryBuf.ToHexString(table,string,boolean)",
+    "title": "SWE.BinaryBuf.ToHexString",
+    "group": "SWE_BinaryBuf",
+    "name": "ToHexString",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "separator",
+            "description": "<p>string separator (default &quot;,&quot;)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "boolean",
+            "optional": false,
+            "field": "prefix",
+            "description": "<p>0x prefix (default true)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "inputbuf",
+            "description": "<p>binarybuf raw data</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>hex string data</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local buf = SWE.BinaryBuf(\"012345678\")\nprint(buf:ToHexString())\n....\n0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38",
+        "type": "json"
+      }
+    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_binarybuf.js",
     "groupTitle": "SWE_BinaryBuf"
@@ -2500,6 +2603,41 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "./api/apidoc_fontrender.js",
     "groupTitle": "SWE_FontRender"
+  },
+  {
+    "type": "fontrender system constructor",
+    "url": "SWE.FontRender.System()",
+    "title": "SWE.FontRender.System",
+    "group": "SWE_FontRender_System",
+    "name": "Constructor",
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.FontRender",
+            "optional": false,
+            "field": "result",
+            "description": "<p>fontrender object internal generated from &quot;alt-8x16.psf&quot;</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local frs = SWE.FontRender.System()\nprint(frs.font,frs.size)",
+        "type": "json"
+      },
+      {
+        "title": "ext table fields (read only)",
+        "content": "| font    | string  | system |\n\n| fixedWidth | number | for fixed font return SymbolAdvance(0x20)\n| lineHeight | number | skip line height",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_fontrender.js",
+    "groupTitle": "SWE_FontRender_System"
   },
   {
     "type": "color enums",
@@ -3785,6 +3923,1496 @@ define({ "api": [
     "groupTitle": "SWE_Key"
   },
   {
+    "type": "netstream close connect",
+    "url": "SWE.NetStream.Close(table)",
+    "title": "SWE.NetStream.Close",
+    "group": "SWE_NetStream",
+    "name": "Close",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream connect",
+    "url": "SWE.NetStream.Connect(table,string,number)",
+    "title": "SWE.NetStream.Connect",
+    "group": "SWE_NetStream",
+    "name": "Connect",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "server",
+            "description": "<p>network connect</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "port",
+            "description": "<p>network port</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream constructor",
+    "url": "SWE.NetStream(),(string,number)",
+    "title": "SWE.NetStream",
+    "group": "SWE_NetStream",
+    "name": "Constructor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "server",
+            "description": "<p>network connect</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "port",
+            "description": "<p>network port</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "result",
+            "description": "<p>netstream object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local net = SWE.NetStream()\nlocal res = net:Connect(\"127.0.0.1\", 22)\nif res then\n    local info = net:RecvString(0x0A)\n    net:SendString(\"quit\\r\\n\")\n    print(info)\nelse\n    print(\"connect false\")\nend\n\n.... may be output\n.... SSH-2.0-OpenSSH_5.3",
+        "type": "json"
+      },
+      {
+        "title": "ext table fields (read only)",
+        "content": "| address | string  |\n| port    | number  |",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream data ready",
+    "url": "SWE.NetStream.DataReady(table)",
+    "title": "SWE.NetStream.DataReady",
+    "group": "SWE_NetStream",
+    "name": "DataReady",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if data ready</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream listen port",
+    "url": "SWE.NetStream.Listen(table,number)",
+    "title": "SWE.NetStream.Listen",
+    "group": "SWE_NetStream",
+    "name": "Listen",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "port",
+            "description": "<p>network port</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream recv 16 bit value",
+    "url": "SWE.NetStream.RecvBE16(table,number)",
+    "title": "SWE.NetStream.RecvBE16",
+    "group": "SWE_NetStream",
+    "name": "RecvBE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>16 bit value (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream recv 32 bit value",
+    "url": "SWE.NetStream.RecvBE32(table,number)",
+    "title": "SWE.NetStream.RecvBE32",
+    "group": "SWE_NetStream",
+    "name": "RecvBE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>32 bit value (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream recv 64 bit value",
+    "url": "SWE.NetStream.RecvBE64(table,number)",
+    "title": "SWE.NetStream.RecvBE64",
+    "group": "SWE_NetStream",
+    "name": "RecvBE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>64 bit value (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream recv 8 bit value",
+    "url": "SWE.NetStream.RecvByte(table,number)",
+    "title": "SWE.NetStream.RecvByte",
+    "group": "SWE_NetStream",
+    "name": "RecvByte",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>8 bit value</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream recv bytes",
+    "url": "SWE.NetStream.RecvBytes(table,number)",
+    "title": "SWE.NetStream.RecvBytes",
+    "group": "SWE_NetStream",
+    "name": "RecvBytes",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "size",
+            "description": "<p>recv data size</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "result",
+            "description": "<p>binarybuf object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream recv 16 bit value",
+    "url": "SWE.NetStream.RecvLE16(table,number)",
+    "title": "SWE.NetStream.RecvLE16",
+    "group": "SWE_NetStream",
+    "name": "RecvLE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>16 bit value (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream recv 32 bit value",
+    "url": "SWE.NetStream.RecvLE32(table,number)",
+    "title": "SWE.NetStream.RecvLE32",
+    "group": "SWE_NetStream",
+    "name": "RecvLE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>32 bit value (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream recv 64 bit value",
+    "url": "SWE.NetStream.RecvLE64(table,number)",
+    "title": "SWE.NetStream.RecvLE64",
+    "group": "SWE_NetStream",
+    "name": "RecvLE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>64 bit value (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream recv string",
+    "url": "SWE.NetStream.RecvString(table,number)",
+    "title": "SWE.NetStream.RecvString",
+    "group": "SWE_NetStream",
+    "name": "RecvString",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "endl",
+            "description": "<p>eol byte (0 default)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>string result</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    -- echo service\n    local net = SWE.NetStream()\n    local res = net:Listen(2121)\n    if res then\n\tlocal client = net:WaitAccept()\n\tif client ~= nil then\n    \t    client:SendString(\"echo service\\r\\n\")\n    \t    local echo = client:RecvString(0x0A)\n    \t    client:SendString(echo)\n\tend\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream send 16 bit value",
+    "url": "SWE.NetStream.SendBE16(table,number)",
+    "title": "SWE.NetStream.SendBE16",
+    "group": "SWE_NetStream",
+    "name": "SendBE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>16 bit value send (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream send 32 bit value",
+    "url": "SWE.NetStream.SendBE32(table,number)",
+    "title": "SWE.NetStream.SendBE32",
+    "group": "SWE_NetStream",
+    "name": "SendBE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>32 bit value send (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream send 64 bit value",
+    "url": "SWE.NetStream.SendBE64(table,number)",
+    "title": "SWE.NetStream.SendBE64",
+    "group": "SWE_NetStream",
+    "name": "SendBE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>64 bit value send (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream send 8 bit value",
+    "url": "SWE.NetStream.SendByte(table,number)",
+    "title": "SWE.NetStream.SendByte",
+    "group": "SWE_NetStream",
+    "name": "SendByte",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>8 bit value send</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream send bytes",
+    "url": "SWE.NetStream.SendBytes(table,table)",
+    "title": "SWE.NetStream.SendBytes",
+    "group": "SWE_NetStream",
+    "name": "SendBytes",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "data",
+            "description": "<p>binarybuf object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream send 16 bit value",
+    "url": "SWE.NetStream.SendLE16(table,number)",
+    "title": "SWE.NetStream.SendLE16",
+    "group": "SWE_NetStream",
+    "name": "SendLE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>16 bit value send (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream send 32 bit value",
+    "url": "SWE.NetStream.SendLE32(table,number)",
+    "title": "SWE.NetStream.SendLE32",
+    "group": "SWE_NetStream",
+    "name": "SendLE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>32 bit value send (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream send 64 bit value",
+    "url": "SWE.NetStream.SendLE64(table,number)",
+    "title": "SWE.NetStream.SendLE64",
+    "group": "SWE_NetStream",
+    "name": "SendLE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>64 bit value send (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream send string",
+    "url": "SWE.NetStream.SendString(table,string)",
+    "title": "SWE.NetStream.SendString",
+    "group": "SWE_NetStream",
+    "name": "SendString",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "data",
+            "description": "<p>string data</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream send string",
+    "url": "SWE.NetStream.SendString(table,string)",
+    "title": "SWE.NetStream.SendString",
+    "group": "SWE_NetStream",
+    "name": "SendString",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "data",
+            "description": "<p>string data</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream rady timeout",
+    "url": "SWE.NetStream.SetReadyTimeout(table,number)",
+    "title": "SWE.NetStream.SetReadyTimeout",
+    "group": "SWE_NetStream",
+    "name": "SetReadyTimeout",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "timeout",
+            "description": "<p>ready timeout (100 ms default)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream wait accept",
+    "url": "SWE.NetStream.WaitAccept(table)",
+    "title": "SWE.NetStream.WaitAccept",
+    "group": "SWE_NetStream",
+    "name": "WaitAccept",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>netstream object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local net = SWE.NetStream()\nlocal res = net:Listen(22222)\nif res then\n    local client = net:WaitAccept()\n    if client ~= nil then\n        client:SendString(\"hello world!\\r\\n\")\n    end\nelse\n    print(\"listen false\")\nend",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "netstream send string",
+    "url": "SWE.NetStream.WaitString(table,string)",
+    "title": "SWE.NetStream.WaitString",
+    "group": "SWE_NetStream",
+    "name": "WaitString",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>netstream object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "data",
+            "description": "<p>wait string data</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success, or false timeout</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    local net = SWE.NetStream()\n    -- connect to www.com\n    local res = net:Connect(\"69.172.201.208\", 80)\n    if res then\n\tlocal request = \"GET / HTTP/1.1\\r\\nAccept: *\" .. \"/\" .. \"*\\r\\n\\r\\n\"\n\tnet:SendString(request)\n\tif net:WaitString(\"<html xmlns=\\\"http://www.w3.org/1999/xhtml\\\">\\r\\n\") then\n    \t    local html = net:RecvString()\n    \t    print(html)\n\tend\n    else\n\tprint(\"error: res false\")\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
+    "type": "point constructor",
+    "url": "SWE.Point(number,number)",
+    "title": "SWE.Point",
+    "group": "SWE_Point",
+    "name": "Constructor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posx",
+            "description": "<p>position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posy",
+            "description": "<p>position</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "result",
+            "description": "<p>point object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local pt = SWE.Point(100, 200)\nprint(pt.posx,pt.posy)",
+        "type": "json"
+      },
+      {
+        "title": "ext table fields (read write)",
+        "content": "| posx    | number  |\n| posy    | number  |",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_rect.js",
+    "groupTitle": "SWE_Point"
+  },
+  {
+    "type": "get point string",
+    "url": "SWE.Point.ToString(table)",
+    "title": "SWE.Point.ToString",
+    "group": "SWE_Point",
+    "name": "ToString",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point",
+            "description": "<p>point object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>string point value</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_rect.js",
+    "groupTitle": "SWE_Point"
+  },
+  {
+    "type": "get list point fields",
+    "url": "SWE.Point.Unpack(table)",
+    "title": "SWE.Point.Unpack",
+    "group": "SWE_Point",
+    "name": "Unpack",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point",
+            "description": "<p>point object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "list",
+            "optional": false,
+            "field": "values",
+            "description": "<p>coord values (posx, posy)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_rect.js",
+    "groupTitle": "SWE_Point"
+  },
+  {
+    "type": "check iteration hits",
+    "url": "SWE.RandomHit.Check(table)",
+    "title": "SWE.RandomHit.Check",
+    "group": "SWE_RandomHit",
+    "name": "Check",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.RandomHit",
+            "optional": false,
+            "field": "hit",
+            "description": "<p>randomhit object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if hit</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_randomhit.js",
+    "groupTitle": "SWE_RandomHit"
+  },
+  {
+    "type": "randomhit constructor",
+    "url": "SWE.RandomHit(number)",
+    "title": "SWE.RandomHit",
+    "group": "SWE_RandomHit",
+    "name": "Constructor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "chance",
+            "description": "<p>hit chance (1 - 99)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.RandomHit",
+            "optional": false,
+            "field": "result",
+            "description": "<p>randomhit object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    local hit = SWE.RandomHit(33)\n    print(hit:ToString())\n\n    for i = 1,100 do\n\tlocal check = hit:Check()\n    end\n\n    local check = hit:Check()\n    print(hit:ToString())\n\n    for i = 2,100 do\n\tlocal check = hit:Check()\n    end\n\n    local check = hit:Check()\n    print(hit:ToString())\n\n    for i = 2,100 do\n\tlocal check = hit:Check()\n    end",
+        "type": "json"
+      },
+      {
+        "title": "ext table fields (read only)",
+        "content": "| chance  | number  |",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_randomhit.js",
+    "groupTitle": "SWE_RandomHit"
+  },
+  {
+    "type": "get last checked",
+    "url": "SWE.RandomHit.Last(table)",
+    "title": "SWE.RandomHit.Last",
+    "group": "SWE_RandomHit",
+    "name": "Last",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.RandomHit",
+            "optional": false,
+            "field": "hit",
+            "description": "<p>randomhit object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "list",
+            "optional": false,
+            "field": "result",
+            "description": "<p>last check value</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_randomhit.js",
+    "groupTitle": "SWE_RandomHit"
+  },
+  {
+    "type": "rect constructor",
+    "url": "SWE.Rect(number,number,number,number)",
+    "title": "SWE.Rect",
+    "group": "SWE_Rect",
+    "name": "Constructor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posx",
+            "description": "<p>position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posy",
+            "description": "<p>position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "width",
+            "description": "<p>size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "height",
+            "description": "<p>size</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "result",
+            "description": "<p>rect object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local rt = SWE.Rect(10,20,100, 200)\nprint(rt.posx,rt.posy,rt.width,rt.height)",
+        "type": "json"
+      },
+      {
+        "title": "ext table fields (read write)",
+        "content": "| posx    | number  |\n| posy    | number  |\n| width   | number  |\n| height  | number  |",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_rect.js",
+    "groupTitle": "SWE_Rect"
+  },
+  {
+    "type": "get rect string",
+    "url": "SWE.Rect.ToString(table)",
+    "title": "SWE.Rect.ToString",
+    "group": "SWE_Rect",
+    "name": "ToString",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "rect",
+            "description": "<p>rect object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>string rect value</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_rect.js",
+    "groupTitle": "SWE_Rect"
+  },
+  {
+    "type": "get list rect fields",
+    "url": "SWE.Rect.Unpack(table)",
+    "title": "SWE.Rect.Unpack",
+    "group": "SWE_Rect",
+    "name": "Unpack",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "rect",
+            "description": "<p>rect object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "list",
+            "optional": false,
+            "field": "values",
+            "description": "<p>rect values (posx,posy,width, height)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_rect.js",
+    "groupTitle": "SWE_Rect"
+  },
+  {
+    "type": "size constructor",
+    "url": "SWE.Size(number,number)",
+    "title": "SWE.Size",
+    "group": "SWE_Size",
+    "name": "Constructor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "width",
+            "description": "<p>size value</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "height",
+            "description": "<p>size value</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Size",
+            "optional": false,
+            "field": "result",
+            "description": "<p>size object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local sz = SWE.Size(100, 200)\nprint(sz.width,sz.height)",
+        "type": "json"
+      },
+      {
+        "title": "ext table fields (read write)",
+        "content": "| width   | number  |\n| height  | number  |",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_rect.js",
+    "groupTitle": "SWE_Size"
+  },
+  {
+    "type": "get size string",
+    "url": "SWE.Size.ToString(table)",
+    "title": "SWE.Size.ToString",
+    "group": "SWE_Size",
+    "name": "ToString",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Size",
+            "optional": false,
+            "field": "size",
+            "description": "<p>size object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>string size value</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_rect.js",
+    "groupTitle": "SWE_Size"
+  },
+  {
+    "type": "get list size fields",
+    "url": "SWE.Size.Unpack(table)",
+    "title": "SWE.Size.Unpack",
+    "group": "SWE_Size",
+    "name": "Unpack",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Size",
+            "optional": false,
+            "field": "size",
+            "description": "<p>size object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "list",
+            "optional": false,
+            "field": "values",
+            "description": "<p>size values (width, height)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_rect.js",
+    "groupTitle": "SWE_Size"
+  },
+  {
     "type": "texture constructor",
     "url": "SWE.Texture(),(number,number)",
     "title": "SWE.Texture",
@@ -4260,6 +5888,36 @@ define({ "api": [
     "groupTitle": "SWE_Texture"
   },
   {
+    "type": "texture save to file",
+    "url": "SWE.Texture.SaveToFile(filename)",
+    "title": "SWE.Texture.SaveToFile",
+    "group": "SWE_Texture",
+    "name": "SaveToFile",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "filename",
+            "description": "<p>save to filename</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_texture.js",
+    "groupTitle": "SWE_Texture"
+  },
+  {
     "type": "texture constructor",
     "url": "SWE.Texture.Image(string,number,number)",
     "title": "SWE.Texture.Image",
@@ -4453,7 +6111,7 @@ define({ "api": [
             "type": "number",
             "optional": false,
             "field": "colbg",
-            "description": "<p>fill backgroung color, SWE.Color</p>"
+            "description": "<p>fill backgroung color, SWE.Color (default Transparent)</p>"
           }
         ]
       }
@@ -4555,7 +6213,7 @@ define({ "api": [
       },
       {
         "title": "ext table fields (read only)",
-        "content": "| posx     | number  | window position\n| posy     | number  | window position\n| width    | number  | window size\n| height   | number  | window size\n| visible  | boolean | window is visible",
+        "content": "| posx      | number  | window position\n| posy      | number  | window position\n| width     | number  | window size\n| height    | number  | window size\n| visible   | boolean | window is visible (defalut false)\n| modality  | boolean | window is modality (defalut false)\n| keyhangle | boolean | window is global key handle (defalut false)",
         "type": "json"
       }
     ],
@@ -4968,6 +6626,66 @@ define({ "api": [
             "optional": false,
             "field": "dsth",
             "description": "<p>dst size (default srch)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window"
+  },
+  {
+    "type": "window set global key handle mode",
+    "url": "SWE.Window.SetKeyHandle(table,boolean)",
+    "title": "SWE.Window.SetKeyHandle",
+    "group": "SWE_Window",
+    "name": "SetKeyHandle",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Window",
+            "optional": false,
+            "field": "window",
+            "description": "<p>window object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "boolean",
+            "optional": false,
+            "field": "handle",
+            "description": "<p>flag key handle</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window"
+  },
+  {
+    "type": "window set modality mode",
+    "url": "SWE.Window.SetModality(table,boolean)",
+    "title": "SWE.Window.SetModality",
+    "group": "SWE_Window",
+    "name": "SetModality",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Window",
+            "optional": false,
+            "field": "window",
+            "description": "<p>window object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "boolean",
+            "optional": false,
+            "field": "modality",
+            "description": "<p>flag modality</p>"
           }
         ]
       }

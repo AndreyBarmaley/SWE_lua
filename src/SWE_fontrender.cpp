@@ -31,13 +31,13 @@ SWE_FontRender* SWE_FontRender::get(LuaState & ll, int tableIndex, const char* f
 {
     if(! ll.isTableIndex(tableIndex))
     {
-        ERROR("table not found" << ": " << tableIndex);
+        ERROR("table not found, index: " << tableIndex);
         return NULL;
     }
 
     if(! ll.getFieldTableIndex("userdata", tableIndex).isTopUserData())
     {
-        ERROR(funcName << ": " << "not userdata: " << ll.getTopTypeName());
+        ERROR(funcName << ": " << "not userdata, index: " << tableIndex << ", " << ll.getTopTypeName());
         return NULL;
     }
 
@@ -53,12 +53,18 @@ int SWE_fontrender_symbol_advance(lua_State* L)
     // params: swe_fontrender, symbol int
 
     LuaState ll(L);
-    int symbol = ll.toIntegerIndex(2);
+
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.fontrender");
+        return 0;
+    }
 
     SWE_FontRender* frs = SWE_FontRender::get(ll, 1, __FUNCTION__);
 
     if(frs)
     {
+	int symbol = ll.toIntegerIndex(2);
         int width = frs->symbolAdvance(symbol);
 
 	// userdata, width
@@ -73,6 +79,10 @@ int SWE_fontrender_symbol_advance(lua_State* L)
     return 0;
 }
 
+const struct luaL_Reg SWE_fontrender_functions[] = {
+    { "SymbolAdvance", SWE_fontrender_symbol_advance }, // [int], swe_fontrender, symbol integer
+    { NULL, NULL }
+};
 
 int SWE_fontrender_create_ttf(lua_State* L)
 {
@@ -116,6 +126,7 @@ int SWE_fontrender_create_ttf(lua_State* L)
     *ptr = (SWE_FontRender*) frs;
 
     // add values
+    ll.pushString("__type").pushString("swe.fontrender").setTableIndex(-3);
     ll.pushString("font").pushString(font).setTableIndex(-3);
     ll.pushString("size").pushInteger(fontsz).setTableIndex(-3);
     ll.pushString("blended").pushBoolean(blended).setTableIndex(-3);
@@ -126,7 +137,7 @@ int SWE_fontrender_create_ttf(lua_State* L)
     ll.pushString("lineHeight").pushInteger((*ptr)->lineSkipHeight()).setTableIndex(-3);
 
     // set functions
-    ll.pushFunction(SWE_fontrender_symbol_advance).setFieldTableIndex("SymbolAdvance", -2);
+    ll.setFunctionsTableIndex(SWE_fontrender_functions, -1);
 
     return 1;
 }
@@ -171,13 +182,47 @@ int SWE_fontrender_create_psf(lua_State* L)
     *ptr = (SWE_FontRender*) frs;
 
     // add values
+    ll.pushString("__type").pushString("swe.fontrender").setTableIndex(-3);
     ll.pushString("font").pushString(font).setTableIndex(-3);
 
     ll.pushString("fixedWidth").pushInteger((*ptr)->symbolAdvance(0x20)).setTableIndex(-3);
     ll.pushString("lineHeight").pushInteger((*ptr)->lineSkipHeight()).setTableIndex(-3);
 
     // set functions
-    ll.pushFunction(SWE_fontrender_symbol_advance).setFieldTableIndex("SymbolAdvance", -2);
+    ll.setFunctionsTableIndex(SWE_fontrender_functions, -1);
+
+    return 1;
+}
+
+int SWE_fontrender_create_sys(lua_State* L)
+{
+    // empty params
+    LuaState ll(L);
+
+    ll.pushTable();
+
+    // userdata
+    ll.pushString("userdata");
+    auto ptr = static_cast<SWE_FontRender**>(ll.pushUserData(sizeof(SWE_FontRender*)));
+
+    // set metatable: __gc
+    ll.pushTable(0, 1);
+    ll.pushFunction(SWE_fontrender_destroy).setFieldTableIndex("__gc", -2);
+    ll.setMetaTableIndex(-2).setTableIndex(-3);
+
+    // SWE_FontRender: system
+    const FontRender* frs = & systemFont();
+    *ptr = (SWE_FontRender*) frs;
+
+    // add values
+    ll.pushString("__type").pushString("swe.fontrender").setTableIndex(-3);
+    ll.pushString("font").pushString("system").setTableIndex(-3);
+
+    ll.pushString("fixedWidth").pushInteger((*ptr)->symbolAdvance(0x20)).setTableIndex(-3);
+    ll.pushString("lineHeight").pushInteger((*ptr)->lineSkipHeight()).setTableIndex(-3);
+
+    // set functions
+    ll.setFunctionsTableIndex(SWE_fontrender_functions, -1);
 
     return 1;
 }
@@ -248,5 +293,10 @@ void SWE_FontRender::registers(LuaState & ll)
     ll.pushTable("SWE.FontRender");
     // set metatable: __call
     ll.pushTable(0, 1).pushFunction(SWE_fontrender_create_ttf).setFieldTableIndex("__call", -2);
+    ll.setMetaTableIndex(-2).stackPop();
+
+    ll.pushTable("SWE.FontRender.System");
+    // set metatable: __call
+    ll.pushTable(0, 1).pushFunction(SWE_fontrender_create_sys).setFieldTableIndex("__call", -2);
     ll.setMetaTableIndex(-2).stackPop();
 }

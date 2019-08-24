@@ -176,22 +176,6 @@ int SWE_sound_play(lua_State* L)
 }
 
 const struct luaL_Reg SWE_audio_functions[] = {
-/*
-------------------
--- This is my module doing ...
-------------------
-module("SWE.Audio")
-*/
-
-/*
-------------------
--- My MixerVolume function.
--- @name MixerVolume
--- @type function
--- @param set volume (number)
-------------------
-function MixerVolume(number)
-*/
     { "MixerVolume", SWE_mixer_volume },       // [int], int volume
     { "MixerReset", SWE_mixer_reset },         // [void], void
     { "MusicIsPlaying", SWE_music_isplaying }, // [bool], void

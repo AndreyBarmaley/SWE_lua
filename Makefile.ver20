@@ -15,6 +15,11 @@ endif
 ENGINE_CFLAGS   := $(SDL2_CFLAGS) $(shell pkg-config SDL2_ttf --cflags) $(shell pkg-config SDL2_image --cflags)
 ENGINE_LIBS     := $(SDL2_LIBS) $(shell pkg-config SDL2_ttf --libs) $(shell pkg-config SDL2_image --libs)
 
+ifndef DISABLE_NETWORK
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) $(shell pkg-config SDL2_net --cflags)
+ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config SDL2_net --libs)
+endif
+
 ifndef DISABLE_AUDIO
 ENGINE_CFLAGS   := $(ENGINE_CFLAGS) $(shell pkg-config SDL2_mixer --cflags)
 ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config SDL2_mixer --libs)

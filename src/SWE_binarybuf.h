@@ -27,20 +27,19 @@
 
 struct lua_State;
 
+int SWE_binarybuf_create(lua_State*);
+int SWE_binarybuf_destroy(lua_State*);
+
 class SWE_BinaryBuf : public BinaryBuf
 {
-protected:
-    LuaState	ll;
-
-
 public:
-    SWE_BinaryBuf(lua_State* L) : ll(L) {}
-    SWE_BinaryBuf(lua_State*, const std::string &);
-    SWE_BinaryBuf(lua_State*, size_t, int);
-    SWE_BinaryBuf(lua_State*, const u8*, size_t);
+    SWE_BinaryBuf() {}
+    SWE_BinaryBuf(const BinaryBuf & buf) : BinaryBuf(buf) {}
+    SWE_BinaryBuf(BinaryBuf && buf) : BinaryBuf(buf) {}
+    SWE_BinaryBuf(size_t sz, int val) : BinaryBuf(sz, val) {}
+    SWE_BinaryBuf(const u8* ptr, size_t sz) : BinaryBuf(ptr, sz) {}
 
     static SWE_BinaryBuf* get(LuaState &, int tableIndex, const char* funcName);
-
     static void registers(LuaState & ll);
 };
 
