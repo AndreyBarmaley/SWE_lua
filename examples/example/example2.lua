@@ -1,9 +1,10 @@
-require 'SWE'
+-- require 'SWE'
 
 local fullscreen = false
-local debug = true
 
-local win = SWE.DisplayInit("Lua SWE", 640, 480, fullscreen, debug)
+SWE.SetDebug(true)
+
+local win = SWE.DisplayInit("Lua SWE", 640, 480, fullscreen)
 
 SWE.CursorHide()
 local txcur = SWE.Texture.Image("cursor16.png")
@@ -54,7 +55,9 @@ function area.SystemUserEvent(a,b)
 	    area.bgcolor = SWE.Color.MidnightBlue
 	end
 	SWE.DisplayDirty()
+	return true
     end
+    return false
 end
 
 function win.RenderWindow()

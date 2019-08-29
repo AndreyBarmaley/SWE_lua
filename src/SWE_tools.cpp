@@ -33,7 +33,7 @@ std::string SWE_Tools::convertEncoding(LuaState & ll, const std::string & str)
 
     if(! ll.getFieldTableIndex("encoding", -1, false).isTopString())
     {
-	ll.stackPop();
+	ll.stackPop(2);
 	return str;
     }
 
@@ -46,6 +46,15 @@ std::string SWE_Tools::convertEncoding(LuaState & ll, const std::string & str)
 
 std::string SWE_Tools::toFullFileName(LuaState & ll, const std::string & file)
 {
+#ifdef ANDROID
+    // check assets
+    StreamFile sf(file, "rb");
+    if(sf.isValid())
+    {
+	sf.close();
+	return file;
+    }
+#endif
     if(! ll.pushTable("SWE").isTopTable())
     {
         ERROR("table not found" << ": " << "swe");
@@ -55,7 +64,7 @@ std::string SWE_Tools::toFullFileName(LuaState & ll, const std::string & file)
 
     if(! ll.getFieldTableIndex("getcwd", -1, false).isTopString())
     {
-	ll.stackPop();
+	ll.stackPop(2);
 	return file;
     }
 

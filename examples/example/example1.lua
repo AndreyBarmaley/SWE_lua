@@ -1,9 +1,10 @@
-require 'SWE'
+-- require 'SWE'
 
 local fullscreen = false
-local debug = true
 
-local win = SWE.DisplayInit("Lua SWE", 640, 480, fullscreen, debug)
+SWE.SetDebug(true)
+
+local win = SWE.DisplayInit("Lua SWE", 640, 480, fullscreen)
 local area = SWE.Window(100, 100, 100, 50)
 local frs = SWE.FontRender("terminus.ttf", 14, true)
 
@@ -14,7 +15,9 @@ function win.RenderWindow()
 end
 
 function win.KeyPressEvent(key)
-    if SWE.Key.ESCAPE == key then
+    if SWE.Key.F1 == key then
+	return true
+    elseif SWE.Key.ESCAPE == key then
         -- close scene, see SWE.MainLoop
         win:SetVisible(false)
         return true

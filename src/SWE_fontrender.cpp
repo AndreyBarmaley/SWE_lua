@@ -38,6 +38,7 @@ SWE_FontRender* SWE_FontRender::get(LuaState & ll, int tableIndex, const char* f
     if(! ll.getFieldTableIndex("userdata", tableIndex).isTopUserData())
     {
         ERROR(funcName << ": " << "not userdata, index: " << tableIndex << ", " << ll.getTopTypeName());
+	ll.stackPop();
         return NULL;
     }
 

@@ -1,4 +1,4 @@
-require 'SWE'
+-- require 'SWE'
 
 SWE.SetDebug(false)
 

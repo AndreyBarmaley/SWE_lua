@@ -12,7 +12,7 @@ $(TARGET).a: $(patsubst %.cpp, %.o, $(wildcard *.cpp))
 	$(AR) crvs $@ $^
 
 $(TARGET).so: $(patsubst %.cpp, %.o, $(wildcard ./*.cpp)) $(LIBENGINE)
-	$(CXX) -fPIC -shared $^ $(LIBS) -o $@ $(LDFLAGS)
+	$(CXX) -shared $^ $(LIBS) -o $@ $(LDFLAGS)
 
 %.o: %.cpp
 	$(CXX) -c -MD $< $(CFLAGS)

@@ -22,6 +22,7 @@
 
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sstream>
 
 #include "engine.h"
 #include "display_scene.h"
@@ -38,21 +39,21 @@
 #include "SWE_netstream.h"
 #include "SWE_randomhit.h"
 
-#define SWE_LUA_VERSION 20190822
+#define SWE_LUA_VERSION 20190828
 #define SWE_LUA_LICENSE "GPL3"
 
 int SWE_window_create(lua_State*);
 
 int SWE_init(lua_State* L)
 {
-    // params: string title, int width, int height, bool fullscreen, bool debug
+    // params: string title, int width, int height, bool fullscreen
     LuaState ll(L);
 
     int params = ll.stackSize();
     if(3 > params || ! ll.isStringIndex(1) ||
 	! ll.isIntegerIndex(2) || ! ll.isIntegerIndex(3))
     {
-        ERROR("require minimum params: " << "string title, int width, int height, <bool fullscreen, bool debug>");
+        ERROR("require minimum params: " << "string title, int width, int height, bool fullscreen");
 	ll.pushNil();
         return 1;
     }
@@ -61,9 +62,6 @@ int SWE_init(lua_State* L)
     int width = ll.toIntegerIndex(2);
     int height = ll.toIntegerIndex(3);
     bool fullscreen = 4 > params ? false : ll.toBooleanIndex(4);
-    bool debug = 5 > params ? true : ll.toBooleanIndex(5);
-
-    Engine::setDebugMode(debug);
 
     // check also initialized
     if(Display::size() == Size(width, height))
@@ -122,6 +120,35 @@ int SWE_display_dirty(lua_State* L)
     return 0;
 }
 
+int SWE_display_size(lua_State* L)
+{
+    // params: none
+    LuaState ll(L);
+
+    const Size & size = Display::size();
+    ll.pushInteger(size.w);
+    ll.pushInteger(size.h);
+    ll.pushBoolean(Display::fullscreen());
+
+    return 3;
+}
+
+int SWE_display_videomodes(lua_State* L)
+{
+    // params: none
+    LuaState ll(L);
+
+    std::list<Size> modes = Display::hardwareVideoModes();
+    for(auto it = modes.begin(); it != modes.end(); ++it)
+    {
+	ll.pushTable();
+	ll.pushInteger((*it).w).setFieldTableIndex("width", -2);
+	ll.pushInteger((*it).h).setFieldTableIndex("height", -2);
+    }
+
+    return modes.size();
+}
+
 int SWE_loop(lua_State* L)
 {
     // params: swe_window
@@ -162,6 +189,34 @@ int SWE_cursor_hide(lua_State* L)
 {
     // params: none
     Display::hardwareCursorHide();
+    return 0;
+}
+
+int SWE_debug(lua_State* L)
+{
+    // params: 
+    LuaState ll(L);
+
+    std::ostringstream os;
+    bool sep = false;
+
+    for(int index = 1; index <= ll.stackSize(); ++index)
+    {
+	if(sep)
+	    os << ", ";
+
+	if(ll.isStringIndex(index))
+	    os << ll.toStringIndex(index);
+	else
+	if(ll.isNumberIndex(index))
+	    os << ll.toNumberIndex(index);
+	else
+	    os << ll.getTypeName(ll.getTypeIndex(index));
+
+	sep = true;
+    }
+
+    DEBUG(os.str());
     return 0;
 }
 
@@ -221,10 +276,15 @@ int SWE_register_directory(lua_State* L)
     if(! Systems::isDirectory(name))
 	name = SWE_Tools::toFullFileName(ll, name);
 
-    bool res = ll.registerDirectory(name);
-    ll.pushBoolean(res);
+    if(Systems::isDirectory(name))
+    {
+	DEBUG(name);
+	bool res = ll.registerDirectory(name);
+	ll.pushBoolean(res);
+	return 1;
+    }
 
-    return 1;
+    return 0;
 }
 
 int SWE_system_memory_usage(lua_State* L)
@@ -234,6 +294,25 @@ int SWE_system_memory_usage(lua_State* L)
 
     ll.pushInteger(Systems::memoryUsage());
     return 1;
+}
+
+int SWE_system_mobile_osname(lua_State* L)
+{
+    // params: none
+    LuaState ll(L);
+
+#if defined ANDROID
+    ll.pushString("android");
+    return 1;
+#elif defined __MINGW32CE__
+    ll.pushString("wince");
+    return 1;
+#elif __SYMBIAN32__
+    ll.pushString("symbian");
+    return 1;
+#else
+    return 0;
+#endif
 }
 
 int SWE_system_current_directory(lua_State* L)
@@ -251,6 +330,18 @@ int SWE_system_current_directory(lua_State* L)
     }
 
     return 1;
+}
+
+int SWE_system_share_directories(lua_State* L)
+{
+    // params: empty
+    LuaState ll(L);
+    StringList dirs = Systems::shareDirectories("SWE_lua");
+
+    for(auto it = dirs.begin(); it != dirs.end(); ++it)
+	ll.pushString(*it);
+
+    return dirs.size();
 }
 
 int SWE_system_read_directory(lua_State* L)
@@ -441,10 +532,26 @@ int SWE_push_event(lua_State* L)
     int params = ll.stackSize();
 
     int code = ll.toIntegerIndex(1);
-    const void* data = 2 > params ? NULL : ll.toPointerIndex(2);
-    SWE_Window* win = 3 > params || ! ll.isTableIndex(3) ? NULL : SWE_Window::get(ll, 3, __FUNCTION__);
+    void* data = NULL;
+    SWE_Window* dst = 3 > params || ! ll.isTableIndex(3) ? NULL : SWE_Window::get(ll, 3, __FUNCTION__);
 
-    DisplayScene::pushEvent(win, code, const_cast<void*>(data));
+    // store ref
+    if(! ll.isNilIndex(2))
+    {
+	ll.pushValueIndex(2);
+	int objRef = luaL_ref(ll.L(), LUA_REGISTRYINDEX);
+	data = reinterpret_cast<void*>(objRef);
+	DEBUG("create ref object: " << String::hex(objRef));
+    }
+
+    DisplayScene::pushEvent(dst, code, data);
+
+    if(data)
+    {
+	// main window
+	SWE_Window* win = SWE_Scene::window_getindex(ll, 1);
+	DisplayScene::pushEvent(win, Signal::LuaUnrefAction, data);
+    }
 
     return 0;
 }
@@ -463,6 +570,7 @@ int SWE_set_debug(lua_State* L)
 const struct luaL_Reg SWE_functions[] = {
     { "DisplayInit", SWE_init },	// [table swe_window], string title, int width, int height
     { "Dump", SWE_dump }, 		// [void], void or object
+    { "Debug", SWE_debug },		// [void], string
     { "MainLoop", SWE_loop }, 		// [int winresult], table: window
     { "CursorShow", SWE_cursor_show },	// [void], void
     { "CursorHide", SWE_cursor_hide },	// [void], void
@@ -473,15 +581,19 @@ const struct luaL_Reg SWE_functions[] = {
     { "SetDebug", SWE_set_debug }, 	// [void], bool
     { "DisplayWindow", SWE_display_window }, 			// [table swe_window], void
     { "DisplayDirty", SWE_display_dirty }, 			// [void], void
+    { "DisplayVideoModes", SWE_display_videomodes }, 		// [string list], void
+    { "DisplaySize", SWE_display_size }, 			// [int list], void
     { "RenderScreenshot", SWE_render_screenshot }, 		// [bool], string filename
     { "LuaRegisterDirectory", SWE_register_directory }, 	// [bool], string directory
     { "SystemCurrentDirectory", SWE_system_current_directory },	// [string], void
+    { "SystemShareDirectories", SWE_system_share_directories },	// [string list], void
     { "SystemReadDirectory", SWE_system_read_directory },	// [table list], string directory
     { "SystemFileStat", SWE_system_file_stat },			// [table], string filename
     { "SystemDirnameBasename", SWE_system_dirname_basename },	// [string], string
     { "SystemConcatePath", SWE_system_concate_path },		// [string], string list
-    { "SystemMemoryUsage", SWE_system_memory_usage },		// [integer memoryusage], void
-    { "StringEncodeToUTF8", SWE_string_encode_utf8 },		// [ string], string str, string from charset
+    { "SystemMemoryUsage", SWE_system_memory_usage },		// [number], void
+    { "SystemMobileOs", SWE_system_mobile_osname },		// [string], void
+    { "StringEncodeToUTF8", SWE_string_encode_utf8 },		// [string], string str, string from charset
     { NULL, NULL }
 };
 
@@ -519,7 +631,11 @@ extern "C" {
     ll.setMetaTableIndex(-2);
 
     // set getpwd
-#ifndef __MINGW32CE__
+#if defined __MINGW32__
+    // set from main
+#elif defined ANDROID
+    // set from main
+#else
     char* pwd = get_current_dir_name();
     ll.pushString(pwd);
     free(pwd);

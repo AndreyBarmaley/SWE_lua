@@ -34,8 +34,6 @@ class SWE_BinaryBuf : public BinaryBuf
 {
 public:
     SWE_BinaryBuf() {}
-    SWE_BinaryBuf(const BinaryBuf & buf) : BinaryBuf(buf) {}
-    SWE_BinaryBuf(BinaryBuf && buf) : BinaryBuf(buf) {}
     SWE_BinaryBuf(size_t sz, int val) : BinaryBuf(sz, val) {}
     SWE_BinaryBuf(const u8* ptr, size_t sz) : BinaryBuf(ptr, sz) {}
 

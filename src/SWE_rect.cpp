@@ -132,7 +132,7 @@ int SWE_point_tostring(lua_State* L)
     {
 	int px = ll.getFieldTableIndex("posx", 1).getTopInteger();
 	int py = ll.getFieldTableIndex("posy", 1).getTopInteger();
-	ll.stackPop(4);
+	ll.stackPop(2);
 
 	std::string str = StringFormat("{ \"posx\": %1, \"posy\": %2 }").arg(px).arg(py);
 	ll.pushString(str);

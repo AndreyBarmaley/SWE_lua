@@ -1,27 +1,57 @@
 require 'gui_list'
+require 'gui_button'
 require 'gui_tools'
 
 local frs = {}
 
-function CommanderInit()
-    local fullscreen = false
-    local dbgmsg = false
+function CommanderInit(win)
     local cmd = {}
 
-    cmd.win = SWE.DisplayInit("Lua SWE Commander", 320, 480, fullscreen, dbgmsg)
+    local cfgfsz = 0
+    local cfgcwd = SWE.SystemCurrentDirectory()
 
-    if not cmd.win then
-	print("SWE init error")
-	os.exit(-1)
-    end
-
-    frs = SWE.FontRender("terminus.ttf", 14, true)
-
+    cmd.win = win
     cmd.start = nil
     cmd.exit = false
-    cmd.btnx = SWE.Window(cmd.win.width - 20, 0, 20, 20)
-    cmd.list = ListCreate(20, 20, cmd.win.width - 40, cmd.win.height - 40, win)
 
+    -- check config
+    local sharedir = SWE.SystemShareDirectories()
+    if sharedir ~= nil then
+	local buf = SWE.BinaryBuf()
+	local file = SWE.SystemConcatePath(sharedir, "config.json")
+	if buf:ReadFromFile(file) then
+	    local config = SWE.JsonParse(buf:ToString())
+	    if config ~= nil then
+		cfgfsz = config.fsz
+		cfgcwd = config.cwd
+	    end
+	end
+    end
+
+    -- init frs
+    if frs.fixeWidth == nil then
+	if cfgfsz == 0 then
+	    local dw,dh,df = SWE.DisplaySize()
+	    -- calculate font size
+	    local fsz = ToInt(dw / 320 * 12)
+	    frs = SWE.FontRender("terminus.ttf", fsz, true)
+	    SWE.Debug("set font size", fsz)
+	else
+	    frs = SWE.FontRender("terminus.ttf", cfgfsz, true)
+	end
+    end
+
+    cmd.btnx = TextButtonCreate(0, 0, "CLOSE", frs, cmd.win)
+    cmd.btnx:SetPosition((cmd.win.width - cmd.btnx.width) / 2, cmd.win.height - cmd.btnx.height - 4)
+
+    cmd.btnzo = TextButtonCreate(0, 0, "Z-", frs, cmd.win)
+    cmd.btnzo:SetPosition(4, cmd.win.height - cmd.btnzo.height - 4)
+
+    cmd.btnzi = TextButtonCreate(0, 0, "Z+", frs, cmd.win)
+    cmd.btnzi:SetPosition(cmd.win.width - cmd.btnzi.width - 4, cmd.win.height - cmd.btnzi.height - 4)
+
+    cmd.list = ListCreate(20, 20, cmd.win.width - 40, cmd.win.height - 25 - cmd.btnx.height, win)
+    cmd.list.cwd = cfgcwd
     cmd.list.hotkeys.GotoFirst = SWE.Key.LEFT
     cmd.list.hotkeys.GotoLast = SWE.Key.RIGHT
     cmd.list.hotkeys.GotoUp = SWE.Key.UP
@@ -32,20 +62,20 @@ function CommanderInit()
     cmd.list:SetKeyHandle(true)
 
     cmd.win.RenderWindow = function()
-	local memusage = ToInt(SWE.SystemMemoryUsage() / 1024)
-	local txMUK = SWE.Texture.Text(frs, "mem: " .. tostring(memusage) .. "K", SWE.Color.Blue)
-
 	cmd.win:RenderClear(SWE.Color.Silver)
 	cmd.win:RenderRect(SWE.Color.Red, 0, 0, cmd.win.width, cmd.win.height)
-
-	cmd.win:RenderTexture(txMUK, 0, 0, txMUK.width, txMUK.height,
-			(cmd.win.width - txMUK.width) / 2, cmd.win.height - txMUK.height - 3)
-
-	-- force free texture
-	txMUK = nil
-	collectgarbage()
-
 	return true
+    end
+
+    cmd.ReloadGUI = function()
+    end
+
+    cmd.win.DisplayResizeEvent = function(w,h)
+	cmd.win:SetSize(w, h)
+	cmd.btnx:SetPosition((cmd.win.width - cmd.btnx.width) / 2, cmd.btnx.height - cmd.btnx.height - 2)
+	cmd.list:SetSize(cmd.win.width - 2 * cmd.btnx.width, cmd.win.height - 2 * cmd.btnx.height)
+	ListFillItems(cmd.list, cmd.list.cwd)
+        SWE.DisplayDirty()
     end
 
     cmd.win.KeyPressEvent = function(key)
@@ -58,17 +88,28 @@ function CommanderInit()
 	return false
     end
 
-    cmd.btnx.RenderWindow = function()
-	cmd.btnx:RenderClear(SWE.Color.DimGray)
-	cmd.btnx:RenderRect(SWE.Color.Red, 0, 0, cmd.btnx.width, cmd.btnx.height)
-	cmd.btnx:RenderText(frs, "X", SWE.Color.Yellow, cmd.btnx.width / 2, cmd.btnx.height / 2, SWE.Align.Center, SWE.Align.Center)
-	return true
-    end
-
     cmd.btnx.MouseClickEvent = function(x,y,btn)
 	cmd.win:SetVisible(false)
 	cmd.exit = true
 	return true
+    end
+
+    cmd.btnzo.MouseClickEvent = function(x,y,btn)
+	local fsz = tonumber(frs.size) - 2
+	if fsz > 10 then
+	    frs = SWE.FontRender("terminus.ttf", fsz, true)
+	    ListFillItems(cmd.list, cmd.list.cwd)
+	    SWE.PushEvent(SWE.Action.FontChanged, frs, nil)
+	    SWE.DisplayDirty()
+	end
+    end
+
+    cmd.btnzi.MouseClickEvent = function(x,y,btn)
+	local fsz = tonumber(frs.size) + 2
+	frs = SWE.FontRender("terminus.ttf", fsz, true)
+	ListFillItems(cmd.list, cmd.list.cwd)
+	SWE.PushEvent(SWE.Action.FontChanged, frs, nil)
+	SWE.DisplayDirty()
     end
 
     cmd.list.ItemSelectedAction = function(item)
@@ -76,7 +117,7 @@ function CommanderInit()
 	if item.isdir then
     	    if current == ".." then
         	local dirname, basename = SWE.SystemDirnameBasename(cmd.list.cwd)
-        	ListFillItems(cmd.list, dirname,basename)
+        	ListFillItems(cmd.list, dirname, basename)
     	    else
     		ListFillItems(cmd.list, SWE.SystemConcatePath(cmd.list.cwd, current))
     	    end
@@ -95,8 +136,23 @@ function CommanderInit()
 	return true
     end
 
+    cmd.list.FontChanged = function(frs)
+	cmd.btnx:SetPosition((cmd.win.width - cmd.btnx.width) / 2, cmd.win.height - cmd.btnx.height - 4)
+	cmd.btnzo:SetPosition(4, cmd.win.height - cmd.btnzo.height - 4)
+	cmd.btnzi:SetPosition(cmd.win.width - cmd.btnzi.width - 4, cmd.win.height - cmd.btnzi.height - 4)
+    end
+
+    cmd.list.WindowCloseEvent = function()
+	local sharedir = SWE.SystemShareDirectories()
+	if sharedir ~= nil then
+	    config = SWE.SystemConcatePath(sharedir, "config.json")
+	    local buf = SWE.BinaryBuf("{" .. "\"fsz\":" .. frs.size .. ",\"cwd\":" .. "\"" .. cmd.list.cwd .. "\"}")
+	    buf:SaveToFile(config)
+	end
+    end
+
     cmd.Start = function()
-	ListFillItems(cmd.list, SWE.SystemCurrentDirectory())
+	ListFillItems(cmd.list, cmd.list.cwd)
 	SWE.MainLoop(cmd.win)
     end
 

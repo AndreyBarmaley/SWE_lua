@@ -36,6 +36,7 @@ SWE_RandomHit* SWE_RandomHit::get(LuaState & ll, int tableIndex, const char* fun
     if(! ll.getFieldTableIndex("userdata", tableIndex).isTopUserData())
     {
         ERROR(funcName << ": " << "not userdata, index: " << tableIndex << ", " << ll.getTopTypeName());
+	ll.stackPop();
         return NULL;
     }
 

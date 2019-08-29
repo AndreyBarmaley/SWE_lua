@@ -41,6 +41,7 @@ protected:
     const Texture* tooltipTexture(void) const override { return & tooltip; }
 
     void	windowCreateEvent(void) override;
+    void	displayResizeEvent(const Size &, bool) override;
     bool	mousePressEvent(const ButtonEvent &) override;
     bool	mouseReleaseEvent(const ButtonEvent &) override;
     bool	mouseMotionEvent(const Point &, u32 buttons) override;
@@ -60,6 +61,7 @@ public:
     SWE_Window(lua_State*, const Point &, const Size &, Window* parent);
 
     void        renderWindow(void) override;
+    void	windowCloseEvent(void);
 
     void        toolTipInit(const std::string &, const FontRender &, const Color & fn, const Color & bg, const Color & rt);
     void        toolTipInit(const std::string &);

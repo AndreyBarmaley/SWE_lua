@@ -3,7 +3,7 @@
 -- FTP port listen 2121
 -- FTP data port set 45001 - 450099
 
-require 'SWE'
+-- require 'SWE'
 
 SWE.SetDebug(false)
 
@@ -115,7 +115,8 @@ function FtpCommands(client,ipaddr)
 	end
     end
 
-    ftp.cmdMKD = function(dir)
+    ftp.cmdMKD = function(name)
+	local dir = FixedPath(ftp.root .. name)
 	ftp.client:SendString("550 permission denied\r\n")
     end
 
@@ -221,12 +222,10 @@ function FtpCommands(client,ipaddr)
 	    local stat = SWE.SystemFileStat(file)
 	    local size = 0
 	    ftp.client:SendString("150 ok to send data\r\n")
-	    print("stat.size:", stat.size)
 	    while size < stat.size do
 		local buf = SWE.BinaryBuf(fh:read(64 * 1024))
 		ftp.data.sock:SendBytes(buf)
 		size = size + buf.size
-		print("size:", size)
 	    end
 	    fh:close()
 	    ftp.client:SendString("226 transfer complete\r\n")
@@ -237,6 +236,52 @@ function FtpCommands(client,ipaddr)
 	ftp.data.sock:Close()
 	ftp.data.sock = nil
     end
+
+    ftp.cmdSTOR = function(name)
+	if (ftp.data.pasv and ftp.data.sock == nil) or
+	    (not ftp.data.pasv and (string.len(ftp.data.ipaddr) == 0 or ftp.data.port == 0)) then
+            ftp.client:SendString("425 Use port or pasv first\r\n")
+	    return
+	end
+
+        if not ftp.data.pasv then
+	    ftp.data.sock = SWE.NetStream()
+	    if not ftp.data.sock:Connect(ftp.data.ipaddr, ftp.data.port) then
+		ftp.data.sock = nil
+            end
+	end
+
+	if ftp.data.sock == nil then
+            ftp.client:SendString("425 failed to established connection\r\n")
+            return
+	end
+
+	-- recv file
+	local file = FixedPath(ftp.root .. name)
+	local fh = io.open(file, "w")
+	if fh ~= nil then
+	    local size = 0
+	    local continue = true
+	    ftp.client:SendString("150 ok to recv data\r\n")
+	    while continue do
+		local buf = ftp.data.sock:RecvBytes(buf, 64 * 1024)
+		if buf ~= nil and buf.size > 0 then
+		    buf:SaveToFile(file, -1)
+		    size = size + buf.size
+		else
+		    continue = false
+		end
+	    end
+	    fh:close()
+	    ftp.client:SendString("226 transfer complete (size " .. tostring(size) .. ")\r\n")
+	else
+	    ftp.client:SendString("550 failed to open file\r\n")
+	end
+
+	ftp.data.sock:Close()
+	ftp.data.sock = nil
+    end
+
 
     ftp.cmdSIZE = function(name)
 	local file = FixedPath(ftp.root .. name)

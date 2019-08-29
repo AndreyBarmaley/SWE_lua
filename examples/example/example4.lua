@@ -1,9 +1,10 @@
 -- require 'SWE'
 
 local fullscreen = false
-local dbgmsg = false
 
-local win = SWE.DisplayInit("Lua SWE Commander", 240, 320, fullscreen, dbgmsg)
+SWE.SetDebug(false)
+
+local win = SWE.DisplayInit("Lua SWE Commander", 240, 320, fullscreen)
 
 if not win then
     print("SWE init error")
@@ -131,11 +132,14 @@ function CreateListItem(x, y, w, h, parent, path, isdir)
     item.SystemUserEvent = function(a,b)
 	if a == 3331 then
 	    item.iscur = false
+	    return true
 	elseif a == 3332 then
 	    item.iscur = true
 	    -- send: list redraw
 	    SWE.PushEvent(3334, nil, list)
+	    return true
 	end
+	return false
     end
 
     return item
@@ -337,7 +341,9 @@ end
 function list.SystemUserEvent(a,b)
     if a == 3334 then
     	SWE.DisplayDirty()
+	return true
     end
+    return false
 end
 
 function list.RenderWindow()

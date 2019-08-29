@@ -1,9 +1,10 @@
-require 'SWE'
+-- require 'SWE'
 
 local fullscreen = false
-local debug = false
 
-local win = SWE.DisplayInit("Game15", 320, 240, fullscreen, debug)
+SWE.SetDebug(false)
+
+local win = SWE.DisplayInit("Game15", 320, 240, fullscreen)
 
 if not win then
     print("SWE init error")

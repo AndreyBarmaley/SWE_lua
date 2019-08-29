@@ -41,18 +41,12 @@ function ListSetItemSelected(list, val)
 	elseif val >= #list.items then
 	    list.selIndex = #list.items
 	end
-	-- send: remove all selected
-	SWE.PushEvent(SWE.Action.ListClearSelected, nil, nil)
-	-- send: item only selected
-	SWE.PushEvent(SWE.Action.ListItemSelected, nil, list.items[list.selIndex])
+	SWE.PushEvent(SWE.Action.ListItemSelected, list.items[list.selIndex], list)
     elseif type(val) == "table" then
-	-- send: remove all selected
-	SWE.PushEvent(SWE.Action.ListClearSelected, nil, nil)
-
 	for k,v in pairs(list.items) do
 	    if v.label == val.label then
 		-- send: item only selected
-	        SWE.PushEvent(SWE.Action.ListItemSelected, nil, v)
+	        SWE.PushEvent(SWE.Action.ListItemSelected, v, list)
 		list.selIndex = k
 		break
 	    end
@@ -70,13 +64,10 @@ function ListSetItemSelected(list, val)
 	    end
 	end
     elseif type(val) == "string" then
-	-- send: remove all selected
-	SWE.PushEvent(SWE.Action.ListClearSelected, nil, nil)
-
 	for k,v in pairs(list.items) do
 	    if v.label == val then
 		-- send: item only selected
-	        SWE.PushEvent(SWE.Action.ListItemSelected, nil, v)
+	        SWE.PushEvent(SWE.Action.ListItemSelected, v, list)
 		list.selIndex = k
 		break
 	    end
@@ -114,13 +105,17 @@ function ListCreateItem(list, x, y, w, h, renderItemFunc)
     end
 
     item.SystemUserEvent = function(a,b)
+	-- list events
 	if a == SWE.Action.ListClearSelected then
 	    item.iscur = false
+	    return true
 	elseif a == SWE.Action.ListItemSelected then
 	    item.iscur = true
 	    -- send: list dirty
-	    SWE.PushEvent(SWE.Action.ListSetDirty, nil, list)
+	    SWE.PushEvent(SWE.Action.ListDirty, nil, list)
+	    return true
 	end
+	return false
     end
 
     item.IsCurrent = function()
@@ -268,12 +263,28 @@ function ListCreate(x, y, w, h, parent)
 	return true
     end
 
+    -- FontChanged
+    list.FontChanged = function(frs)
+	-- empty template
+    end
+
     -- SystemUserEvent
     list.SystemUserEvent = function(a,b)
+	-- list items
+	if a == SWE.Action.ListItemSelected then
+	    for i = 1, #list.items do
+		SWE.PushEvent(SWE.Action.ListClearSelected, nil, list.items[i])
+	    end
+	    SWE.PushEvent(SWE.Action.ListItemSelected, nil, b)
+	    return true
 	-- list dirty
-	if a == SWE.Action.ListSetDirty then
+	elseif a == SWE.Action.ListDirty then
     	    list:RenderWindow()
+	    return true
+	elseif a == SWE.Action.FontChanged then
+	    list:FontChanged(b)
 	end
+	return false
     end
 
     return list

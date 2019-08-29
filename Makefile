@@ -17,7 +17,7 @@ ENGINEDIR := ../../engine
 
 include Makefile.$(ENGINEVER)
 
-CFLAGS          := $(CFLAGS) -fPIC -std=c++0x -O0 -g -Wall -Werror -Wno-sign-compare
+CFLAGS          := $(CFLAGS) -std=c++0x -O0 -g -Wall -Werror -Wno-sign-compare
 CFLAGS          := $(CFLAGS) $(ENGINE_CFLAGS) -DDISABLE_TERMGUI -DBUILD_DEBUG_MESSAGES -DWITH_LUA -DWITH_JSON
 LIBS            := $(LIBS) $(ENGINE_LIBS) -lz
 
@@ -29,7 +29,7 @@ endif
 
 ifdef LUASRC
 CFLAGS          := -I$(LUASRC) $(CFLAGS)
-LIBS            := $(LIBS) $(LUASRC)/liblua.a -ldl
+LIBS            := $(LIBS) $(LUASRC)/liblua.a
 LUADST		:= generic
 else
 LUA_CFLAGS	:= $(shell pkg-config lua --cflags)
@@ -45,21 +45,22 @@ ifndef OS
 OS		:= $(shell uname)
 endif
 
-ifeq ($(OS),Windows_NT)
-PLATFORM	:= mingw
-LUADST		:= mingw
-endif
-ifeq ($(OS),FreeBSD)
-PLATFORM	:= bsd
-LUADST		:= freebsd
-endif
-ifeq ($(OS),Darwin)
-PLATFORM	:= osx
-LUADST		:= macosx
-endif
 ifeq ($(OS),Linux)
 PLATFORM	:= all
+endif
+endif
+
+ifeq ($(PLATFORM),all)
 LUADST		:= linux
+ifdef LUASRC
+LIBS            := $(LIBS) $(LUASRC)/liblua.a -ldl
+endif
+endif
+
+ifeq ($(PLATFORM),mingw32)
+LUADST		:= mingw
+ifdef LUASRC
+LIBS            := $(LIBS) $(LUASRC)/liblua.a
 endif
 endif
 
@@ -73,11 +74,11 @@ all:
 ifdef LUASRC
 	$(MAKE) -C $(LUASRC) $(LUADST)
 endif
-	$(MAKE) -C $(ENGINEDIR)
-	$(MAKE) -C src
+	$(MAKE) -C $(ENGINEDIR) libengine.a
+	$(MAKE) -C src SWE.a
 	$(MAKE) -C main
 	cp -f main/$(TARGET)_lua.bin .
-	cp -f src/$(TARGET).so .
+	$(CROSS_PREFIX)strip $(TARGET)_lua.bin
 
 clean:
 ifdef LUASRC
@@ -86,4 +87,4 @@ endif
 	$(MAKE) -C $(ENGINEDIR) clean
 	$(MAKE) -C main clean
 	$(MAKE) -C src clean
-	rm -f $(TARGET)_lua.bin $(TARGET).so
+	rm -f $(TARGET)_lua.bin

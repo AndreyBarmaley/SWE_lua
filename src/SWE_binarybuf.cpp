@@ -34,6 +34,7 @@ SWE_BinaryBuf* SWE_BinaryBuf::get(LuaState & ll, int tableIndex, const char* fun
     if(! ll.getFieldTableIndex("userdata", tableIndex).isTopUserData())
     {
         ERROR(funcName << ": " << "not userdata, index: " << tableIndex << ", " << ll.getTopTypeName());
+	ll.stackPop();
         return NULL;
     }
     
@@ -258,7 +259,6 @@ int SWE_binarybuf_readfile1(lua_State* L)
     {
 	BinaryBuf res = Systems::readFile(filename);
 	buf->swap(res);
-
 	ll.pushInteger(buf->size()).setFieldTableIndex("size", 1);
 	ll.pushBoolean(buf->size());
 	return 1;
@@ -283,7 +283,9 @@ int SWE_binarybuf_readfile2(lua_State* L)
 
     if(Systems::isFile(filename))
     {
-	BinaryBuf res = Systems::readFile(filename);
+	int offset = ll.isNumberIndex(2) ? ll.toNumberIndex(2) : 0;
+	int size = ll.isNumberIndex(3) ? ll.toNumberIndex(3) : 0;
+	BinaryBuf res = Systems::readFile(filename, offset, size);
 
         ll.stackClear();
         ll.pushTable();
@@ -335,12 +337,14 @@ int SWE_binarybuf_savefile(lua_State* L)
 	return 0;
     }
 
-    std::string filename = ll.toStringIndex(2);
     SWE_BinaryBuf* buf = SWE_BinaryBuf::get(ll, 1, __FUNCTION__);
 
     if(buf)
     {
-	bool res = Systems::saveFile(*buf, SWE_Tools::toFullFileName(ll, filename));
+	std::string filename = ll.toStringIndex(2);
+	int offset = ll.isNumberIndex(3) ? ll.toNumberIndex(3) : 0;
+
+	bool res = Systems::saveFile(*buf, filename, offset);
 	ll.pushBoolean(res);
 	return 1;
     }
@@ -649,8 +653,8 @@ const struct luaL_Reg SWE_binarybuf_functions[] = {
     { "ZlibDecompress", SWE_binarybuf_zlib_decompress },// [table binarybuf], table binarybuf
     { "Base64Decode", SWE_binarybuf_base64_decode },	// [table binarybuf], table binarybuf | string base64
     { "Base64Encode", SWE_binarybuf_base64_encode },	// [string base64], table binarybuf
-    { "ReadFromFile", SWE_binarybuf_readfile },		// [bool], table binarybuf, string filename
-    { "SaveToFile", SWE_binarybuf_savefile },		// [bool], table binarybuf, string filename
+    { "ReadFromFile", SWE_binarybuf_readfile },		// [bool], table binarybuf, string filename, number
+    { "SaveToFile", SWE_binarybuf_savefile },		// [bool], table binarybuf, string filename, number
     { "ToString", SWE_binarybuf_to_cstring },		// [string], table binarybuf
     { "ToHexString", SWE_binarybuf_to_hexstring },	// [string], table binarybuf, string sep, bool prefix
     { "SetByte", SWE_binarybuf_setbyte },		// [bool], table binarybuf, int offset, int byte
@@ -710,7 +714,8 @@ int SWE_binarybuf_create(lua_State* L)
     if(ll.isStringIndex(2))
     {
 	BinaryBuf buf = ll.toBinaryIndex(2);
-	*ptr = new SWE_BinaryBuf(buf);
+	*ptr = new SWE_BinaryBuf();
+	(*ptr)->swap(buf);
     }
     else
     // SWE_BinaryBuf: pointer, size

@@ -76,7 +76,7 @@ define({ "api": [
   },
   {
     "type": "create display window object",
-    "url": "SWE.DisplayInit(string,number,number,boolean,boolean)",
+    "url": "SWE.DisplayInit(string,number,number,boolean)",
     "title": "SWE.DisplayInit",
     "group": "SWE",
     "name": "DisplayInit",
@@ -110,13 +110,6 @@ define({ "api": [
             "optional": false,
             "field": "fullscreen",
             "description": "<p>fullscreen mode, (default false)</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "boolean",
-            "optional": false,
-            "field": "debug",
-            "description": "<p>debug mode, (default true)</p>"
           }
         ]
       }
@@ -138,6 +131,66 @@ define({ "api": [
       {
         "title": "usage",
         "content": "local win = SWE.DisplayInit(\"SWE Text\",640,480)\n-- see also SWE.DisplayWindow\n\nlocal result = SWE.MainLoop(win)",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
+    "type": "get display size",
+    "url": "SWE.DisplaySize()",
+    "title": "SWE.DisplaySize",
+    "group": "SWE",
+    "name": "DisplaySize",
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "list",
+            "optional": false,
+            "field": "result",
+            "description": "<p>display size</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local w,h,fullscreen = SWE.DisplaySize();\nprint(\"display size:\", w, h, fullscreen)",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
+    "type": "get display mode list",
+    "url": "SWE.DisplayVideoModes()",
+    "title": "SWE.DisplayVideoModes",
+    "group": "SWE",
+    "name": "DisplayVideoModes",
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "list",
+            "optional": false,
+            "field": "result",
+            "description": "<p>modes list</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    local modes = { SWE.DisplayVideoModes() }\n    for i=1,#modes do\n\tprint(\"videomodes:\", modes[i].width, modes[i].height)\n    end",
         "type": "json"
       }
     ],
@@ -263,7 +316,7 @@ define({ "api": [
   },
   {
     "type": "push custom event to window object",
-    "url": "SWE.PushEvent(number,userdata,table)",
+    "url": "SWE.PushEvent(number,object,table)",
     "title": "SWE.PushEvent",
     "group": "SWE",
     "name": "PushEvent",
@@ -275,14 +328,14 @@ define({ "api": [
             "type": "number",
             "optional": false,
             "field": "code",
-            "description": "<p>code event</p>"
+            "description": "<p>code event (0x00FFFFFF max value)</p>"
           },
           {
             "group": "Parameter",
-            "type": "userdata",
+            "type": "object",
             "optional": false,
-            "field": "pointer",
-            "description": "<p>userdata event</p>"
+            "field": "object",
+            "description": "<p>any Lua object</p>"
           },
           {
             "group": "Parameter",
@@ -495,6 +548,29 @@ define({ "api": [
             "optional": false,
             "field": "value",
             "description": "<p>memory usage</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
+    "type": "get mobile os name",
+    "url": "SWE.SystemMobileOs()",
+    "title": "SWE.SystemMobileOs",
+    "group": "SWE",
+    "name": "SystemMobileOs",
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "name",
+            "description": "<p>mobile os name</p>"
           }
         ]
       }
@@ -1097,7 +1173,7 @@ define({ "api": [
   },
   {
     "type": "read from file",
-    "url": "SWE.BinaryBuf.ReadFromFile(string)",
+    "url": "SWE.BinaryBuf.ReadFromFile(string,number,number)",
     "title": "SWE.BinaryBuf.ReadFromFile",
     "group": "SWE_BinaryBuf",
     "name": "ReadFromFile",
@@ -1110,6 +1186,20 @@ define({ "api": [
             "optional": false,
             "field": "filename",
             "description": "<p>path to filename</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset read (default 0)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "size",
+            "description": "<p>block size read (default file size)</p>"
           }
         ]
       }
@@ -6762,6 +6852,43 @@ define({ "api": [
     "groupTitle": "SWE_Window"
   },
   {
+    "type": "window set position",
+    "url": "SWE.Window.SetSize(table,number,number)",
+    "title": "SWE.Window.SetSize",
+    "group": "SWE_Window",
+    "name": "SetSize",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Window",
+            "optional": false,
+            "field": "window",
+            "description": "<p>window object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "width",
+            "description": "<p>window size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "height",
+            "description": "<p>window size</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window"
+  },
+  {
     "type": "window set visible mode",
     "url": "SWE.Window.SetVisible(table,boolean)",
     "title": "SWE.Window.SetVisible",
@@ -6790,6 +6917,43 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "./api/apidoc_window.js",
     "groupTitle": "SWE_Window"
+  },
+  {
+    "type": "window event: win size changed",
+    "url": "SWE.Window.DisplayResizeEvent(number,number)",
+    "title": "SWE.Window.DisplayResizeEvent",
+    "group": "SWE_Window_Events",
+    "name": "DisplayResizeEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "width",
+            "description": "<p>window size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "height",
+            "description": "<p>window size</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.DisplayResizeEvent = function(w,h)\n\tprint(\"new win size\",w,h)\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window_Events"
   },
   {
     "type": "window event: key event",
@@ -6948,23 +7112,6 @@ define({ "api": [
       {
         "title": "usage",
         "content": "    win.MouseClickEvent = function(px,py,pbtn,rx,ry,rbtn)\n\tprint(px,py,rx,ry)\n\treturn true\n    end",
-        "type": "json"
-      }
-    ],
-    "version": "0.0.0",
-    "filename": "./api/apidoc_window.js",
-    "groupTitle": "SWE_Window_Events"
-  },
-  {
-    "type": "window event: single event constructor",
-    "url": "SWE.Window.WindowCreate()",
-    "title": "SWE.Window.WindowCreate",
-    "group": "SWE_Window_Events",
-    "name": "MouseFocusEvent",
-    "examples": [
-      {
-        "title": "usage",
-        "content": "    win.WindowCreateEvent = function(f)\n\tprint(\"win created\")\n    end",
         "type": "json"
       }
     ],
@@ -7309,7 +7456,7 @@ define({ "api": [
             "type": "number",
             "optional": false,
             "field": "code",
-            "description": "<p>user code, see SWE.pushEvent</p>"
+            "description": "<p>user code (0x00FFFFFF max value), see SWE.pushEvent</p>"
           },
           {
             "group": "Parameter",
@@ -7338,6 +7485,23 @@ define({ "api": [
       {
         "title": "usage",
         "content": "    win.SystemUserEvent = function(code,data)\n\tprint(\"code:\",code)\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window_Events"
+  },
+  {
+    "type": "window event: single event constructor",
+    "url": "SWE.Window.WindowCreateEvent()",
+    "title": "SWE.Window.WindowCreateEvent",
+    "group": "SWE_Window_Events",
+    "name": "WindowCreateEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.WindowCreateEvent = function()\n\tprint(\"win created\")\n    end",
         "type": "json"
       }
     ],

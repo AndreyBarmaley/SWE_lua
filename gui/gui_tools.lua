@@ -3,7 +3,7 @@ function ToInt(x)
     return integral
 end
 
-local function StringSplit(str, sep)
+function StringSplit(str, sep)
    local result = {}
    local regex = ("([^%s]+)"):format(sep)
    for each in str:gmatch(regex) do
