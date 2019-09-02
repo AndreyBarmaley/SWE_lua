@@ -65,9 +65,7 @@ int SWE_randomhit_last(lua_State* L)
     if(hit)
     {
         bool res = hit->last();
-
         ll.pushBoolean(res);
-	return 1;
     }
     else
     {
@@ -95,9 +93,7 @@ int SWE_randomhit_check(lua_State* L)
     if(hit)
     {
         bool res = hit->check();
-
         ll.pushBoolean(res);
-	return 1;
     }
     else
     {
@@ -124,16 +120,17 @@ int SWE_randomhit_tostring(lua_State* L)
 
     if(hit)
     {
-        std::string str = hit->toString();
+        int chance = ll.getFieldTableIndex("chance", 1).getTopInteger();
+        ll.stackPop(1);
+
+        std::string str = StringFormat("{\"type\":\"swe.randomhit\",\"chance\":\"%1\",\"order\":\"%2\"}").
+            arg(chance).arg(hit->toString());
 
         ll.pushString(str);
 	return 1;
     }
-    else
-    {
-        ERROR("userdata empty");
-    }
 
+    ERROR("userdata empty");
     return 0;
 }
 

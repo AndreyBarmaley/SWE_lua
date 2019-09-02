@@ -816,6 +816,37 @@ int SWE_netstream_close(lua_State* L)
     return 0;
 }
 
+int SWE_netstream_tostring(lua_State* L)
+{   
+    // params: swe_netstream
+
+    LuaState ll(L);
+
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.netstream");
+        return 0;
+    }
+    
+    SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
+
+    if(net)
+    {
+        std::string address = ll.getFieldTableIndex("address", 1).getTopString();
+        int port = ll.getFieldTableIndex("port", 1).getTopInteger();
+
+        ll.stackPop(2);
+        std::string str = StringFormat("{\"type\":\"swe.netstream\",\"address\":\"%1\",\"port\":%2}").
+            arg(address).arg(port);
+
+        ll.pushString(str);
+        return 1;
+    }
+
+    ERROR("userdata empty");
+    return 0;
+}
+
 const struct luaL_Reg SWE_netstream_functions[] = {
     { "RecvByte", SWE_netstream_recv_byte },		// [int], swe_netstream
     { "RecvBE16", SWE_netstream_recv_be16 },		// [int], swe_netstream
@@ -842,6 +873,7 @@ const struct luaL_Reg SWE_netstream_functions[] = {
     { "DataReady", SWE_netstream_data_ready },		// [bool], swe_netstream
     { "WaitAccept", SWE_netstream_wait_accept }, 	// [swe_netstream], swe_netstream
     { "Close", SWE_netstream_close }, 			// [swe_netstream], swe_netstream
+    { "ToString", SWE_netstream_tostring },		// [string], swe_netstream
     { NULL, NULL }
 };
 

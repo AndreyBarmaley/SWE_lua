@@ -49,6 +49,40 @@ SWE_FontRender* SWE_FontRender::get(LuaState & ll, int tableIndex, const char* f
 }
 
 /////////////////////////////////////////////////////////////////////
+int SWE_fontrender_tostring(lua_State* L)
+{
+    // params: swe_fontrender
+
+    LuaState ll(L);
+
+    if(! ll.isTableIndex(1))
+    {
+        ERROR("table not found" << ", " << "swe.fontrender");
+        return 0;
+    }
+
+    SWE_FontRender* frs = SWE_FontRender::get(ll, 1, __FUNCTION__);
+
+    if(frs)
+    {
+	std::string font = ll.getFieldTableIndex("font", 1).getTopString();
+	int size = ll.getFieldTableIndex("size", 1).getTopInteger();
+	std::string blended = ll.getFieldTableIndex("blended", 1).getTopString();
+	int style = ll.getFieldTableIndex("style", 1).getTopInteger();
+	int hinting = ll.getFieldTableIndex("hinting", 1).getTopInteger();
+
+	ll.stackPop(5);
+        std::string str = StringFormat("{\"type\":\"swe.fontrender\",\"font\":\"%1\",\"size\":%2,\"blended\":%3,\"style\":%4,\"hinting\":%5}").
+	    arg(font).arg(size).arg(blended).arg(style).arg(hinting);
+
+        ll.pushString(str);
+        return 1;
+    }
+
+    ERROR("userdata empty");
+    return 0;
+}
+
 int SWE_fontrender_symbol_advance(lua_State* L)
 {
     // params: swe_fontrender, symbol int
@@ -72,15 +106,13 @@ int SWE_fontrender_symbol_advance(lua_State* L)
 	ll.stackPop().pushInteger(width);
 	return 1;
     }
-    else
-    {
-        ERROR("userdata empty");
-    }
 
+    ERROR("userdata empty");
     return 0;
 }
 
 const struct luaL_Reg SWE_fontrender_functions[] = {
+    { "ToString", SWE_fontrender_tostring },		// [string], swe_fontrender
     { "SymbolAdvance", SWE_fontrender_symbol_advance }, // [int], swe_fontrender, symbol integer
     { NULL, NULL }
 };

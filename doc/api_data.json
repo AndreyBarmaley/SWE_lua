@@ -76,8 +76,8 @@
   },
   {
     "type": "create display window object",
-    "url": "SWE.DisplayInit(string,number,number,boolean)",
-    "title": "SWE.DisplayInit",
+    "url": "SWE.DisplayInit(string,number",
+    "title": "width,number height,boolean fullscreen)(string,boolean landscape) SWE.DisplayInit",
     "group": "SWE",
     "name": "DisplayInit",
     "parameter": {
@@ -110,6 +110,13 @@
             "optional": false,
             "field": "fullscreen",
             "description": "<p>fullscreen mode, (default false)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "boolean",
+            "optional": false,
+            "field": "landscape",
+            "description": "<p>init landscape of portrait mode (mobile os)</p>"
           }
         ]
       }
@@ -131,6 +138,11 @@
       {
         "title": "usage",
         "content": "local win = SWE.DisplayInit(\"SWE Text\",640,480)\n-- see also SWE.DisplayWindow\n\nlocal result = SWE.MainLoop(win)",
+        "type": "json"
+      },
+      {
+        "title": "usage",
+        "content": "local landscape = false\nlocal win = SWE.DisplayInit(\"SWE init: Portrait modes\",landscape)\nprint(win.width,win.height)",
         "type": "json"
       }
     ],
@@ -170,10 +182,23 @@
   },
   {
     "type": "get display mode list",
-    "url": "SWE.DisplayVideoModes()",
+    "url": "SWE.DisplayVideoModes(boolean)",
     "title": "SWE.DisplayVideoModes",
     "group": "SWE",
     "name": "DisplayVideoModes",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "boolean",
+            "optional": false,
+            "field": "lanscape",
+            "description": "<p>landscape (default) or portrait modes</p>"
+          }
+        ]
+      }
+    },
     "success": {
       "fields": {
         "Return": [
@@ -534,6 +559,42 @@
     "groupTitle": "SWE"
   },
   {
+    "type": "make directory",
+    "url": "SWE.SystemMakeDirectory(string)",
+    "title": "SWE.SystemMakeDirectory",
+    "group": "SWE",
+    "name": "SystemMakeDirectory",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "directory",
+            "description": "<p>path to directory</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success or present</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
     "type": "get memory usage",
     "url": "SWE.SystemMemoryUsage()",
     "title": "SWE.SystemMemoryUsage",
@@ -618,6 +679,52 @@
         "type": "json"
       }
     ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
+    "type": "get current directory",
+    "url": "SWE.SystemShareDirectories()",
+    "title": "SWE.SystemShareDirectories",
+    "group": "SWE",
+    "name": "SystemShareDirectories",
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "list",
+            "optional": false,
+            "field": "directories",
+            "description": "<p>local writable directories list</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
+    "type": "sleep ms",
+    "url": "SWE.SystemSleep(number)",
+    "title": "SWE.SystemSleep",
+    "group": "SWE",
+    "name": "SystemSleep",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "delay",
+            "description": "<p>sleep delay ms</p>"
+          }
+        ]
+      }
+    },
     "version": "0.0.0",
     "filename": "./api/apidoc_swe.js",
     "groupTitle": "SWE"
@@ -1173,13 +1280,20 @@
   },
   {
     "type": "read from file",
-    "url": "SWE.BinaryBuf.ReadFromFile(string,number,number)",
+    "url": "SWE.BinaryBuf.ReadFromFile(table,string,number,number)(string,number,number)",
     "title": "SWE.BinaryBuf.ReadFromFile",
     "group": "SWE_BinaryBuf",
     "name": "ReadFromFile",
     "parameter": {
       "fields": {
         "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "buf",
+            "description": "<p>binarybuf raw data</p>"
+          },
           {
             "group": "Parameter",
             "type": "string",
@@ -1217,13 +1331,25 @@
         ]
       }
     },
+    "examples": [
+      {
+        "title": "usage variant1",
+        "content": "local buf = SWE.BinaryBuf()\nbuf:ReadFromFile(\"/var/tmp/test.bin\")\nif buf ~= nil then\n    print(buf:ToHexString())\nend",
+        "type": "json"
+      },
+      {
+        "title": "usage variant2",
+        "content": "local file = \"/var/tmp/2gis.log\"\nlocal buf = SWE.BinaryBuf.ReadFromFile(file)\nif buf ~= nil then\n    print(buf:ToHexString())\nend",
+        "type": "json"
+      }
+    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_binarybuf.js",
     "groupTitle": "SWE_BinaryBuf"
   },
   {
     "type": "save to file",
-    "url": "SWE.BinaryBuf.SaveToFile(string)",
+    "url": "SWE.BinaryBuf.SaveToFile(table,string,number)",
     "title": "SWE.BinaryBuf.SaveToFile",
     "group": "SWE_BinaryBuf",
     "name": "SaveTiFile",
@@ -1232,10 +1358,24 @@
         "Parameter": [
           {
             "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "buf",
+            "description": "<p>binarybuf raw data</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "string",
             "optional": false,
             "field": "filename",
             "description": "<p>filename</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset read (default 0, endpos: -1)</p>"
           }
         ]
       }
@@ -1542,7 +1682,7 @@
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "color",
+            "field": "colval",
             "description": "<p>color enum or RGB hex value</p>"
           }
         ]
@@ -1555,7 +1695,7 @@
             "group": "Return",
             "type": "string",
             "optional": false,
-            "field": "color",
+            "field": "colname",
             "description": "<p>color name</p>"
           }
         ]
@@ -5304,6 +5444,199 @@
     "groupTitle": "SWE_Rect"
   },
   {
+    "type": "get intersect rects",
+    "url": "SWE.Rect.GetIntersectRect(table,table)",
+    "title": "SWE.Rect.GetIntersectRect",
+    "group": "SWE_Rect",
+    "name": "GetIntersectRect",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "rect1",
+            "description": "<p>rect object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "rect2",
+            "description": "<p>rect object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "result",
+            "description": "<p>rect intersect</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local rt1 = SWE.Rect(10,20,100, 200)\nlocal rt2 = SWE.Rect(50,80,100, 200)\nlocal res = rt1:GetIntersectRect(rt2)\nprint(\"intersect rect\",res.ToString())",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_rect.js",
+    "groupTitle": "SWE_Rect"
+  },
+  {
+    "type": "check has intersection rects",
+    "url": "SWE.Rect.HasIntersection(table,table)",
+    "title": "SWE.Rect.HasIntersection",
+    "group": "SWE_Rect",
+    "name": "HasIntersection",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "rect1",
+            "description": "<p>rect object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "rect2",
+            "description": "<p>rect object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if there is an intersection</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local rt1 = SWE.Rect(10,20,100, 200)\nlocal rt2 = SWE.Rect(50,80,100, 200)\nlocal res = rt1:HasIntersection(rt2)\nprint(\"has intersection\",res)",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_rect.js",
+    "groupTitle": "SWE_Rect"
+  },
+  {
+    "type": "check point in rect",
+    "url": "SWE.Rect.PointInRect(table,table)",
+    "title": "SWE.Rect.PointInRect",
+    "group": "SWE_Rect",
+    "name": "PointInRect",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "rect",
+            "description": "<p>rect object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point",
+            "description": "<p>point object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if point resides inside rectangle</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local rt = SWE.Rect(10,20,100, 200)\nlocal pt = SWE.Point(150, 150)\nlocal res = rt:PointInRect(pt)\nprint(\"point in rect\",res)",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_rect.js",
+    "groupTitle": "SWE_Rect"
+  },
+  {
+    "type": "check rect equals",
+    "url": "SWE.Rect.RectEquals(table,table)",
+    "title": "SWE.Rect.RectEquals",
+    "group": "SWE_Rect",
+    "name": "RectEquals",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "rect1",
+            "description": "<p>rect object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "rect2",
+            "description": "<p>rect object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if the two rectangles are exactly the same</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_rect.js",
+    "groupTitle": "SWE_Rect"
+  },
+  {
     "type": "get rect string",
     "url": "SWE.Rect.ToString(table)",
     "title": "SWE.Rect.ToString",
@@ -5374,6 +5707,121 @@
     "version": "0.0.0",
     "filename": "./api/apidoc_rect.js",
     "groupTitle": "SWE_Rect"
+  },
+  {
+    "type": "get signal string",
+    "url": "SWE.Signal.ToString(number)",
+    "title": "SWE.Signal.ToString",
+    "group": "SWE_Signal",
+    "name": "ToString",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "signal",
+            "description": "<p>signal enum</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "name",
+            "description": "<p>signal name</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_signal.js",
+    "groupTitle": "SWE_Signal"
+  },
+  {
+    "type": "signal enums",
+    "url": "SWE.Signal.<EnumConstant>",
+    "title": "SWE.Signal.<EnumConstant>",
+    "group": "SWE_Signal",
+    "name": "_EnumConstant_",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "GestureFingerUp",
+            "description": "<p>gesture signal: finger up</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "GestureFingerDown",
+            "description": "<p>gesture signal: finger down</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "GestureFingerLeft",
+            "description": "<p>gesture signal: finger left</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "GestureFingerRight",
+            "description": "<p>gesture signal: finger right</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "FingerMoveUp",
+            "description": "<p>finger signal: move up</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "FingerMoveDown",
+            "description": "<p>finger signal: move down</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "FingerMoveLeft",
+            "description": "<p>finger signal: move left</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "FingerMoveRight",
+            "description": "<p>finger signal: move right</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    local landscape = false\n    local win = SWE.DisplayInit(\"GestureTest\", landscape)\n\n    win.SystemUserEvent = function(a,b)\n        if a == SWE.Signal.GestureFingerUp then\n            SWE.Debug(\"GestureFingerUp\")\n\t    return true\n        elseif a == SWE.Signal.GestureFingerDown then\n            SWE.Debug(\"GestureFingerDown\")\n\t    return true\n        elseif a == SWE.Signal.GestureFingerLeft then\n            SWE.Debug(\"GestureFingerLeft\")\n\t    return true\n        elseif a == SWE.Signal.GestureFingerRight then\n            SWE.Debug(\"GestureFingerRight\")\n\t    return true\n        elseif a == SWE.Signal.FingerMoveUp then\n            SWE.Debug(\"FingerMoveUp\")\n\t    return true\n        elseif a == SWE.Signal.FingerMoveDown then\n            SWE.Debug(\"FingerMoveDown\")\n\t    return true\n        elseif a == SWE.Signal.FingerMoveLeft then\n            SWE.Debug(\"FingerMoveLeft\")\n\t    return true\n        elseif a == SWE.Signal.FingerMoveRight then\n            SWE.Debug(\"FingerMoveRight\")\n\t    return true\n        end\n\treturn false\n    end\n\n    SWE.MainLoop(win)",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_signal.js",
+    "groupTitle": "SWE_Signal"
   },
   {
     "type": "size constructor",
@@ -7485,6 +7933,41 @@
       {
         "title": "usage",
         "content": "    win.SystemUserEvent = function(code,data)\n\tprint(\"code:\",code)\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window_Events"
+  },
+  {
+    "type": "window event: invalid texture",
+    "url": "SWE.Window.TextureInvalidEvent()",
+    "title": "SWE.Window.TextureInvalidEvent",
+    "group": "SWE_Window_Events",
+    "name": "TextureInvalidEvent",
+    "description": "<p>after resizing the display or rotate (for mobile os), all textures (if used) must be reinitialized, because the internal SDL render is changed</p>",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.tx1 = SWE.Texture.Text(frs, text, SWE.Color.Red)\n    ...\n    win.TextureInvalidEvent = function()\n\twin.tx1 = SWE.Texture.Text(frs, text, SWE.Color.Red)\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window_Events"
+  },
+  {
+    "type": "window event: destroy object",
+    "url": "SWE.Window.WindowCloseEvent()",
+    "title": "SWE.Window.WindowCloseEvent",
+    "group": "SWE_Window_Events",
+    "name": "WindowCloseEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.WindowCloseEvent = function()\n\tprint(\"win closed\")\n    end",
         "type": "json"
       }
     ],

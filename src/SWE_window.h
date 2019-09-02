@@ -41,6 +41,7 @@ protected:
     const Texture* tooltipTexture(void) const override { return & tooltip; }
 
     void	windowCreateEvent(void) override;
+    void	textureInvalidEvent(void) override;
     void	displayResizeEvent(const Size &, bool) override;
     bool	mousePressEvent(const ButtonEvent &) override;
     bool	mouseReleaseEvent(const ButtonEvent &) override;
@@ -52,9 +53,11 @@ protected:
     bool	keyReleaseEvent(int) override;
     bool        scrollUpEvent(const Point &) override;
     bool        scrollDownEvent(const Point &) override;
+    bool        scrollLeftEvent(const Point &) override;
+    bool        scrollRightEvent(const Point &) override;
     bool        userEvent(int, void*) override;
     void        tickEvent(u32 ms) override;
-    void        signalReceive(int, const SignalMember*) override;
+    //void        signalReceive(int, const SignalMember*) override;
 
 public:
     SWE_Window(lua_State*, Window* parent);

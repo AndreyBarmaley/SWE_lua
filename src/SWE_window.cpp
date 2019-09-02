@@ -241,6 +241,22 @@ void SWE_Window::windowCreateEvent(void)
     ll.stackPop();
 }
 
+void SWE_Window::textureInvalidEvent(void)
+{
+    if(SWE_Scene::window_push(ll, this))
+    {
+	if(ll.getFieldTableIndex("TextureInvalidEvent", -1).isTopFunction())
+	{
+	    ll.callFunction(0, 0);
+	}
+	else
+	{
+	    ll.stackPop();
+	}
+    }
+    ll.stackPop();
+}
+
 void SWE_Window::displayResizeEvent(const Size & winsz, bool fromsdl)
 {
     if(SWE_Scene::window_push(ll, this))
@@ -345,6 +361,51 @@ bool SWE_Window::scrollDownEvent(const Point & pos)
     return false;
 }
 
+bool SWE_Window::scrollLeftEvent(const Point & pos)
+{
+    if(SWE_Scene::window_push(ll, this))
+    {
+	if(ll.getFieldTableIndex("ScrollLeftEvent", -1).isTopFunction())
+	{
+	    ll.pushInteger(pos.x).pushInteger(pos.y);
+	    int res = ll.callFunction(2, 1).getTopBoolean();
+	    // remove boolean, table
+	    ll.stackPop(2);
+	    return res;
+	}
+	else
+	{
+	    ll.stackPop();
+	}
+    }
+    ll.stackPop();
+
+    return false;
+}
+
+bool SWE_Window::scrollRightEvent(const Point & pos)
+{
+    if(SWE_Scene::window_push(ll, this))
+    {
+	if(ll.getFieldTableIndex("ScrollRightEvent", -1).isTopFunction())
+	{
+	    ll.pushInteger(pos.x).pushInteger(pos.y);
+	    int res = ll.callFunction(2, 1).getTopBoolean();
+	    // remove boolean, table
+	    ll.stackPop(2);
+	    return res;
+	}
+	else
+	{
+	    ll.stackPop();
+	}
+    }
+    ll.stackPop();
+
+    return false;
+}
+
+/*
 void SWE_Window::signalReceive(int code, const SignalMember* data)
 {
     if(SWE_Scene::window_push(ll, this))
@@ -362,6 +423,7 @@ void SWE_Window::signalReceive(int code, const SignalMember* data)
     }
     ll.stackPop();
 }
+*/
 
 bool SWE_Window::userEvent(int code, void* data)
 {
@@ -1096,6 +1158,7 @@ const struct luaL_Reg SWE_window_functions[] = {
     { "RenderTexture",  SWE_window_render_texture },   // table: window, table: texture, rect, rect
     { "RenderText",     SWE_window_render_text },      // table: window, table: fontrender, string, color, point
     // virtual
+    { "TextureInvalidEvent",SWE_window_empty },
     { "WindowCreateEvent", SWE_window_empty },
     { "DisplayResizeEvent",SWE_window_empty },
     { "MousePressEvent",   SWE_window_empty },
@@ -1107,9 +1170,10 @@ const struct luaL_Reg SWE_window_functions[] = {
     { "KeyReleaseEvent",   SWE_window_empty },
     { "ScrollUpEvent",     SWE_window_empty },
     { "ScrollDownEvent",   SWE_window_empty },
+    { "ScrollLeftEvent",   SWE_window_empty },
+    { "ScrollRightEvent",  SWE_window_empty },
     { "SystemUserEvent",   SWE_window_empty },
     { "SystemTickEvent",   SWE_window_empty },
-    { "SystemSignalEvent", SWE_window_empty },
     { "RenderWindow",      SWE_window_empty },
     { NULL, NULL }
 };
@@ -1209,6 +1273,7 @@ const struct luaL_Reg SWE_polygon_functions[] = {
     { "RenderTexture",  SWE_window_render_texture },   // table: window, table: texture, rect, rect
     { "RenderText",     SWE_window_render_text },      // table: window, table: fontrender, color, point
     // virtual
+    { "TextureInvalidEvent",SWE_window_empty },
     { "WindowCreateEvent", SWE_window_empty },
     { "MousePressEvent",   SWE_window_empty },
     { "MouseReleaseEvent", SWE_window_empty },
@@ -1219,9 +1284,10 @@ const struct luaL_Reg SWE_polygon_functions[] = {
     { "KeyReleaseEvent",   SWE_window_empty },
     { "ScrollUpEvent",     SWE_window_empty },
     { "ScrollDownEvent",   SWE_window_empty },
+    { "ScrollLeftEvent",   SWE_window_empty },
+    { "ScrollRightEvent",  SWE_window_empty },
     { "SystemUserEvent",   SWE_window_empty },
     { "SystemTickEvent",   SWE_window_empty },
-    { "SystemSignalEvent", SWE_window_empty },
     { "RenderWindow",      SWE_window_empty },
     { NULL, NULL }
 };

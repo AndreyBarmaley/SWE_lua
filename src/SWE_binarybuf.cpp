@@ -244,7 +244,10 @@ int SWE_binarybuf_readfile1(lua_State* L)
     std::string filename = ll.toStringIndex(2);
 
     if(! Systems::isFile(filename))
-	filename = SWE_Tools::toFullFileName(ll, filename);
+    {
+	std::string filename2 = SWE_Tools::toFullFileName(ll, filename);
+	if(Systems::isFile(filename2)) std::swap(filename, filename2);
+    }
 
     if(! Systems::isFile(filename))
     { 
@@ -257,17 +260,17 @@ int SWE_binarybuf_readfile1(lua_State* L)
 
     if(buf)
     {
-	BinaryBuf res = Systems::readFile(filename);
+	int offset = ll.isNumberIndex(2) ? ll.toNumberIndex(2) : 0;
+	int size = ll.isNumberIndex(3) ? ll.toNumberIndex(3) : 0;
+	BinaryBuf res = Systems::readFile(filename, offset, size);
+
 	buf->swap(res);
 	ll.pushInteger(buf->size()).setFieldTableIndex("size", 1);
 	ll.pushBoolean(buf->size());
 	return 1;
     }
-    else
-    { 
-        ERROR("userdata empty");
-    }
 
+    ERROR("userdata empty");
     return 0;
 }
 
@@ -279,7 +282,10 @@ int SWE_binarybuf_readfile2(lua_State* L)
     std::string filename = ll.toStringIndex(1);
 
     if(! Systems::isFile(filename))
-	filename = SWE_Tools::toFullFileName(ll, filename);
+    {
+	std::string filename2 = SWE_Tools::toFullFileName(ll, filename);
+	if(Systems::isFile(filename2)) std::swap(filename, filename2);
+    }
 
     if(Systems::isFile(filename))
     {
@@ -295,14 +301,11 @@ int SWE_binarybuf_readfile2(lua_State* L)
 	buf->swap(res);
 
 	ll.pushString("size").pushInteger(buf->size()).setTableIndex(-3);
-    }
-    else
-    { 
-        ERROR("file not found: " << filename);
-	ll.pushBoolean(false);
+	return 1;
     }
 
-    return 1;
+    ERROR("file not found: " << filename);
+    return 0;
 }
 
 int SWE_binarybuf_readfile(lua_State* L)
@@ -616,7 +619,7 @@ int SWE_binarybuf_tostring(lua_State* L)
 
     if(buf)
     {
-	std::string str = StringFormat("[%1]").arg(buf->toHexString(",", true));
+	std::string str = StringFormat("{\"type\":\"swe.binarybuf\",\"data\":[%1]}").arg(buf->toHexString(",", true));
 	ll.pushString(str);
 	return 1;
     }

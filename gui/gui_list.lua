@@ -6,12 +6,17 @@
 -- end
 --
 -- local list = ListCreate(20, 20, 200, 280, win)
+--    public interface:
+--    item = list:GetItemSelected()
+--    list:SetItemSelected(val)
+--    list:ItemsDisposition()
 --
 -- set hotkeys:
 -- list.hotkeys { GotoFirst, GotoLast, GotoUp, GotoDown, Action, PageUp, PageDown }
 --
 -- function ListFillItems()
 --     local item1 = ListCreateItem(list, 0, 0, 50, 10, ItemRenderWindow)
+--     item1.label = uniq
 --     ...
 --     list.InsertItems(item1, item2, ...)
 -- end
@@ -32,16 +37,20 @@
 require 'gui_tools'
 require 'gui_action'
 
-function ListSetItemSelected(list, val)
+local function ListSetItemSelected(list, val)
     if type(val) == "number" then
-        if 1 < val and val < #list.items then
-	    list.selIndex = val
-	elseif val <= 1 then
-	    list.selIndex = 1
-	elseif val >= #list.items then
+	if val < 1 then
+	    list.selIndex = 0
+	elseif val > #list.items then
 	    list.selIndex = #list.items
+        else
+	    list.selIndex = val
 	end
-	SWE.PushEvent(SWE.Action.ListItemSelected, list.items[list.selIndex], list)
+	if 0 < list.selIndex then
+	    SWE.PushEvent(SWE.Action.ListItemSelected, list.items[list.selIndex], list)
+	else
+	    SWE.PushEvent(SWE.Action.ListItemSelected, nil, list)
+	end
     elseif type(val) == "table" then
 	for k,v in pairs(list.items) do
 	    if v.label == val.label then
@@ -53,7 +62,7 @@ function ListSetItemSelected(list, val)
 	end
 	-- out of visible
 	if list.selIndex < list.topIndex or
-	    list.selIndex > list.topIndex + list.maxItems - 1then
+	    list.selIndex > list.topIndex + list.maxItems - 1 then
 	    list.topIndex = 1
 	    -- find top index
 	    while list.selIndex > list.topIndex + list.maxItems - 1 do
@@ -91,12 +100,17 @@ function ListCreateItem(list, x, y, w, h, renderItemFunc)
     local item = SWE.Window(x, y, w, h, list)
     item.iscur = false
 
+    item.IsSelected = function()
+	return item.iscur
+    end
+
     item.RenderWindow = function()
 	return renderItemFunc(item)
     end
 
     item.MouseClickEvent = function(x,y,btn)
-	if item.iscur then
+	if item:IsSelected() then
+	    -- value item only
 	    list.ItemSelectedAction(item)
 	else
 	    ListSetItemSelected(list, item)
@@ -118,10 +132,6 @@ function ListCreateItem(list, x, y, w, h, renderItemFunc)
 	return false
     end
 
-    item.IsCurrent = function()
-	return item.iscur
-    end
-
     return item
 end
 
@@ -129,13 +139,28 @@ function ListCreate(x, y, w, h, parent)
     local list = SWE.Window(x, y, w, h, parent)
 
     list.items = {}
-    list.setIndex = 0
+    list.selIndex = 0
     list.topIndex = 0
     list.maxItems = 0
     list.lastIndex = 0
     list.ItemSelectedAction = function(item) end
     list.hotkeys = {}
     -- list.hotkeys { GotoFirst, GotoLast, GotoUp, GotoDown, Action, PageUp, PageDown }
+
+    list.GetItemSelected = function()
+	if 0 < #list.items then
+	    for i = 1, #list.items do
+		if list.items[i]:IsSelected() then
+		    return list.items[i]
+		end
+	    end
+	end
+	return nil
+    end
+
+    list.SetItemSelected = function(val)
+	ListSetItemSelected(list, val)
+    end
 
     list.InsertItems = function(...)
 	local itemHeight = 0
@@ -147,7 +172,7 @@ function ListCreate(x, y, w, h, parent)
 
 	list.items = { select(1, ...) }
 
-	collectgarbage()
+	--collectgarbage()
 
 	if 0 < #list.items then
 	    for i = 1, #list.items do
@@ -221,6 +246,7 @@ function ListCreate(x, y, w, h, parent)
 	    return true
 	-- action
 	elseif list.hotkeys.Action ~= nil and list.hotkeys.Action == key then
+	    -- value item only
 	    list.ItemSelectedAction(list.items[list.selIndex])
 	    return true
 	-- page up
@@ -275,7 +301,9 @@ function ListCreate(x, y, w, h, parent)
 	    for i = 1, #list.items do
 		SWE.PushEvent(SWE.Action.ListClearSelected, nil, list.items[i])
 	    end
-	    SWE.PushEvent(SWE.Action.ListItemSelected, nil, b)
+	    if b ~= nil then
+		SWE.PushEvent(SWE.Action.ListItemSelected, nil, b)
+	    end
 	    return true
 	-- list dirty
 	elseif a == SWE.Action.ListDirty then
@@ -283,6 +311,11 @@ function ListCreate(x, y, w, h, parent)
 	    return true
 	elseif a == SWE.Action.FontChanged then
 	    list:FontChanged(b)
+	-- system signal
+	elseif a == SWE.Signal.FingerMoveUp then
+	    list:ScrollUpEvent()
+	elseif a == SWE.Signal.FingerMoveDown then
+	    list:ScrollDownEvent()
 	end
 	return false
     end

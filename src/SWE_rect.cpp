@@ -25,8 +25,143 @@
 int SWE_point_create(lua_State*);
 int SWE_size_create(lua_State*);
 int SWE_rect_create(lua_State*);
+int SWE_rect_create(LuaState & ll, int rx, int ry, int rw, int rh);
+
+SDL_Rect SDLRect(int x, int y, int w, int h)
+{
+    SDL_Rect rt;
+    rt.x = x; rt.y = y; rt.w = w; rt.h = h;
+    return rt;
+}
 
 /////////////////////////////////////////////////////////////////////
+int SWE_rect_point_inrect(lua_State* L)
+{
+    // params: swe_rect, swe.point
+
+    LuaState ll(L);
+
+    if(ll.isTableIndex(1) && 0 == ll.popFieldTableIndex("__type", 1).compare("swe.rect") &&
+	ll.isTableIndex(2) && 0 == ll.popFieldTableIndex("__type", 2).compare("swe.point"))
+    {
+	Rect rt; Point pt;
+
+	rt.x = ll.getFieldTableIndex("posx", 1).getTopInteger();
+	rt.y = ll.getFieldTableIndex("posy", 1).getTopInteger();
+	rt.w = ll.getFieldTableIndex("width", 1).getTopInteger();
+	rt.h = ll.getFieldTableIndex("height", 1).getTopInteger();
+	ll.stackPop(4);
+
+	pt.x = ll.getFieldTableIndex("posx", 2).getTopInteger();
+	pt.y = ll.getFieldTableIndex("posy", 2).getTopInteger();
+	ll.stackPop(2);
+
+	bool res = rt & pt;
+	ll.pushBoolean(res);
+	return 1;
+    }
+
+    ERROR("userdata empty");
+    return 0;
+}
+
+int SWE_rect_equals(lua_State* L)
+{
+    // params: swe_rect, swe.rect
+
+    LuaState ll(L);
+
+    if(ll.isTableIndex(1) && 0 == ll.popFieldTableIndex("__type", 1).compare("swe.rect") &&
+	ll.isTableIndex(2) && 0 == ll.popFieldTableIndex("__type", 2).compare("swe.rect"))
+    {
+	Rect rt1, rt2;
+
+	rt1.x = ll.getFieldTableIndex("posx", 1).getTopInteger();
+	rt1.y = ll.getFieldTableIndex("posy", 1).getTopInteger();
+	rt1.w = ll.getFieldTableIndex("width", 1).getTopInteger();
+	rt1.h = ll.getFieldTableIndex("height", 1).getTopInteger();
+	ll.stackPop(4);
+
+	rt2.x = ll.getFieldTableIndex("posx", 2).getTopInteger();
+	rt2.y = ll.getFieldTableIndex("posy", 2).getTopInteger();
+	rt2.w = ll.getFieldTableIndex("width", 2).getTopInteger();
+	rt2.h = ll.getFieldTableIndex("height", 2).getTopInteger();
+	ll.stackPop(4);
+
+	bool res = rt1 == rt2;
+	ll.pushBoolean(res);
+	return 1;
+    }
+
+    ERROR("userdata empty");
+    return 0;
+}
+
+int SWE_rect_has_intersection(lua_State* L)
+{
+    // params: swe_rect, swe.rect
+
+    LuaState ll(L);
+
+    if(ll.isTableIndex(1) && 0 == ll.popFieldTableIndex("__type", 1).compare("swe.rect") &&
+	ll.isTableIndex(2) && 0 == ll.popFieldTableIndex("__type", 2).compare("swe.rect"))
+    {
+	Rect rt1, rt2;
+
+	rt1.x = ll.getFieldTableIndex("posx", 1).getTopInteger();
+	rt1.y = ll.getFieldTableIndex("posy", 1).getTopInteger();
+	rt1.w = ll.getFieldTableIndex("width", 1).getTopInteger();
+	rt1.h = ll.getFieldTableIndex("height", 1).getTopInteger();
+	ll.stackPop(4);
+
+	rt2.x = ll.getFieldTableIndex("posx", 2).getTopInteger();
+	rt2.y = ll.getFieldTableIndex("posy", 2).getTopInteger();
+	rt2.w = ll.getFieldTableIndex("width", 2).getTopInteger();
+	rt2.h = ll.getFieldTableIndex("height", 2).getTopInteger();
+	ll.stackPop(4);
+
+	bool res = rt1 & rt2;
+	ll.pushBoolean(res);
+	return 1;
+    }
+
+    ERROR("userdata empty");
+    return 0;
+}
+
+int SWE_rect_intersect(lua_State* L)
+{
+    // params: swe_rect, swe.rect
+
+    LuaState ll(L);
+
+    if(ll.isTableIndex(1) && 0 == ll.popFieldTableIndex("__type", 1).compare("swe.rect") &&
+	ll.isTableIndex(2) && 0 == ll.popFieldTableIndex("__type", 2).compare("swe.rect"))
+    {
+	Rect rt1, rt2, res;
+
+	rt1.x = ll.getFieldTableIndex("posx", 1).getTopInteger();
+	rt1.y = ll.getFieldTableIndex("posy", 1).getTopInteger();
+	rt1.w = ll.getFieldTableIndex("width", 1).getTopInteger();
+	rt1.h = ll.getFieldTableIndex("height", 1).getTopInteger();
+	ll.stackPop(4);
+
+	rt2.x = ll.getFieldTableIndex("posx", 2).getTopInteger();
+	rt2.y = ll.getFieldTableIndex("posy", 2).getTopInteger();
+	rt2.w = ll.getFieldTableIndex("width", 2).getTopInteger();
+	rt2.h = ll.getFieldTableIndex("height", 2).getTopInteger();
+	ll.stackPop(4);
+
+	if(Rect::intersection(rt1, rt2, &res))
+	    return SWE_rect_create(ll, res.x, res.y, res.w, res.h);
+
+	return 0;
+    }
+
+    ERROR("userdata empty");
+    return 0;
+}
+
 int SWE_rect_tostring(lua_State* L)
 {
     // params: swe_rect
@@ -41,16 +176,13 @@ int SWE_rect_tostring(lua_State* L)
 	int rh = ll.getFieldTableIndex("height", 1).getTopInteger();
 	ll.stackPop(4);
 
-	std::string str = StringFormat("{ \"posx\": %1, \"posy\": %2, \"width\": %3, \"height\": %4 }").arg(rx).arg(ry).arg(rw).arg(rh);
+	std::string str = StringFormat("{\"posx\":%1,\"posy\":%2,\"width\":%3,\"height\":%4}").arg(rx).arg(ry).arg(rw).arg(rh);
 	ll.pushString(str);
 
 	return 1;
     }
-    else
-    {
-        ERROR("userdata empty");
-    }
 
+    ERROR("userdata empty");
     return 0;
 }
 
@@ -84,21 +216,17 @@ int SWE_rect_unpack(lua_State* L)
 }
 
 const struct luaL_Reg SWE_rect_functions[] = {
-    { "ToString", SWE_rect_tostring }, 		// [string], swe_rect
-    { "Unpack", SWE_rect_unpack }, 		// [list int], swe_rect
+    { "PointInRect", SWE_rect_point_inrect },		// [bool], swe_rect, swe_point
+    { "HasIntersection", SWE_rect_has_intersection },	// [bool], swe_rect, swe_rect
+    { "RectEquals", SWE_rect_equals },			// [bool], swe_rect, swe_rect
+    { "GetIntersectRect", SWE_rect_intersect },		// [swe_rect], swe_rect, swe_rect
+    { "ToString", SWE_rect_tostring }, 			// [string], swe_rect
+    { "Unpack", SWE_rect_unpack }, 			// [list int], swe_rect
     { NULL, NULL }
 };
 
-int SWE_rect_create(lua_State* L)
+int SWE_rect_create(LuaState & ll, int rx, int ry, int rw, int rh)
 {
-    // empty params
-    LuaState ll(L);
-
-    int rx = ll.toIntegerIndex(2);
-    int ry = ll.toIntegerIndex(3);
-    int rw = ll.toIntegerIndex(4);
-    int rh = ll.toIntegerIndex(5);
-
     ll.pushTable();
     ll.pushString("swe.rect").setFieldTableIndex("__type", -2);
     ll.pushInteger(rx).setFieldTableIndex("posx", -2);
@@ -110,6 +238,19 @@ int SWE_rect_create(lua_State* L)
     ll.setFunctionsTableIndex(SWE_rect_functions, -1);
 
     return 1;
+}
+
+int SWE_rect_create(lua_State* L)
+{
+    // empty params
+    LuaState ll(L);
+
+    int rx = ll.toIntegerIndex(2);
+    int ry = ll.toIntegerIndex(3);
+    int rw = ll.toIntegerIndex(4);
+    int rh = ll.toIntegerIndex(5);
+
+    return SWE_rect_create(ll, rx, ry, rw, rh);
 }
 
 void SWE_Rect::registers(LuaState & ll)
@@ -134,7 +275,7 @@ int SWE_point_tostring(lua_State* L)
 	int py = ll.getFieldTableIndex("posy", 1).getTopInteger();
 	ll.stackPop(2);
 
-	std::string str = StringFormat("{ \"posx\": %1, \"posy\": %2 }").arg(px).arg(py);
+	std::string str = StringFormat("{\"posx\":%1,\"posy\":%2}").arg(px).arg(py);
 	ll.pushString(str);
 
 	return 1;
@@ -219,7 +360,7 @@ int SWE_size_tostring(lua_State* L)
 	int sh = ll.getFieldTableIndex("height", 1).getTopInteger();
 	ll.stackPop(2);
 
-	std::string str = StringFormat("{ \"width\": %1, \"height\": %2 }").arg(sw).arg(sh);
+	std::string str = StringFormat("{\"width\":%1,\"height\":%2}").arg(sw).arg(sh);
 	ll.pushString(str);
 
 	return 1;

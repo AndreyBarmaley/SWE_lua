@@ -343,6 +343,8 @@ function FtpCommands(client,ipaddr)
 		end
 	    end
 
+	    print(ipaddr, ftp.data.port)
+
 	    local octets = StringSplit(ipaddr, "%.")
 	    local p1 = ToInt(ftp.data.port / 256)
 	    local p2 = ftp.data.port - p1 * 256
@@ -377,30 +379,38 @@ function FtpCommands(client,ipaddr)
         ftp.client:SendString("220 " .. ftp.banner .. "\r\n")
 	-- wait commands
 	while not ftp.exit do
-	    local argv = StringSplit(ftp.client:RecvString(0x0A), "%s")
-	    local cmd = string.upper(argv[1])
-	    local func = "cmd" .. cmd
+	    local str = ftp.client:RecvString(0x0A)
+	    if 0 < string.len(str) then
+		local argv = StringSplit(str, "%s")
+		local cmd = string.upper(argv[1])
+		local func = "cmd" .. cmd
 
-	    print("recv command:", table.unpack(argv))
+		print("recv command:", table.unpack(argv))
 
-	    local answer = false
+		local answer = false
 
-	    for k,v in pairs(ftp) do
-		if k == func and type(v) == "function" then
-		    ftp[func](select(2, table.unpack(argv)))
-		    answer = true
-		    break;
+		for k,v in pairs(ftp) do
+		    if k == func and type(v) == "function" then
+			ftp[func](select(2, table.unpack(argv)))
+			answer = true
+			break;
+		    end
 		end
-	    end
 
-	    if not answer then
-		ftp.cmdUNKNOWN()
+		if not answer then
+		    ftp.cmdUNKNOWN()
+		end
+	    else
+		SWE.SystemSleep(500)
 	    end
 	end
     end
 
     return ftp
 end
+
+-- reset locale time (for LIST cmd)
+os.setlocale("C", "time")
 
 local net = SWE.NetStream()
 local res = net:Listen(2121)

@@ -32,6 +32,7 @@
 #include "SWE_tools.h"
 #include "SWE_audio.h"
 #include "SWE_color.h"
+#include "SWE_signal.h"
 #include "SWE_window.h"
 #include "SWE_texture.h"
 #include "SWE_binarybuf.h"
@@ -39,57 +40,93 @@
 #include "SWE_netstream.h"
 #include "SWE_randomhit.h"
 
-#define SWE_LUA_VERSION 20190828
+#define SWE_LUA_VERSION 20190830
 #define SWE_LUA_LICENSE "GPL3"
 
 int SWE_window_create(lua_State*);
+
+int SWE_init2(lua_State* L)
+{
+    // params: string title, bool landscape
+    LuaState ll(L);
+
+    std::string title = ll.toStringIndex(1);
+    bool landscape =  ll.toBooleanIndex(2);
+    const Size & dsz = Display::size();
+
+    // check also initialized
+    if((landscape && dsz.w > dsz.h) ||
+	(! landscape && dsz.w < dsz.h))
+    {
+	// return display window
+	SWE_Window* win = SWE_Scene::window_getindex(ll, 1);
+	if(win)
+	{
+	    DEBUG("display found: " << dsz.toString());
+	    win->setVisible(true);
+	    SWE_Scene::window_push(ll, win);
+	    return 1;
+	}
+    }
+
+    SWE_Scene::clean(ll);
+
+    if(Display::init(title, landscape))
+    {
+	const Size & dsz2 = Display::size();
+	ll.stackClear();
+	ll.pushTable().pushInteger(0).pushInteger(0).pushInteger(dsz2.w).pushInteger(dsz2.h).pushNil();
+
+	SWE_window_create(L);
+	return 1;
+    }
+
+    ERROR("display init failed");
+    return 0;
+}
 
 int SWE_init(lua_State* L)
 {
     // params: string title, int width, int height, bool fullscreen
     LuaState ll(L);
 
-    int params = ll.stackSize();
-    if(3 > params || ! ll.isStringIndex(1) ||
-	! ll.isIntegerIndex(2) || ! ll.isIntegerIndex(3))
-    {
-        ERROR("require minimum params: " << "string title, int width, int height, bool fullscreen");
-	ll.pushNil();
-        return 1;
-    }
+    if(ll.isBooleanIndex(2))
+	return SWE_init2(L);
 
+    int params = ll.stackSize();
     std::string title = ll.toStringIndex(1);
-    int width = ll.toIntegerIndex(2);
-    int height = ll.toIntegerIndex(3);
+    Size winsz = 3 > params ? Size(0, 0) : Size(ll.toIntegerIndex(2), ll.toIntegerIndex(3));
     bool fullscreen = 4 > params ? false : ll.toBooleanIndex(4);
+    const Size & dsz = Display::size();
 
     // check also initialized
-    if(Display::size() == Size(width, height))
+    if(! dsz.isEmpty() && (winsz.isEmpty() || winsz == dsz))
     {
 	// return display window
 	SWE_Window* win = SWE_Scene::window_getindex(ll, 1);
-	SWE_Scene::window_push(ll, win);
-	return 1;
+	if(win)
+	{
+	    DEBUG("display found: " << dsz.toString());
+	    win->setVisible(true);
+	    SWE_Scene::window_push(ll, win);
+	    return 1;
+	}
     }
 
     SWE_Scene::clean(ll);
 
-    bool res = Display::init(title, Size(width, height), fullscreen);
-    if(res)
+    if(Display::init(title, winsz, fullscreen))
     {
-	const Size & dsz = Display::size();
+	const Size & dsz2 = Display::size();
 	ll.stackClear();
-	ll.pushTable().pushInteger(0).pushInteger(0).pushInteger(dsz.w).pushInteger(dsz.h).pushNil();
+	ll.pushTable().pushInteger(0).pushInteger(0).pushInteger(dsz2.w).pushInteger(dsz2.h).pushNil();
 
 	SWE_window_create(L);
-    }
-    else
-    {
-    	ERROR("display init failed");
-	ll.pushNil();
+	return 1;
     }
 
-    return 1;
+    ERROR("display init failed");
+    return 0;
 }
 
 int SWE_quit(lua_State* L)
@@ -138,7 +175,9 @@ int SWE_display_videomodes(lua_State* L)
     // params: none
     LuaState ll(L);
 
-    std::list<Size> modes = Display::hardwareVideoModes();
+    bool landscape = ll.isBooleanIndex(1) ? ll.toBooleanIndex(1) : true;
+    std::list<Size> modes = Display::hardwareVideoModes(landscape);
+
     for(auto it = modes.begin(); it != modes.end(); ++it)
     {
 	ll.pushTable();
@@ -285,6 +324,43 @@ int SWE_register_directory(lua_State* L)
     }
 
     return 0;
+}
+
+int SWE_system_delay(lua_State* L)
+{
+    // params: string directory
+    LuaState ll(L);
+
+    if(! ll.isTopInteger())
+    {
+	ERROR("integer not found");
+	return 0;
+    }
+
+    int ms = ll.getTopInteger();
+    Tools::delay(ms);
+
+    return 0;
+}
+
+int SWE_system_mkdir(lua_State* L)
+{
+    // params: string directory
+    LuaState ll(L);
+
+    if(! ll.isTopString())
+    {
+	ERROR("string not found");
+	return 0;
+    }
+
+    std::string name = ll.getTopString();
+
+    if(! Systems::isDirectory(name))
+	Systems::makeDirectory(name);
+
+    ll.pushBoolean(Systems::isDirectory(name));
+    return 1;
 }
 
 int SWE_system_memory_usage(lua_State* L)
@@ -585,6 +661,8 @@ const struct luaL_Reg SWE_functions[] = {
     { "DisplaySize", SWE_display_size }, 			// [int list], void
     { "RenderScreenshot", SWE_render_screenshot }, 		// [bool], string filename
     { "LuaRegisterDirectory", SWE_register_directory }, 	// [bool], string directory
+    { "SystemSleep", SWE_system_delay }, 			// [void], int
+    { "SystemMakeDirectory", SWE_system_mkdir },		// [bool], string directory
     { "SystemCurrentDirectory", SWE_system_current_directory },	// [string], void
     { "SystemShareDirectories", SWE_system_share_directories },	// [string list], void
     { "SystemReadDirectory", SWE_system_read_directory },	// [table list], string directory
@@ -666,6 +744,8 @@ extern "C" {
     SWE_Size::registers(ll);
     // SWE.Rect
     SWE_Rect::registers(ll);
+    // SWE.Signal
+    SWE_Signal::registers(ll);
 
     bool res = Engine::init();
     if(! res) ERROR("engine init failed");

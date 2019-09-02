@@ -50,10 +50,11 @@ int main(int argc, char** argv)
 
 	std::string runfile;
 	Engine::setDebugMode(true);
+	StringList dirs = Systems::shareDirectories(app);
+
+#ifdef ANDROID
 	Systems::assetsInit();
 
-	StringList dirs = Systems::shareDirectories(app);
-#ifdef ANDROID
 	// sync assets
 	for(auto it = dirs.rbegin(); it != dirs.rend(); ++it)
 	{
@@ -88,7 +89,7 @@ int main(int argc, char** argv)
 	if(Systems::isFile(start))
 	    runfile = start;
 
-	dirs.push_back(argv[0]);
+	dirs.push_back(Systems::dirname(argv[0]));
 #endif
 
 	for(auto it = dirs.begin(); it != dirs.end(); ++it)

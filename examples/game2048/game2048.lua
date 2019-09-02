@@ -2,7 +2,7 @@
 
 local fullscreen = false
 
-SWE.SetDebug(false)
+SWE.SetDebug(true)
 local win = SWE.DisplayInit("Game2048", 320, 240, fullscreen)
 
 if not win then
@@ -108,10 +108,10 @@ function tointeger(x)
 end
 
 -- WIN
-function win.RenderWindow()
-    local memusage = tointeger(SWE.SystemMemoryUsage() / 1024)
-    local txMUK = SWE.Texture.Text(frs14, "mem: " .. tostring(memusage) .. "K", SWE.Color.Blue)
+function win.DisplayResizeEvent(w,h)
+end
 
+function win.RenderWindow()
     win:RenderClear(SWE.Color.Silver)
     win:RenderRect(SWE.Color.Red, 0, 0, win.width, win.height)
 
@@ -123,14 +123,24 @@ function win.RenderWindow()
     end
 
     win:RenderRect(SWE.Color.Navy, orders[1].posx - 1, orders[1].posy - 2, 2 + bitRect * 4, 2 + bitRect * 4, false)
-    win:RenderTexture(txMUK, 0, 0, txMUK.width, txMUK.height, win.width - txMUK.width - 5,
-    			    win.height - txMUK.height - 2, txMUK.width, txMUK.height)
-
-    -- free texture
-    txMUK = nil
-    collectgarbage()
-
     return true
+end
+
+function win.SystemUserEvent(a,b)
+    if a == SWE.Signal.GestureFingerUp then
+	MoveNumbers(3)
+	return true
+    elseif a == SWE.Signal.GestureFingerDown then
+	MoveNumbers(4)
+	return true
+    elseif a == SWE.Signal.GestureFingerLeft then
+	MoveNumbers(1)
+	return true
+    elseif a == SWE.Signal.GestureFingerRight then
+	MoveNumbers(2)
+	return true
+    end
+    return false
 end
 
 function win.KeyPressEvent(key)
@@ -193,6 +203,7 @@ function win.SystemTickEvent(ms)
 	    end
 	end
     end
+    collectgarbage()
 end
 
 function MoveAnimationItem()
@@ -247,6 +258,8 @@ function MoveNumbers(dir)
 	MoveCol(14,10, 6, 2)
 	MoveCol(15,11, 7, 3)
 	MoveCol(16,12, 8, 4)
+    else
+	print("unknown direct")
     end
 end
 
@@ -337,6 +350,8 @@ function StackNumbers()
 	StackCol(10, 6, 2)
 	StackCol(11, 7, 3)
 	StackCol(12, 8, 4)
+    else
+	print("unknown direct")
     end
 
     stackTurn = true

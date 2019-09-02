@@ -11,6 +11,7 @@ function TextButtonCreate(posx, posy, text, frs, parent)
     local btn = SWE.Window(posx, posy, tx1.width + 6, tx1.height + 6, parent)
 
     btn.text = text
+    btn.frs = frs
     btn.cl1 = cl1
     btn.cl2 = cl2
     btn.tx1 = tx1
@@ -20,6 +21,11 @@ function TextButtonCreate(posx, posy, text, frs, parent)
     btn.MouseFocusEvent = function(f)
 	btn.focused = f
 	SWE.PushEvent(SWE.Action.ButtonDirty, nil, btn)
+    end
+
+    btn.TextureInvalidEvent = function()
+	btn.tx1 = SWE.Texture.Text(btn.frs, btn.text, btn.cl1)
+	btn.tx2 = SWE.Texture.Text(btn.frs, btn.text, btn.cl2)
     end
 
     btn.RenderWindow = function()
@@ -41,8 +47,9 @@ function TextButtonCreate(posx, posy, text, frs, parent)
             btn:RenderWindow()
 	    return true
         elseif a == SWE.Action.FontChanged then
-	    btn.tx1 = SWE.Texture.Text(b, btn.text, btn.cl1)
-	    btn.tx2 = SWE.Texture.Text(b, btn.text, btn.cl2)
+	    btn.frs = b
+	    btn.tx1 = SWE.Texture.Text(btn.frs, btn.text, btn.cl1)
+	    btn.tx2 = SWE.Texture.Text(btn.frs, btn.text, btn.cl2)
 	    btn:SetSize(btn.tx1.width + 6, btn.tx1.height + 6)
 	    return true
         end

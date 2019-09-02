@@ -47,7 +47,18 @@ function test_binarybuf()
 	error("SWE.BinaryBuf.Base64Encode FAILED")
     end
 
+    if not SWE.BinaryBuf.SaveToFile(SWE.BinaryBuf(base64), "/tmp/swe.test") then
+	error("SWE.BinaryBuf.SaveToFile FAILED")
+    end
+
     zip1 = nil
+    base64 = SWE.BinaryBuf.ReadFromFile("/tmp/swe.test")
+
+    if base64 == nil or base64.size == nil or base64.size < 1 then
+	error("SWE.BinaryBuf.ReadFromFile FAILED")
+    end
+
+    os.remove("/tmp/swe.test")
 
     local zip2 = SWE.BinaryBuf.Base64Decode(base64)
 
@@ -157,6 +168,17 @@ print(rt:ToString())
 print(pt:Unpack())
 print(sz:Unpack())
 print(rt:Unpack())
+
+local rt1 = SWE.Rect(10,20,100, 200)
+print("rect1",rt1:ToString())
+local rt2 = SWE.Rect(50,80,100, 200)
+print("rect2",rt2:ToString())
+
+local res1 = rt1:HasIntersection(rt2)
+print("has intersection",res1)
+
+local res2 = rt1:GetIntersectRect(rt2)
+print("intersect rects",res2:ToString())
 
 local hit = SWE.RandomHit(33)
 print(hit:ToString())
