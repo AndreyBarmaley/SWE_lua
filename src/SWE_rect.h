@@ -33,6 +33,7 @@ public:
     SWE_Point() {}
     SWE_Point(const Point & pt) : Point(pt) {}
 
+    static Point get(LuaState &, int tableIndex, const char* funcName);
     static void registers(LuaState &);
 };
 
@@ -42,6 +43,7 @@ public:
     SWE_Size() {}
     SWE_Size(const Size & sz) : Size(sz) {}
 
+    static Size get(LuaState &, int tableIndex, const char* funcName);
     static void registers(LuaState &);
 };
 
@@ -51,6 +53,7 @@ public:
     SWE_Rect() {}
     SWE_Rect(const Rect & rt) : Rect(rt) {}
 
+    static Rect get(LuaState &, int tableIndex, const char* funcName);
     static void registers(LuaState &);
 };
 

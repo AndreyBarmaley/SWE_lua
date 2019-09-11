@@ -29,9 +29,10 @@ int SWE_fontrender_destroy(lua_State*);
 
 SWE_FontRender* SWE_FontRender::get(LuaState & ll, int tableIndex, const char* funcName)
 {
-    if(! ll.isTableIndex(tableIndex))
+    if(! ll.isTableIndex(tableIndex) ||
+	0 != ll.popFieldTableIndex("__type", tableIndex).compare("swe.fontrender"))
     {
-        ERROR("table not found, index: " << tableIndex);
+        ERROR(funcName << ": " << "table not found, index: " << tableIndex);
         return NULL;
     }
 
@@ -54,13 +55,6 @@ int SWE_fontrender_to_json(lua_State* L)
     // params: swe_fontrender
 
     LuaState ll(L);
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.fontrender"))
-    {
-        ERROR("table not found" << ", " << "swe.fontrender");
-        return 0;
-    }
-
     SWE_FontRender* frs = SWE_FontRender::get(ll, 1, __FUNCTION__);
 
     if(frs)
@@ -99,14 +93,6 @@ int SWE_fontrender_symbol_advance(lua_State* L)
     // params: swe_fontrender, symbol int
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.fontrender"))
-    {
-        ERROR("table not found" << ", " << "swe.fontrender");
-        return 0;
-    }
-
     SWE_FontRender* frs = SWE_FontRender::get(ll, 1, __FUNCTION__);
 
     if(frs)

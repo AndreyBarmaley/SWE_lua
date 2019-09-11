@@ -20,8 +20,9 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "SWE_fontrender.h"
+#include "SWE_rect.h"
 #include "SWE_tools.h"
+#include "SWE_fontrender.h"
 #include "SWE_texture.h"
 
 int SWE_texture_create_rect(lua_State*);
@@ -29,9 +30,10 @@ int SWE_texture_create_text(lua_State*);
 
 SWE_Texture* SWE_Texture::get(LuaState & ll, int tableIndex, const char* funcName)
 {
-    if(! ll.isTableIndex(tableIndex))
+    if(! ll.isTableIndex(tableIndex) ||
+	0 != ll.popFieldTableIndex("__type", tableIndex).compare("swe.texture"))
     {
-        ERROR("table not found, index: " << tableIndex);
+        ERROR(funcName << ": " << "table not found, index: " << tableIndex);
         return NULL;
     }
 
@@ -52,28 +54,20 @@ SWE_Texture* SWE_Texture::get(LuaState & ll, int tableIndex, const char* funcNam
 int SWE_texture_save_tofile(lua_State* L)
 {
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture"))
-    {
-        ERROR("table not found" << ", " << "swe.texture");
-        return 0;
-    }
-
-    bool res = false;
     SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
 
     if(tx)
     {
 	std::string file = ll.toStringIndex(2);
-	res = tx->save(file);
+	bool res = tx->save(file);
+	ll.pushBoolean(res);
     }
     else
     {
 	ERROR("userdata empty");
+	ll.pushBoolean(false);
     }
 
-    ll.pushBoolean(res);
     return 1;
 }
 
@@ -82,14 +76,6 @@ int SWE_texture_render_clear(lua_State* L)
     // params: swe_texture, color
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture"))
-    {
-        ERROR("table not found" << ", " << "swe.texture");
-        return 0;
-    }
-
     SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
 
     if(tx)
@@ -107,34 +93,40 @@ int SWE_texture_render_clear(lua_State* L)
 
 int SWE_texture_render_rect(lua_State* L)
 {
-    // params: swe_texture, color, posx, posy, width, height, bool
+    // params: swe_texture, color, rtx, rty, rtw, rth, bool
+    // params: swe_texture, color, rect, bool
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture"))
-    {
-        ERROR("table not found" << ", " << "swe.texture");
-        return 0;
-    }
-
     SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
     
     if(tx)
     {
-	int params = ll.stackSize();
+        ARGB argb = ll.toIntegerIndex(2);
+	int filled = false;
+	Rect rt;
 
-	ARGB argb = ll.toIntegerIndex(2);
-	int posx = ll.toIntegerIndex(3);
-	int posy = ll.toIntegerIndex(4);
-	int width = ll.toIntegerIndex(5);
-	int height = ll.toIntegerIndex(6);
-	int filled = 7 > params ? false : ll.toBooleanIndex(7);
+	if(ll.isTableIndex(3))
+	{
+    	    rt = SWE_Rect::get(ll, 3, __FUNCTION__);
+
+    	    if(ll.isBooleanIndex(4))
+		filled = ll.toBooleanIndex(4);
+	}
+	else
+	{
+    	    rt.x = ll.toIntegerIndex(3);
+	    rt.y = ll.toIntegerIndex(4);
+    	    rt.w = ll.toIntegerIndex(5);
+	    rt.h = ll.toIntegerIndex(6);
+
+    	    if(ll.isBooleanIndex(7))
+		filled = ll.toBooleanIndex(7);
+	}
 
 	if(filled)
-	    Display::renderColor(Color(argb), *tx, Rect(posx, posy, width, height));
+	    Display::renderColor(Color(argb), *tx, rt);
 	else
-	    Display::renderRect(Color(argb), *tx, Rect(posx, posy, width, height));
+	    Display::renderRect(Color(argb), *tx, rt);
     }
     else
     {
@@ -147,25 +139,25 @@ int SWE_texture_render_rect(lua_State* L)
 int SWE_texture_render_point(lua_State* L)
 {
     // params: swe_texture, color, posx. posy
+    // params: swe_texture, color, point
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture"))
-    {
-        ERROR("table not found" << ", " << "swe.texture");
-        return 0;
-    }
-
     SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
     
     if(tx)
     {
 	ARGB argb = ll.toIntegerIndex(2);
-	int posx = ll.toIntegerIndex(3);
-	int posy = ll.toIntegerIndex(4);
+	Point pt;
 
-	Display::renderPoint(Color(argb), *tx, Point(posx, posy));
+	if(ll.isTableIndex(3))
+    	    pt = SWE_Point::get(ll, 3, __FUNCTION__);
+	else
+	{
+	    pt.x = ll.toIntegerIndex(3);
+    	    pt.y = ll.toIntegerIndex(4);
+	}
+
+	Display::renderPoint(Color(argb), *tx, pt);
     }
     else
     {
@@ -178,27 +170,37 @@ int SWE_texture_render_point(lua_State* L)
 int SWE_texture_render_line(lua_State* L)
 {
     // params: swe_texture, color, pt1x, pt1y, pt2x, pt2y
+    // params: swe_texture, color, point1, point2
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture"))
-    {
-        ERROR("table not found" << ", " << "swe.texture");
-        return 0;
-    }
-
     SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
     
     if(tx)
     {
 	ARGB argb = ll.toIntegerIndex(2);
-	int posx1 = ll.toIntegerIndex(3);
-	int posy1 = ll.toIntegerIndex(4);
-	int posx2 = ll.toIntegerIndex(5);
-	int posy2 = ll.toIntegerIndex(6);
+	Point pt1, pt2;
 
-	Display::renderLine(Color(argb), *tx, Point(posx1, posy1), Point(posx2, posy2));
+	if(ll.isTableIndex(3))
+	{
+    	    pt1 = SWE_Point::get(ll, 3, __FUNCTION__);
+
+    	    if(ll.isTableIndex(4))
+		pt2 = SWE_Point::get(ll, 4, __FUNCTION__);
+    	    else
+    	    {
+		pt2.x = ll.toIntegerIndex(4);
+		pt2.y = ll.toIntegerIndex(5);
+    	    }
+	}
+	else
+	{
+	    pt1.x = ll.toIntegerIndex(3);
+	    pt1.y = ll.toIntegerIndex(4);
+    	    pt2.x = ll.toIntegerIndex(5);
+	    pt2.y = ll.toIntegerIndex(6);
+	}
+
+	Display::renderLine(Color(argb), *tx, pt1, pt2);
     }
     else
     {
@@ -211,29 +213,34 @@ int SWE_texture_render_line(lua_State* L)
 int SWE_texture_render_cyrcle(lua_State* L)
 {
     // params: swe_texture, color, px, py, int radius, bool filled
+    // params: swe_texture, color, point center, int radius, bool filled
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture"))
-    {
-        ERROR("table not found" << ", " << "swe.texture");
-        return 0;
-    }
-
     SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
     
     if(tx)
     {
-	int params = ll.stackSize();
+        ARGB argb = ll.toIntegerIndex(2);
+	Point center;
+        int radius = 0;
+        bool filled = false;
+        int params = ll.stackSize();
 
-	ARGB argb = ll.toIntegerIndex(2);
-	int posx = ll.toIntegerIndex(3);
-	int posy = ll.toIntegerIndex(4);
-	int radius = ll.toIntegerIndex(5);
-	bool filled = 6 > params ? false : ll.toBooleanIndex(6);
+	if(ll.isTableIndex(3))
+	{
+    	    center = SWE_Point::get(ll, 3, __FUNCTION__);
+	    radius = ll.toIntegerIndex(4);
+	    if(4 < params) filled = ll.toBooleanIndex(5);
+	}
+	else
+	{
+	    center.x = ll.toIntegerIndex(3);
+	    center.y = ll.toIntegerIndex(4);
+	    radius = ll.toIntegerIndex(5);
+	    if(5 < params) filled = ll.toBooleanIndex(6);
+	}
 
-	Points points = Tools::renderCircle(Point(posx, posy), radius, filled);
+	Points points = Tools::renderCircle(center, radius, filled);
 
 	for(auto it = points.begin(); it != points.end(); ++it)
 	    Display::renderPoint(Color(argb), *tx, *it);
@@ -249,34 +256,47 @@ int SWE_texture_render_cyrcle(lua_State* L)
 int SWE_texture_render_texture(lua_State* L)
 {
     // params: swe_texture, swe_texture, [srcx, srcy, srcw, srch], [dstx, dsty, dstw, dsth]
+    // params: swe_texture, swe_texture, rect src, rect dst
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) || ! ll.isTableIndex(2) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture") ||
-	0 != ll.popFieldTableIndex("__type", 2).compare("swe.texture"))
-    {
-        ERROR("table not found" << ", " << "swe.texture");
-        return 0;
-    }
 
     SWE_Texture* tx1 = SWE_Texture::get(ll, 1, __FUNCTION__);
     SWE_Texture* tx2 = SWE_Texture::get(ll, 2, __FUNCTION__);
     
     if(tx1 && tx2)
     {
-	int params = ll.stackSize();
+	Rect src, dst;
+        int params = ll.stackSize();
 
-	int srcx = ll.toIntegerIndex(3);
-	int srcy = ll.toIntegerIndex(4);
-	int srcw = ll.toIntegerIndex(5);
-	int srch = ll.toIntegerIndex(6);
-	int dstx = ll.toIntegerIndex(7);
-	int dsty = ll.toIntegerIndex(8);
-	int dstw = 9 > params ? srcw : ll.toIntegerIndex(9);
-	int dsth = 9 > params ? srch : ll.toIntegerIndex(10);
+	if(ll.isTableIndex(3))
+	{
+    	    src = SWE_Rect::get(ll, 3, __FUNCTION__);
 
-	Display::renderTexture(*tx2, Rect(srcx, srcy, srcw, srch), *tx1, Rect(dstx, dsty, dstw, dsth));
+    	    if(ll.isTableIndex(4))
+    	    {
+	        dst = SWE_Rect::get(ll, 4, __FUNCTION__);
+    	    }
+    	    else
+    	    {
+		dst.x = ll.toIntegerIndex(4);
+		dst.y = ll.toIntegerIndex(5);
+		dst.w = 6 > params ? src.w : ll.toIntegerIndex(6);
+		dst.h = 6 > params ? src.h : ll.toIntegerIndex(7);
+    	    }
+	}
+	else
+	{
+	    src.x = ll.toIntegerIndex(3);
+	    src.y = ll.toIntegerIndex(4);
+    	    src.w = ll.toIntegerIndex(5);
+	    src.h = ll.toIntegerIndex(6);
+	    dst.x = ll.toIntegerIndex(7);
+	    dst.y = ll.toIntegerIndex(8);
+	    dst.w = 9 > params ? src.w : ll.toIntegerIndex(9);
+	    dst.h = 9 > params ? src.h : ll.toIntegerIndex(10);
+	}
+
+	Display::renderTexture(*tx2, src, *tx1, dst);
     }
     else
     {
@@ -289,35 +309,50 @@ int SWE_texture_render_texture(lua_State* L)
 int SWE_texture_render_text(lua_State* L)
 {
     // params: swe_texture, swe_fontrender, string, color, dstx, dsty, int halign, int valign, boolean horizontal
+    // params: swe_texture, swe_fontrender, string, color, point dst, int halign, int valign, boolean horizontal
 
     LuaState ll(L);
-    int params = ll.stackSize();
-
-    if(6 > params || ! ll.isTableIndex(1) || ! ll.isTableIndex(2) || ! ll.isStringIndex(3) ||
-	! ll.isIntegerIndex(4) || ! ll.isNumberIndex(5) || ! ll.isNumberIndex(6))
-    {
-        ERROR("require minimum params: " << "table window, table fontrender, string, int color, int dstx, int dsty");
-        return 0;
-    }
 
     SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
     SWE_FontRender* frs = SWE_FontRender::get(ll, 2, __FUNCTION__);
 
     if(tx && frs)
     {
+	int params = ll.stackSize();
 	std::string text = SWE_Tools::convertEncoding(ll, ll.toStringIndex(3));
 	ARGB argb = ll.toIntegerIndex(4);
-	int dstx = ll.toIntegerIndex(5);
-	int dsty = ll.toIntegerIndex(6);
-	int halign = 7 > params ? AlignLeft : ll.toIntegerIndex(7);
-	int valign = 8 > params ? AlignTop : ll.toIntegerIndex(8);
-	bool horizontal = 9 > params ? true : ll.toBooleanIndex(9);
+	Point dst;
+	int halign = AlignLeft;
+	int valign = AlignTop;
+	bool horizontal = true;
 
-	Rect area = Display::renderText(*frs, text, Color(argb), *tx, Point(dstx, dsty), halign, valign, horizontal);
+	if(ll.isTableIndex(5))
+	{
+    	    dst = SWE_Point::get(ll, 5, __FUNCTION__);
 
-	ll.pushInteger(area.x).pushInteger(area.y);
-	ll.pushInteger(area.w).pushInteger(area.h);
+    	    if(5 < params)
+		halign = ll.toIntegerIndex(6);
+    	    if(6 < params)
+		valign = ll.toIntegerIndex(7);
+    	    if(7 < params)
+		horizontal = ll.toBooleanIndex(8);
+	}
+	else
+	{
+    	    dst.x = ll.toIntegerIndex(5);
+    	    dst.y = ll.toIntegerIndex(6);
 
+    	    if(6 < params)
+		halign = ll.toIntegerIndex(7);
+    	    if(7 < params)
+		valign = ll.toIntegerIndex(8);
+    	    if(8 < params)
+		horizontal = ll.toBooleanIndex(9);
+	}
+
+	Rect area = Display::renderText(*frs, text, Color(argb), *tx, dst, halign, valign, horizontal);
+
+	ll.pushInteger(area.x).pushInteger(area.y).pushInteger(area.w).pushInteger(area.h);
 	return 4;
     }
     else
@@ -333,14 +368,6 @@ int SWE_texture_to_json(lua_State* L)
     // params: swe_texture
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture"))
-    {
-        ERROR("table not found" << ", " << "swe.texture");
-        return 0;
-    }
-
     SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
 
     if(tx)

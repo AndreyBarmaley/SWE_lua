@@ -846,7 +846,7 @@ define({ "api": [
   },
   {
     "type": "play music from binarybuf",
-    "url": "SWE.Audio.MusicPlayBuf(binarybuf)",
+    "url": "SWE.Audio.MusicPlayBuf(inputbuf)",
     "title": "SWE.Audio.MusicPlayBuf",
     "group": "SWE_Audio",
     "name": "MusicPlayBuf",
@@ -951,7 +951,7 @@ define({ "api": [
   },
   {
     "type": "play sound from binarybuf",
-    "url": "SWE.Audio.SoundPlayBuf(binarybuf)",
+    "url": "SWE.Audio.SoundPlayBuf(inputbuf)",
     "title": "SWE.Audio.SoundPlayBuf",
     "group": "SWE_Audio",
     "name": "SoundPlayBuf",
@@ -6129,7 +6129,7 @@ define({ "api": [
   },
   {
     "type": "texture render cyrcle",
-    "url": "SWE.Texture.RenderCyrcle(self,color,centerx,centery,radius,filled)",
+    "url": "SWE.Texture.RenderCyrcle(self,color,centerx,centery,radius,filled)(self,color,point_center,radius,filled)",
     "title": "SWE.Texture.RenderCyrcle",
     "group": "SWE_Texture",
     "name": "RenderCyrcle",
@@ -6166,6 +6166,13 @@ define({ "api": [
           },
           {
             "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point_center",
+            "description": "<p>point object</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "number",
             "optional": false,
             "field": "radius",
@@ -6187,7 +6194,7 @@ define({ "api": [
   },
   {
     "type": "texture render line",
-    "url": "SWE.Texture.RenderLine(self,color,px1,py1,px2,py2)",
+    "url": "SWE.Texture.RenderLine(self,color,px1,py1,px2,py2)(self,color,point1,point2)",
     "title": "SWE.Texture.RenderLine",
     "group": "SWE_Texture",
     "name": "RenderLine",
@@ -6235,6 +6242,20 @@ define({ "api": [
             "optional": false,
             "field": "py2",
             "description": "<p>point2 position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point1",
+            "description": "<p>point object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point2",
+            "description": "<p>point object</p>"
           }
         ]
       }
@@ -6245,7 +6266,7 @@ define({ "api": [
   },
   {
     "type": "texture render point",
-    "url": "SWE.Texture.RenderPoint(self,color,posx,posy)",
+    "url": "SWE.Texture.RenderPoint(self,color,ptx,pty)(self,color,point)",
     "title": "SWE.Texture.RenderPoint",
     "group": "SWE_Texture",
     "name": "RenderPoint",
@@ -6270,15 +6291,22 @@ define({ "api": [
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "posx",
+            "field": "ptx",
             "description": "<p>point position</p>"
           },
           {
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "posy",
+            "field": "pty",
             "description": "<p>point position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point",
+            "description": "<p>point object</p>"
           }
         ]
       }
@@ -6289,7 +6317,7 @@ define({ "api": [
   },
   {
     "type": "texture render rect",
-    "url": "SWE.Texture.RenderRect(self,color,rectx,recty,rectw,recth,filled)",
+    "url": "SWE.Texture.RenderRect(self,color,rtx,rty,rtw,rth,filled)(self,color,rect,filled)",
     "title": "SWE.Texture.RenderRect",
     "group": "SWE_Texture",
     "name": "RenderRect",
@@ -6314,29 +6342,36 @@ define({ "api": [
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "rectx",
+            "field": "rtx",
             "description": "<p>rect position</p>"
           },
           {
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "recty",
+            "field": "rty",
             "description": "<p>rect position</p>"
           },
           {
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "rectw",
+            "field": "rtw",
             "description": "<p>rect size</p>"
           },
           {
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "recth",
+            "field": "rth",
             "description": "<p>rect size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "rect",
+            "description": "<p>rect object</p>"
           },
           {
             "group": "Parameter",
@@ -6354,7 +6389,7 @@ define({ "api": [
   },
   {
     "type": "texture render text",
-    "url": "SWE.Texture.RenderText(self,frs,color,posx,posy,halign,valign,horizontal)",
+    "url": "SWE.Texture.RenderText(self,frs,color,posx,posy,halign,valign,horizontal)(self,frs,color,point,halign,valign,horizontal)",
     "title": "SWE.Texture.RenderText",
     "group": "SWE_Texture",
     "name": "RenderText",
@@ -6398,6 +6433,13 @@ define({ "api": [
           },
           {
             "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point",
+            "description": "<p>point object</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "number",
             "optional": false,
             "field": "halign",
@@ -6433,7 +6475,7 @@ define({ "api": [
   },
   {
     "type": "texture render texture",
-    "url": "SWE.Texture.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty,dstw,dsth)",
+    "url": "SWE.Texture.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty,dstw,dsth)(self,texture,rect_src,rect_dst)",
     "title": "SWE.Texture.RenderTexture",
     "group": "SWE_Texture",
     "name": "RenderTexture",
@@ -6484,6 +6526,13 @@ define({ "api": [
           },
           {
             "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "rect_src",
+            "description": "<p>rect object</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "number",
             "optional": false,
             "field": "dstx",
@@ -6509,6 +6558,13 @@ define({ "api": [
             "optional": false,
             "field": "dsth",
             "description": "<p>dst size (default srch)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "rect_dst",
+            "description": "<p>rect object</p>"
           }
         ]
       }
@@ -6896,7 +6952,7 @@ define({ "api": [
   },
   {
     "type": "point in window area",
-    "url": "SWE.Window.PointInArea(self,ptx,pty)",
+    "url": "SWE.Window.PointInArea(self,ptx,pty)(self,point)",
     "title": "SWE.Window.PointInArea",
     "group": "SWE_Window",
     "name": "PointInArea",
@@ -6923,6 +6979,13 @@ define({ "api": [
             "optional": false,
             "field": "pty",
             "description": "<p>point coord</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point",
+            "description": "<p>point object</p>"
           }
         ]
       }
@@ -6976,7 +7039,7 @@ define({ "api": [
   },
   {
     "type": "window render cyrcle",
-    "url": "SWE.Window.RenderCyrcle(self,color,centerx,centery,radius,filled)",
+    "url": "SWE.Window.RenderCyrcle(self,color,centerx,centery,radius,filled)(self,color,center,radius,filled)",
     "title": "SWE.Window.RenderCyrcle",
     "group": "SWE_Window",
     "name": "RenderCyrcle",
@@ -7013,6 +7076,13 @@ define({ "api": [
           },
           {
             "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "center",
+            "description": "<p>point object</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "number",
             "optional": false,
             "field": "radius",
@@ -7034,7 +7104,7 @@ define({ "api": [
   },
   {
     "type": "window render line",
-    "url": "SWE.Window.RenderLine(self,color,px1,py1,px2,py2)",
+    "url": "SWE.Window.RenderLine(self,color,px1,py1,px2,py2)(self,color,point1,point2)",
     "title": "SWE.Window.RenderLine",
     "group": "SWE_Window",
     "name": "RenderLine",
@@ -7082,6 +7152,20 @@ define({ "api": [
             "optional": false,
             "field": "py2",
             "description": "<p>point2 position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point1",
+            "description": "<p>point object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point2",
+            "description": "<p>point object</p>"
           }
         ]
       }
@@ -7092,7 +7176,7 @@ define({ "api": [
   },
   {
     "type": "window render point",
-    "url": "SWE.Window.RenderPoint(self,color,posx,posy)",
+    "url": "SWE.Window.RenderPoint(self,color,posx,posy)(self,color,point)",
     "title": "SWE.Window.RenderPoint",
     "group": "SWE_Window",
     "name": "RenderPoint",
@@ -7126,6 +7210,13 @@ define({ "api": [
             "optional": false,
             "field": "posy",
             "description": "<p>point position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point",
+            "description": "<p>point object</p>"
           }
         ]
       }
@@ -7136,7 +7227,7 @@ define({ "api": [
   },
   {
     "type": "window render rect",
-    "url": "SWE.Window.RenderRect(self,color,rectx,recty,rectw,recth,filled)",
+    "url": "SWE.Window.RenderRect(self,color,rtx,rty,rtw,rth,filled)(self,color,rect,filled)",
     "title": "SWE.Window.RenderRect",
     "group": "SWE_Window",
     "name": "RenderRect",
@@ -7161,29 +7252,36 @@ define({ "api": [
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "rectx",
+            "field": "rtx",
             "description": "<p>rect position</p>"
           },
           {
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "recty",
+            "field": "rty",
             "description": "<p>rect position</p>"
           },
           {
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "rectw",
+            "field": "rtw",
             "description": "<p>rect size</p>"
           },
           {
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "recth",
+            "field": "rth",
             "description": "<p>rect size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "rect",
+            "description": "<p>rect object</p>"
           },
           {
             "group": "Parameter",
@@ -7201,7 +7299,7 @@ define({ "api": [
   },
   {
     "type": "window render text",
-    "url": "SWE.Window.RenderText(self,frs,color,posx,posy,halign,valign,horizontal)",
+    "url": "SWE.Window.RenderText(self,frs,color,posx,posy,halign,valign,horizontal)(self,frs,color,point,halign,valign,horizontal)",
     "title": "SWE.Window.RenderText",
     "group": "SWE_Window",
     "name": "RenderText",
@@ -7245,6 +7343,13 @@ define({ "api": [
           },
           {
             "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point",
+            "description": "<p>point object</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "number",
             "optional": false,
             "field": "halign",
@@ -7273,7 +7378,7 @@ define({ "api": [
   },
   {
     "type": "window render texture",
-    "url": "SWE.Window.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty,dstw,dsth)",
+    "url": "SWE.Window.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty,dstw,dsth)(self,texture,src_rt,dst_rt)",
     "title": "SWE.Window.RenderTexture",
     "group": "SWE_Window",
     "name": "RenderTexture",
@@ -7349,6 +7454,20 @@ define({ "api": [
             "optional": false,
             "field": "dsth",
             "description": "<p>dst size (default srch)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "src_rt",
+            "description": "<p>src rect object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "dst_rt",
+            "description": "<p>dst rect object</p>"
           }
         ]
       }
@@ -7517,6 +7636,71 @@ define({ "api": [
         ]
       }
     },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window"
+  },
+  {
+    "type": "set tooltip info",
+    "url": "SWE.Window.SetToolTip(self,text,frs,colorFn,colorBg,colorRt)",
+    "title": "SWE.Window.SetToolTip",
+    "group": "SWE_Window",
+    "name": "SetToolTip",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Window",
+            "optional": false,
+            "field": "self",
+            "description": "<p>window object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "text",
+            "description": "<p>tooltip text</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.FontRender",
+            "optional": false,
+            "field": "frs",
+            "description": "<p>fontrender object (default: system)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "colorFn",
+            "description": "<p>SWE.Color constant, (default: black)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "colorBg",
+            "description": "<p>SWE.Color constant, (default: wheat)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "colorRt",
+            "description": "<p>SWE.Color constant, (default: midnightblue)</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "win:SetToolTip(\"Hello World!\")",
+        "type": "json"
+      }
+    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_window.js",
     "groupTitle": "SWE_Window"

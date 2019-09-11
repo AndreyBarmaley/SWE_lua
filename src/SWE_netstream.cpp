@@ -28,9 +28,10 @@ int SWE_netstream_destroy(lua_State*);
 
 SWE_NetStream* SWE_NetStream::get(LuaState & ll, int tableIndex, const char* funcName)
 {
-    if(! ll.isTableIndex(tableIndex))
+    if(! ll.isTableIndex(tableIndex) ||
+	0 != ll.popFieldTableIndex("__type", tableIndex).compare("swe.netstream"))
     {
-        ERROR("table not found, index: " << tableIndex);
+        ERROR(funcName << ": " << "table not found, index: " << tableIndex);
         return NULL;
     }
 
@@ -53,14 +54,6 @@ int SWE_netstream_recv_byte(lua_State* L)
     // params: swe_netstream
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -83,14 +76,6 @@ int SWE_netstream_recv_be16(lua_State* L)
     // params: swe_netstream
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -113,14 +98,6 @@ int SWE_netstream_recv_be32(lua_State* L)
     // params: swe_netstream
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -143,14 +120,6 @@ int SWE_netstream_recv_be64(lua_State* L)
     // params: swe_netstream
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -173,14 +142,6 @@ int SWE_netstream_recv_le16(lua_State* L)
     // params: swe_netstream
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -203,14 +164,6 @@ int SWE_netstream_recv_le32(lua_State* L)
     // params: swe_netstream
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -233,14 +186,6 @@ int SWE_netstream_recv_le64(lua_State* L)
     // params: swe_netstream
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -263,14 +208,6 @@ int SWE_netstream_recv_bytes(lua_State* L)
     // params: swe_netstream, size
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -298,14 +235,6 @@ int SWE_netstream_recv_string(lua_State* L)
     // params: swe_netstream, int endl
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -353,14 +282,6 @@ int SWE_netstream_send_bytes(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1) || ! ll.isTableIndex(2) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream") ||
-	0 != ll.popFieldTableIndex("__type", 2).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
     SWE_BinaryBuf* buf = SWE_BinaryBuf::get(ll, 2, __FUNCTION__);
 
@@ -381,14 +302,6 @@ int SWE_netstream_send_string(lua_State* L)
     // params: swe_netstream, string
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -409,14 +322,6 @@ int SWE_netstream_send_byte(lua_State* L)
     // params: swe_netstream, number
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -437,14 +342,6 @@ int SWE_netstream_send_be16(lua_State* L)
     // params: swe_netstream, number
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -465,14 +362,6 @@ int SWE_netstream_send_be32(lua_State* L)
     // params: swe_netstream, number
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -493,14 +382,6 @@ int SWE_netstream_send_be64(lua_State* L)
     // params: swe_netstream, number
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -521,14 +402,6 @@ int SWE_netstream_send_le16(lua_State* L)
     // params: swe_netstream, number
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -549,14 +422,6 @@ int SWE_netstream_send_le32(lua_State* L)
     // params: swe_netstream, number
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -577,14 +442,6 @@ int SWE_netstream_send_le64(lua_State* L)
     // params: swe_netstream, number
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -605,14 +462,6 @@ int SWE_netstream_setready_timeout(lua_State* L)
     // params: swe_netstream, number
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -633,13 +482,6 @@ int SWE_netstream_wait_string(lua_State* L)
     // params: swe_netstream, string
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
 
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
     std::string str = ll.toStringIndex(2);
@@ -668,14 +510,6 @@ int SWE_netstream_connect(lua_State* L)
     // params: swe_netstream, string, int port
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -700,14 +534,6 @@ int SWE_netstream_data_ready(lua_State* L)
     // params: swe_netstream, int port
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -726,14 +552,6 @@ int SWE_netstream_listen(lua_State* L)
     // params: swe_netstream, int port
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -757,14 +575,6 @@ int SWE_netstream_wait_accept(lua_State* L)
     // params: swe_netstream
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -822,14 +632,6 @@ int SWE_netstream_disable(lua_State* L)
     // params: swe_netstream
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -851,14 +653,6 @@ int SWE_netstream_close(lua_State* L)
     // params: swe_netstream
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)
@@ -878,14 +672,6 @@ int SWE_netstream_to_json(lua_State* L)
     // params: swe_netstream
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
-    {
-        ERROR("table not found" << ", " << "swe.netstream");
-        return 0;
-    }
-    
     SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
 
     if(net)

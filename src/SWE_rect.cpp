@@ -34,6 +34,62 @@ SDL_Rect SDLRect(int x, int y, int w, int h)
     return rt;
 }
 
+Point SWE_Point::get(LuaState & ll, int tableIndex, const char* funcName)
+{
+    Point res;
+
+    if(! ll.isTableIndex(tableIndex))
+    {
+        ERROR(funcName << ": " << "table not found, index: " << tableIndex);
+        return res;
+    }
+
+    res.x = ll.getFieldTableIndex("posx", tableIndex).getTopInteger();
+    res.y = ll.getFieldTableIndex("posy", tableIndex).getTopInteger();
+ 
+    ll.stackPop(2);
+
+    return res;
+}
+
+Size SWE_Size::get(LuaState & ll, int tableIndex, const char* funcName)
+{
+    Size res;
+
+    if(! ll.isTableIndex(tableIndex))
+    {
+        ERROR(funcName << ": " << "table not found, index: " << tableIndex);
+        return res;
+    }
+
+    res.w = ll.getFieldTableIndex("width", tableIndex).getTopInteger();
+    res.h = ll.getFieldTableIndex("height", tableIndex).getTopInteger();
+ 
+    ll.stackPop(2);
+
+    return res;
+}
+
+Rect SWE_Rect::get(LuaState & ll, int tableIndex, const char* funcName)
+{
+    Rect res;
+
+    if(! ll.isTableIndex(tableIndex))
+    {
+        ERROR(funcName << ": " << "table not found, index: " << tableIndex);
+        return res;
+    }
+
+    res.x = ll.getFieldTableIndex("posx", tableIndex).getTopInteger();
+    res.y = ll.getFieldTableIndex("posy", tableIndex).getTopInteger();
+    res.w = ll.getFieldTableIndex("width", tableIndex).getTopInteger();
+    res.h = ll.getFieldTableIndex("height", tableIndex).getTopInteger();
+
+    ll.stackPop(4);
+
+    return res;
+}
+
 /////////////////////////////////////////////////////////////////////
 int SWE_rect_point_inrect(lua_State* L)
 {

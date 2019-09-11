@@ -27,9 +27,10 @@ int SWE_randomhit_destroy(lua_State*);
 
 SWE_RandomHit* SWE_RandomHit::get(LuaState & ll, int tableIndex, const char* funcName)
 {
-    if(! ll.isTableIndex(tableIndex))
+    if(! ll.isTableIndex(tableIndex) ||
+	0 != ll.popFieldTableIndex("__type", tableIndex).compare("swe.randomhit"))
     {
-        ERROR("table not found, index: " << tableIndex);
+        ERROR(funcName << ": " << "table not found, index: " << tableIndex);
         return NULL;
     }
 
@@ -53,14 +54,6 @@ int SWE_randomhit_last(lua_State* L)
     // params: swe_randomhit
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.randomhit"))
-    {
-        ERROR("table not found" << ", " << "swe.randomhit");
-        return 0;
-    }
-
     SWE_RandomHit* hit = SWE_RandomHit::get(ll, 1, __FUNCTION__);
 
     if(hit)
@@ -82,14 +75,6 @@ int SWE_randomhit_check(lua_State* L)
     // params: swe_randomhit
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.randomhit"))
-    {
-        ERROR("table not found" << ", " << "swe.randomhit");
-        return 0;
-    }
-
     SWE_RandomHit* hit = SWE_RandomHit::get(ll, 1, __FUNCTION__);
 
     if(hit)
@@ -111,14 +96,6 @@ int SWE_randomhit_to_json(lua_State* L)
     // params: swe_randomhit
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1) ||
-	0 != ll.popFieldTableIndex("__type", 1).compare("swe.randomhit"))
-    {
-        ERROR("table not found" << ", " << "swe.randomhit");
-        return 0;
-    }
-
     SWE_RandomHit* hit = SWE_RandomHit::get(ll, 1, __FUNCTION__);
 
     if(hit)

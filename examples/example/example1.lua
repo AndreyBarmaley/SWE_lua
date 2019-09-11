@@ -25,8 +25,8 @@ function win.KeyPressEvent(key)
     return false
 end
 
-function area.MouseClickEvent(x, y, btn)
-    print("mouse click: ", x, y, f)
+function area.MouseClickEvent(px, py, pbtn, rx, ry, rbtn)
+    print("mouse click: ", px, py, pbtn, rx, ry, rbtn)
     return true
 end
 

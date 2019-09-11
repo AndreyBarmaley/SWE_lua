@@ -40,7 +40,7 @@
 #include "SWE_netstream.h"
 #include "SWE_randomhit.h"
 
-#define SWE_LUA_VERSION 20190904
+#define SWE_LUA_VERSION 20190906
 #define SWE_LUA_LICENSE "GPL3"
 
 int SWE_window_create(lua_State*);
