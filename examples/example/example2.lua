@@ -12,6 +12,7 @@ SWE.CursorLoad(txcur)
 
 local area = SWE.Window(100, 100, 100, 50)
 area.bgcolor = SWE.Color.MidnightBlue
+area:SetToolTip("Area color: " .. SWE.Color.ToString(area.bgcolor))
 
 local butn = SWE.Window(300, 70, 86, 46)
 butn.tx1 = SWE.Texture.Image("buttons.png", 172, 0, 86, 46, 0xffd2d2)
@@ -54,6 +55,7 @@ function area.SystemUserEvent(a,b)
 	else
 	    area.bgcolor = SWE.Color.MidnightBlue
 	end
+	area:SetToolTip("Area color: " .. SWE.Color.ToString(area.bgcolor))
 	SWE.DisplayDirty()
 	return true
     end

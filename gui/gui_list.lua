@@ -9,7 +9,12 @@
 --    public interface:
 --    item = list:GetItemSelected()
 --    list:SetItemSelected(val)
+--    list:SetItemSelectedLast()
+--    list:SetItemTop(val)
+--    list:SetItemTopLast()
 --    list:ItemsDisposition()
+--    list:AssignItems(item1, item2, ...)
+--    list:AppendItems(item1, item2, ...)
 --
 -- set hotkeys:
 -- list.hotkeys { GotoFirst, GotoLast, GotoUp, GotoDown, Action, PageUp, PageDown }
@@ -18,10 +23,10 @@
 --     local item1 = ListCreateItem(list, 0, 0, 50, 10, ItemRenderWindow)
 --     item1.label = uniq
 --     ...
---     list.InsertItems(item1, item2, ...)
+--     list:AssignItems(item1, item2, ...)
 -- end
 --
--- list.ItemSelectedAction = function(item)
+-- list.ItemSelectedAction = function(list, item)
 --     ...
 -- end
 --
@@ -40,7 +45,7 @@ require 'gui_action'
 local function ListSetItemSelected(list, val)
     if type(val) == "number" then
 	if val < 1 then
-	    list.selIndex = 0
+	    list.selIndex = 1
 	elseif val > #list.items then
 	    list.selIndex = #list.items
         else
@@ -108,12 +113,12 @@ function ListCreateItem(list, x, y, w, h, renderItemFunc)
 	return renderItemFunc(item)
     end
 
-    item.MouseClickEvent = function(x,y,btn)
+    item.MouseClickEvent = function(px,py,pb,rx,ry,rb)
 	if item:IsSelected() then
 	    -- value item only
-	    list.ItemSelectedAction(item)
+	    list:ItemSelectedAction(item)
 	else
-	    ListSetItemSelected(list, item)
+	    list:SetItemSelected(item)
 	end
         return true
     end
@@ -143,11 +148,11 @@ function ListCreate(x, y, w, h, parent)
     list.topIndex = 0
     list.maxItems = 0
     list.lastIndex = 0
-    list.ItemSelectedAction = function(item) end
+    list.ItemSelectedAction = function(list, item) end
     list.hotkeys = {}
     -- list.hotkeys { GotoFirst, GotoLast, GotoUp, GotoDown, Action, PageUp, PageDown }
 
-    list.GetItemSelected = function()
+    list.GetItemSelected = function(list)
 	if 0 < #list.items then
 	    for i = 1, #list.items do
 		if list.items[i]:IsSelected() then
@@ -158,11 +163,29 @@ function ListCreate(x, y, w, h, parent)
 	return nil
     end
 
-    list.SetItemSelected = function(val)
+    list.SetItemSelected = function(list, val)
 	ListSetItemSelected(list, val)
     end
 
-    list.InsertItems = function(...)
+    list.SetItemSelectedLast = function(list)
+	ListSetItemSelected(list, #list.items)
+    end
+
+    list.SetItemTop = function(list, val)
+	list.topIndex = val
+	if list.topIndex < 1 then
+	    list.topIndex = 1
+	end
+	if list.topIndex > list.lastIndex then
+	    list.topIndex = list.lastIndex
+	end
+    end
+
+    list.SetItemTopLast = function(list)
+	list.topIndex = list.lastIndex
+    end
+
+    list.AssignItems = function(list, ...)
 	local itemHeight = 0
 
 	for i = 1, #list.items do
@@ -171,8 +194,6 @@ function ListCreate(x, y, w, h, parent)
 	end
 
 	list.items = { select(1, ...) }
-
-	--collectgarbage()
 
 	if 0 < #list.items then
 	    for i = 1, #list.items do
@@ -188,7 +209,29 @@ function ListCreate(x, y, w, h, parent)
 		list.lastIndex = 1
 	    end
 
-	    ListSetItemSelected(list, 1)
+	    list:SetItemSelected(1)
+	end
+    end
+
+    list.AppendItems = function(list, ...)
+	local itemHeight = 0
+	local argc = select('#', ...)
+
+	for i = 1, argc do
+	    local item = select(i, ...)
+	    table.insert(list.items, item)
+	    itemHeight = item.height
+	end
+
+	if 0 < #list.items then
+	    list.topIndex = 1
+	    list.maxItems = math.min(ToInt(list.height / itemHeight), #list.items)
+	    list.lastIndex = #list.items - list.maxItems + 1
+
+	    if list.lastIndex < 1 then
+		list.lastIndex = 1
+	    end
+	    list:SetItemSelected(1)
 	end
     end
 
@@ -215,56 +258,51 @@ function ListCreate(x, y, w, h, parent)
     list.KeyPressEvent = function(key)
 	-- goto first
 	if list.hotkeys.GotoFirst ~= nil and list.hotkeys.GotoFirst == key and 1 < list.selIndex then
-	    ListSetItemSelected(list, 1)
-	    list.topIndex = 1
+	    list:SetItemSelected(1)
+	    list:SetItemTop(1)
 	    list:RenderWindow()
 	    return true
 	-- goto last
 	elseif list.hotkeys.GotoLast ~= nil and list.hotkeys.GotoLast == key and list.selIndex < #list.items then
-	    ListSetItemSelected(list, #list.items)
-	    list.topIndex = #list.items - list.maxItems + 1
-	    if list.topIndex < 1 then
-		list.topIndex = 1
-	    end
+	    list:SetItemSelected(#list.items)
+	    list:SetItemTop(#list.items - list.maxItems + 1)
 	    list:RenderWindow()
 	    return true
 	-- goto up
 	elseif list.hotkeys.GotoUp ~= nil and list.hotkeys.GotoUp == key and 1 < list.selIndex then
-	    ListSetItemSelected(list, list.selIndex - 1)
+	    list:SetItemSelected(list.selIndex - 1)
 	    if list.selIndex < list.topIndex then
-		list.topIndex = list.topIndex - 1
+		list:SetItemTop(list.topIndex - 1)
 	    end
 	    list:RenderWindow()
 	    return true
 	-- goto down
 	elseif list.hotkeys.GotoDown ~= nil and list.hotkeys.GotoDown == key and list.selIndex < #list.items then
-	    ListSetItemSelected(list, list.selIndex + 1)
+	    list:SetItemSelected(list.selIndex + 1)
 	    if list.selIndex > list.topIndex + list.maxItems - 1 then
-		list.topIndex = list.topIndex + 1
+		list:SetItemTop(list.topIndex + 1)
 	    end
 	    list:RenderWindow()
 	    return true
 	-- action
 	elseif list.hotkeys.Action ~= nil and list.hotkeys.Action == key then
 	    -- value item only
-	    list.ItemSelectedAction(list.items[list.selIndex])
+	    list:ItemSelectedAction(list.items[list.selIndex])
 	    return true
 	-- page up
 	elseif list.hotkeys.PageUp ~= nil and list.hotkeys.PageUp == key and 1 < list.selIndex then
-	    list.topIndex = list.topIndex - list.maxItems
-	    if list.topIndex < 1 then
-		list.topIndex = 1
+	    list:SetItemTop(list.topIndex - list.maxItems)
+	    local index = list.selIndex - list.maxItems
+	    if index < 1 then
+		index = 1
 	    end
-	    ListSetItemSelected(list, list.selIndex - list.maxItems)
+	    list:SetItemSelected(index)
 	    list:RenderWindow()
 	    return true
 	-- page down
 	elseif list.hotkeys.PageDown ~= nil and list.hotkeys.PageDown == key and list.selIndex < #list.items then
-	    list.topIndex = list.topIndex + list.maxItems
-	    if list.topIndex > list.lastIndex then
-		list.topIndex = list.lastIndex
-	    end
-	    ListSetItemSelected(list, list.selIndex + list.maxItems)
+	    list:SetItemTop(list.topIndex + list.maxItems)
+	    list:SetItemSelected(list.selIndex + list.maxItems)
 	    list:RenderWindow()
 	    return true
 	end
@@ -274,7 +312,7 @@ function ListCreate(x, y, w, h, parent)
     -- ScrollUpEvent
     list.ScrollUpEvent = function(x,y)
 	if 1 < list.topIndex then
-	    list.topIndex = list.topIndex - 1
+	    list:SetItemTop(list.topIndex - 1)
 	    list:RenderWindow()
 	end
 	return true
@@ -283,7 +321,7 @@ function ListCreate(x, y, w, h, parent)
     -- ScrollDownEvent
     list.ScrollDownEvent = function(x,y)
 	if list.topIndex < list.lastIndex then
-	    list.topIndex = list.topIndex + 1
+	    list:SetItemTop(list.topIndex + 1)
 	    list:RenderWindow()
 	end
 	return true
@@ -311,11 +349,12 @@ function ListCreate(x, y, w, h, parent)
 	    return true
 	elseif a == SWE.Action.FontChanged then
 	    list:FontChanged(b)
+	    return true
 	-- system signal
 	elseif a == SWE.Signal.FingerMoveUp then
-	    list:ScrollUpEvent()
+	    return list:ScrollDownEvent()
 	elseif a == SWE.Signal.FingerMoveDown then
-	    list:ScrollDownEvent()
+	    return list:ScrollUpEvent()
 	end
 	return false
     end

@@ -11,7 +11,7 @@ define({ "api": [
   },
   {
     "type": "set custom cursor",
-    "url": "SWE.CursorLoad(table,number,number)",
+    "url": "SWE.CursorLoad(texture,offsetx,offsety)",
     "title": "SWE.CursorLoad",
     "group": "SWE",
     "name": "CursorLoad",
@@ -76,8 +76,8 @@ define({ "api": [
   },
   {
     "type": "create display window object",
-    "url": "SWE.DisplayInit(string,number",
-    "title": "width,number height,boolean fullscreen)(string,boolean landscape) SWE.DisplayInit",
+    "url": "SWE.DisplayInit(title,width,height,fullscreen)(title,landscape)",
+    "title": "SWE.DisplayInit",
     "group": "SWE",
     "name": "DisplayInit",
     "parameter": {
@@ -182,7 +182,7 @@ define({ "api": [
   },
   {
     "type": "get display mode list",
-    "url": "SWE.DisplayVideoModes(boolean)",
+    "url": "SWE.DisplayVideoModes(landscape)",
     "title": "SWE.DisplayVideoModes",
     "group": "SWE",
     "name": "DisplayVideoModes",
@@ -193,7 +193,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "boolean",
             "optional": false,
-            "field": "lanscape",
+            "field": "landscape",
             "description": "<p>landscape (default) or portrait modes</p>"
           }
         ]
@@ -255,7 +255,7 @@ define({ "api": [
   },
   {
     "type": "parse json string",
-    "url": "SWE.JsonParse(string)",
+    "url": "SWE.JsonParse(json)",
     "title": "SWE.JsonParse",
     "group": "SWE",
     "name": "JsonParse",
@@ -298,7 +298,7 @@ define({ "api": [
   },
   {
     "type": "main loop events processing",
-    "url": "SWE.MainLoop(table)",
+    "url": "SWE.MainLoop(window)",
     "title": "SWE.MainLoop",
     "group": "SWE",
     "name": "MainLoop",
@@ -341,7 +341,7 @@ define({ "api": [
   },
   {
     "type": "push custom event to window object",
-    "url": "SWE.PushEvent(number,object,table)",
+    "url": "SWE.PushEvent(code,object,window)",
     "title": "SWE.PushEvent",
     "group": "SWE",
     "name": "PushEvent",
@@ -385,7 +385,7 @@ define({ "api": [
   },
   {
     "type": "display scene render to screenshot",
-    "url": "SWE.RenderScreenshot(string)",
+    "url": "SWE.RenderScreenshot(filename)",
     "title": "SWE.RenderScreenshot",
     "group": "SWE",
     "name": "RenderScreenshot",
@@ -421,7 +421,7 @@ define({ "api": [
   },
   {
     "type": "set debug mode",
-    "url": "SWE.SetDebug(boolean)",
+    "url": "SWE.SetDebug(debug)",
     "title": "SWE.SetDebug",
     "group": "SWE",
     "name": "SetDebug",
@@ -467,7 +467,7 @@ define({ "api": [
   },
   {
     "type": "parse to dirname/basename",
-    "url": "SWE.SystemDirnameBasename(string)",
+    "url": "SWE.SystemDirnameBasename(path)",
     "title": "SWE.SystemDirnameBasename",
     "group": "SWE",
     "name": "SystemDirnameBasename",
@@ -517,7 +517,7 @@ define({ "api": [
   },
   {
     "type": "stat info for directory/file",
-    "url": "SWE.SystemFileStat(string)",
+    "url": "SWE.SystemFileStat(path)",
     "title": "SWE.SystemFileStat",
     "group": "SWE",
     "name": "SystemFileStat",
@@ -560,7 +560,7 @@ define({ "api": [
   },
   {
     "type": "make directory",
-    "url": "SWE.SystemMakeDirectory(string)",
+    "url": "SWE.SystemMakeDirectory(directory)",
     "title": "SWE.SystemMakeDirectory",
     "group": "SWE",
     "name": "SystemMakeDirectory",
@@ -631,7 +631,7 @@ define({ "api": [
             "type": "string",
             "optional": false,
             "field": "name",
-            "description": "<p>mobile os name</p>"
+            "description": "<p>mobile os name: android, wince, symbian</p>"
           }
         ]
       }
@@ -642,7 +642,7 @@ define({ "api": [
   },
   {
     "type": "read directory",
-    "url": "SWE.SystemReadDirectory(string)",
+    "url": "SWE.SystemReadDirectory(directory)",
     "title": "SWE.SystemReadDirectory",
     "group": "SWE",
     "name": "SystemReadDirectory",
@@ -708,7 +708,7 @@ define({ "api": [
   },
   {
     "type": "sleep ms",
-    "url": "SWE.SystemSleep(number)",
+    "url": "SWE.SystemSleep(delay)",
     "title": "SWE.SystemSleep",
     "group": "SWE",
     "name": "SystemSleep",
@@ -741,7 +741,7 @@ define({ "api": [
   },
   {
     "type": "set mixer volume",
-    "url": "SWE.Audio.MixerVolume(number)",
+    "url": "SWE.Audio.MixerVolume(volume)",
     "title": "SWE.Audio.MixerVolume",
     "group": "SWE_Audio",
     "name": "MixerVolume",
@@ -810,7 +810,7 @@ define({ "api": [
   },
   {
     "type": "play music from filename",
-    "url": "SWE.Audio.MusicPlay(string)",
+    "url": "SWE.Audio.MusicPlay(filename)",
     "title": "SWE.Audio.MusicPlay",
     "group": "SWE_Audio",
     "name": "MusicPlay",
@@ -846,7 +846,7 @@ define({ "api": [
   },
   {
     "type": "play music from binarybuf",
-    "url": "SWE.Audio.MusicPlayBuf(table)",
+    "url": "SWE.Audio.MusicPlayBuf(binarybuf)",
     "title": "SWE.Audio.MusicPlayBuf",
     "group": "SWE_Audio",
     "name": "MusicPlayBuf",
@@ -915,7 +915,7 @@ define({ "api": [
   },
   {
     "type": "play sound from filename",
-    "url": "SWE.Audio.SoundPlay(string)",
+    "url": "SWE.Audio.SoundPlay(filename)",
     "title": "SWE.Audio.SoundPlay",
     "group": "SWE_Audio",
     "name": "SoundPlay",
@@ -951,7 +951,7 @@ define({ "api": [
   },
   {
     "type": "play sound from binarybuf",
-    "url": "SWE.Audio.SoundPlayBuf(table)",
+    "url": "SWE.Audio.SoundPlayBuf(binarybuf)",
     "title": "SWE.Audio.SoundPlayBuf",
     "group": "SWE_Audio",
     "name": "SoundPlayBuf",
@@ -987,7 +987,7 @@ define({ "api": [
   },
   {
     "type": "base64 decode",
-    "url": "SWE.BinaryBuf.Base64Decode(table),(string)",
+    "url": "SWE.BinaryBuf.Base64Decode(inputbuf),(inputstr)",
     "title": "SWE.BinaryBuf.Base64Decode",
     "group": "SWE_BinaryBuf",
     "name": "Base64Decode",
@@ -1030,7 +1030,7 @@ define({ "api": [
   },
   {
     "type": "base64 encode",
-    "url": "SWE.BinaryBuf.Base64Encode(table)",
+    "url": "SWE.BinaryBuf.Base64Encode(inputbuf)",
     "title": "SWE.BinaryBuf.Base64Encode",
     "group": "SWE_BinaryBuf",
     "name": "Base64Encode",
@@ -1066,7 +1066,7 @@ define({ "api": [
   },
   {
     "type": "binarybuf clear",
-    "url": "SWE.BinaryBuf.Clear(table)",
+    "url": "SWE.BinaryBuf.Clear(self)",
     "title": "SWE.BinaryBuf.Clear",
     "group": "SWE_BinaryBuf",
     "name": "Clear",
@@ -1077,8 +1077,8 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.BinaryBuf",
             "optional": false,
-            "field": "owner",
-            "description": "<p>binarybuf object</p>"
+            "field": "self",
+            "description": "<p>binarybuf raw data</p>"
           }
         ]
       }
@@ -1089,7 +1089,7 @@ define({ "api": [
   },
   {
     "type": "binarybuf constructor",
-    "url": "SWE.BinaryBuf(),(string),(number),(userdata,number)",
+    "url": "SWE.BinaryBuf(),(inputstr),(length),(inputptr,length)",
     "title": "SWE.BinaryBuf",
     "group": "SWE_BinaryBuf",
     "name": "Constructor",
@@ -1151,7 +1151,7 @@ define({ "api": [
   },
   {
     "type": "get byte value",
-    "url": "SWE.BinaryBuf.GetByte(table,number)",
+    "url": "SWE.BinaryBuf.GetByte(self,offset)",
     "title": "SWE.BinaryBuf.GetByte",
     "group": "SWE_BinaryBuf",
     "name": "GetByte",
@@ -1162,7 +1162,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.BinaryBuf",
             "optional": false,
-            "field": "inputbuf",
+            "field": "self",
             "description": "<p>binarybuf raw data</p>"
           },
           {
@@ -1194,7 +1194,7 @@ define({ "api": [
   },
   {
     "type": "get byte values",
-    "url": "SWE.BinaryBuf.GetBytes(table,number,number)",
+    "url": "SWE.BinaryBuf.GetBytes(self,offset,length)",
     "title": "SWE.BinaryBuf.GetBytes",
     "group": "SWE_BinaryBuf",
     "name": "GetBytes",
@@ -1205,7 +1205,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.BinaryBuf",
             "optional": false,
-            "field": "inputbuf",
+            "field": "self",
             "description": "<p>binarybuf raw data</p>"
           },
           {
@@ -1219,8 +1219,8 @@ define({ "api": [
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "count",
-            "description": "<p>count data</p>"
+            "field": "length",
+            "description": "<p>length data</p>"
           }
         ]
       }
@@ -1244,7 +1244,7 @@ define({ "api": [
   },
   {
     "type": "calculate crc32b sum",
-    "url": "SWE.BinaryBuf.GetCRC32b(table)",
+    "url": "SWE.BinaryBuf.GetCRC32b(inputbuf)",
     "title": "SWE.BinaryBuf.GetCRC32b",
     "group": "SWE_BinaryBuf",
     "name": "GetCRC32b",
@@ -1280,7 +1280,7 @@ define({ "api": [
   },
   {
     "type": "read from file",
-    "url": "SWE.BinaryBuf.ReadFromFile(table,string,number,number)(string,number,number)",
+    "url": "SWE.BinaryBuf.ReadFromFile(self,filename,offset,length)(filename,offset,length)",
     "title": "SWE.BinaryBuf.ReadFromFile",
     "group": "SWE_BinaryBuf",
     "name": "ReadFromFile",
@@ -1291,7 +1291,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.BinaryBuf",
             "optional": false,
-            "field": "buf",
+            "field": "self",
             "description": "<p>binarybuf raw data</p>"
           },
           {
@@ -1312,7 +1312,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "size",
+            "field": "length",
             "description": "<p>block size read (default file size)</p>"
           }
         ]
@@ -1334,12 +1334,12 @@ define({ "api": [
     "examples": [
       {
         "title": "usage variant1",
-        "content": "local buf = SWE.BinaryBuf()\nbuf:ReadFromFile(\"/var/tmp/test.bin\")\nif buf ~= nil then\n    print(buf:ToHexString())\nend",
+        "content": "local buf = SWE.BinaryBuf()\nbuf:ReadFromFile(\"/var/tmp/test.bin\")\nif buf ~= nil then\n    print(buf:ToJson())\nend",
         "type": "json"
       },
       {
         "title": "usage variant2",
-        "content": "local file = \"/var/tmp/2gis.log\"\nlocal buf = SWE.BinaryBuf.ReadFromFile(file)\nif buf ~= nil then\n    print(buf:ToHexString())\nend",
+        "content": "local file = \"/var/tmp/2gis.log\"\nlocal buf = SWE.BinaryBuf.ReadFromFile(file)\nif buf ~= nil then\n    print(buf:ToJson())\nend",
         "type": "json"
       }
     ],
@@ -1349,7 +1349,7 @@ define({ "api": [
   },
   {
     "type": "save to file",
-    "url": "SWE.BinaryBuf.SaveToFile(table,string,number)",
+    "url": "SWE.BinaryBuf.SaveToFile(self,filename,offset)",
     "title": "SWE.BinaryBuf.SaveToFile",
     "group": "SWE_BinaryBuf",
     "name": "SaveTiFile",
@@ -1360,7 +1360,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.BinaryBuf",
             "optional": false,
-            "field": "buf",
+            "field": "self",
             "description": "<p>binarybuf raw data</p>"
           },
           {
@@ -1399,7 +1399,7 @@ define({ "api": [
   },
   {
     "type": "set byte value",
-    "url": "SWE.BinaryBuf.SetByte(table,number,number)",
+    "url": "SWE.BinaryBuf.SetByte(self,offset,value)",
     "title": "SWE.BinaryBuf.SetByte",
     "group": "SWE_BinaryBuf",
     "name": "SetByte",
@@ -1410,8 +1410,8 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.BinaryBuf",
             "optional": false,
-            "field": "outputbuf",
-            "description": "<p>binarybuf</p>"
+            "field": "self",
+            "description": "<p>binarybuf raw data</p>"
           },
           {
             "group": "Parameter",
@@ -1449,7 +1449,7 @@ define({ "api": [
   },
   {
     "type": "set byte values",
-    "url": "SWE.BinaryBuf.SetBytes(table,number,table,number,number)",
+    "url": "SWE.BinaryBuf.SetBytes(self,offset,binarybuf,offset,length)",
     "title": "SWE.BinaryBuf.SetBytes",
     "group": "SWE_BinaryBuf",
     "name": "SetBytes",
@@ -1460,8 +1460,8 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.BinaryBuf",
             "optional": false,
-            "field": "inputbuf",
-            "description": "<p>binarybuf input values</p>"
+            "field": "self",
+            "description": "<p>binarybuf raw data</p>"
           },
           {
             "group": "Parameter",
@@ -1474,15 +1474,15 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.BinaryBuf",
             "optional": false,
-            "field": "outputbuf",
-            "description": "<p>binarybuf output values</p>"
+            "field": "inputbuf",
+            "description": "<p>binarybuf input data</p>"
           },
           {
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "count",
-            "description": "<p>count data</p>"
+            "field": "length",
+            "description": "<p>length data</p>"
           }
         ]
       }
@@ -1505,28 +1505,14 @@ define({ "api": [
     "groupTitle": "SWE_BinaryBuf"
   },
   {
-    "type": "convert binarybuf to hex string",
-    "url": "SWE.BinaryBuf.ToHexString(table,string,boolean)",
-    "title": "SWE.BinaryBuf.ToHexString",
+    "type": "convert binarybuf to json string",
+    "url": "SWE.BinaryBuf.ToJson(inputbuf)",
+    "title": "SWE.BinaryBuf.ToJson",
     "group": "SWE_BinaryBuf",
-    "name": "ToHexString",
+    "name": "ToJson",
     "parameter": {
       "fields": {
         "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "separator",
-            "description": "<p>string separator (default &quot;,&quot;)</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "boolean",
-            "optional": false,
-            "field": "prefix",
-            "description": "<p>0x prefix (default true)</p>"
-          },
           {
             "group": "Parameter",
             "type": "SWE.BinaryBuf",
@@ -1545,7 +1531,7 @@ define({ "api": [
             "type": "string",
             "optional": false,
             "field": "result",
-            "description": "<p>hex string data</p>"
+            "description": "<p>json string</p>"
           }
         ]
       }
@@ -1553,7 +1539,7 @@ define({ "api": [
     "examples": [
       {
         "title": "usage",
-        "content": "local buf = SWE.BinaryBuf(\"012345678\")\nprint(buf:ToHexString())\n....\n0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38",
+        "content": "local buf = SWE.BinaryBuf(\"012345678\")\nprint(buf:ToJson())\n....\n'[0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38]'",
         "type": "json"
       }
     ],
@@ -1563,7 +1549,7 @@ define({ "api": [
   },
   {
     "type": "convert binarybuf to string",
-    "url": "SWE.BinaryBuf.ToString(table)",
+    "url": "SWE.BinaryBuf.ToString(inputbuf)",
     "title": "SWE.BinaryBuf.ToString",
     "group": "SWE_BinaryBuf",
     "name": "ToString",
@@ -1599,7 +1585,7 @@ define({ "api": [
   },
   {
     "type": "compress binarybuf",
-    "url": "SWE.BinaryBuf.ZlibCompress(table)",
+    "url": "SWE.BinaryBuf.ZlibCompress(inputbuf)",
     "title": "SWE.BinaryBuf.ZlibCompress",
     "group": "SWE_BinaryBuf",
     "name": "ZlibCompress",
@@ -1635,7 +1621,7 @@ define({ "api": [
   },
   {
     "type": "decompress binarybuf",
-    "url": "SWE.BinaryBuf.ZlibDecompress(table)",
+    "url": "SWE.BinaryBuf.ZlibDecompress(inputbuf)",
     "title": "SWE.BinaryBuf.ZlibDecompress",
     "group": "SWE_BinaryBuf",
     "name": "ZlibDecompress",
@@ -1671,7 +1657,7 @@ define({ "api": [
   },
   {
     "type": "get color string",
-    "url": "SWE.Color.ToString(number)",
+    "url": "SWE.Color.ToString(colval)",
     "title": "SWE.Color.ToString",
     "group": "SWE_Color",
     "name": "ToString",
@@ -2717,7 +2703,7 @@ define({ "api": [
   },
   {
     "type": "fontrender constructor",
-    "url": "SWE.FontRender(string,number,boolean,number,number)",
+    "url": "SWE.FontRender(filename,size,blended,style,hinting)",
     "title": "SWE.FontRender",
     "group": "SWE_FontRender",
     "name": "Constructor",
@@ -2742,7 +2728,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "boolean",
             "optional": false,
-            "field": "blend",
+            "field": "blended",
             "description": "<p>blended mode</p>"
           },
           {
@@ -2793,7 +2779,7 @@ define({ "api": [
   },
   {
     "type": "get symbol advance value",
-    "url": "SWE.FontRender.SymbolAdvance(table,number)",
+    "url": "SWE.FontRender.SymbolAdvance(self,symbol)",
     "title": "SWE.FontRender.SymbolAdvance",
     "group": "SWE_FontRender",
     "name": "SymbolAdvance",
@@ -2804,14 +2790,14 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.FontRender",
             "optional": false,
-            "field": "frs",
+            "field": "self",
             "description": "<p>fontrender object</p>"
           },
           {
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "sym",
+            "field": "symbol",
             "description": "<p>symbol chars</p>"
           }
         ]
@@ -2826,6 +2812,42 @@ define({ "api": [
             "optional": false,
             "field": "result",
             "description": "<p>advance value</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_fontrender.js",
+    "groupTitle": "SWE_FontRender"
+  },
+  {
+    "type": "convert fontrender to json string",
+    "url": "SWE.FontRender.ToJson(self)",
+    "title": "SWE.FontRender.ToJson",
+    "group": "SWE_FontRender",
+    "name": "ToJson",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.FontRender",
+            "optional": false,
+            "field": "self",
+            "description": "<p>fontrender object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>json string</p>"
           }
         ]
       }
@@ -2950,7 +2972,7 @@ define({ "api": [
   },
   {
     "type": "get color string",
-    "url": "SWE.Key.Lower(number)",
+    "url": "SWE.Key.Lower(key1)",
     "title": "SWE.Key.Lower",
     "group": "SWE_Key",
     "name": "Lower",
@@ -2986,7 +3008,7 @@ define({ "api": [
   },
   {
     "type": "get color string",
-    "url": "SWE.Key.ToString(number)",
+    "url": "SWE.Key.ToString(key)",
     "title": "SWE.Key.ToChar",
     "group": "SWE_Key",
     "name": "ToChar",
@@ -3022,7 +3044,7 @@ define({ "api": [
   },
   {
     "type": "get color string",
-    "url": "SWE.Key.ToKey(string)",
+    "url": "SWE.Key.ToKey(name)",
     "title": "SWE.Key.ToKey",
     "group": "SWE_Key",
     "name": "ToKey",
@@ -3058,7 +3080,7 @@ define({ "api": [
   },
   {
     "type": "get color string",
-    "url": "SWE.Key.ToString(number)",
+    "url": "SWE.Key.ToString(key)",
     "title": "SWE.Key.ToString",
     "group": "SWE_Key",
     "name": "ToString",
@@ -3094,7 +3116,7 @@ define({ "api": [
   },
   {
     "type": "get color string",
-    "url": "SWE.Key.Upper(number)",
+    "url": "SWE.Key.Upper(key1)",
     "title": "SWE.Key.Upper",
     "group": "SWE_Key",
     "name": "Upper",
@@ -4154,7 +4176,7 @@ define({ "api": [
   },
   {
     "type": "netstream close connect",
-    "url": "SWE.NetStream.Close(table)",
+    "url": "SWE.NetStream.Close(self)",
     "title": "SWE.NetStream.Close",
     "group": "SWE_NetStream",
     "name": "Close",
@@ -4165,7 +4187,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           }
         ]
@@ -4177,7 +4199,7 @@ define({ "api": [
   },
   {
     "type": "netstream connect",
-    "url": "SWE.NetStream.Connect(table,string,number)",
+    "url": "SWE.NetStream.Connect(self,server,port)",
     "title": "SWE.NetStream.Connect",
     "group": "SWE_NetStream",
     "name": "Connect",
@@ -4188,7 +4210,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           },
           {
@@ -4227,7 +4249,7 @@ define({ "api": [
   },
   {
     "type": "netstream constructor",
-    "url": "SWE.NetStream(),(string,number)",
+    "url": "SWE.NetStream(),(server,port)",
     "title": "SWE.NetStream",
     "group": "SWE_NetStream",
     "name": "Constructor",
@@ -4282,7 +4304,7 @@ define({ "api": [
   },
   {
     "type": "netstream data ready",
-    "url": "SWE.NetStream.DataReady(table)",
+    "url": "SWE.NetStream.DataReady(self)",
     "title": "SWE.NetStream.DataReady",
     "group": "SWE_NetStream",
     "name": "DataReady",
@@ -4293,7 +4315,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           }
         ]
@@ -4318,7 +4340,7 @@ define({ "api": [
   },
   {
     "type": "netstream listen port",
-    "url": "SWE.NetStream.Listen(table,number)",
+    "url": "SWE.NetStream.Listen(self,port)",
     "title": "SWE.NetStream.Listen",
     "group": "SWE_NetStream",
     "name": "Listen",
@@ -4329,7 +4351,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           },
           {
@@ -4361,7 +4383,7 @@ define({ "api": [
   },
   {
     "type": "netstream recv 16 bit value",
-    "url": "SWE.NetStream.RecvBE16(table,number)",
+    "url": "SWE.NetStream.RecvBE16(self)",
     "title": "SWE.NetStream.RecvBE16",
     "group": "SWE_NetStream",
     "name": "RecvBE16",
@@ -4372,7 +4394,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           }
         ]
@@ -4397,7 +4419,7 @@ define({ "api": [
   },
   {
     "type": "netstream recv 32 bit value",
-    "url": "SWE.NetStream.RecvBE32(table,number)",
+    "url": "SWE.NetStream.RecvBE32(self)",
     "title": "SWE.NetStream.RecvBE32",
     "group": "SWE_NetStream",
     "name": "RecvBE32",
@@ -4408,7 +4430,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           }
         ]
@@ -4433,7 +4455,7 @@ define({ "api": [
   },
   {
     "type": "netstream recv 64 bit value",
-    "url": "SWE.NetStream.RecvBE64(table,number)",
+    "url": "SWE.NetStream.RecvBE64(self)",
     "title": "SWE.NetStream.RecvBE64",
     "group": "SWE_NetStream",
     "name": "RecvBE64",
@@ -4444,7 +4466,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           }
         ]
@@ -4469,7 +4491,7 @@ define({ "api": [
   },
   {
     "type": "netstream recv 8 bit value",
-    "url": "SWE.NetStream.RecvByte(table,number)",
+    "url": "SWE.NetStream.RecvByte(self)",
     "title": "SWE.NetStream.RecvByte",
     "group": "SWE_NetStream",
     "name": "RecvByte",
@@ -4505,7 +4527,7 @@ define({ "api": [
   },
   {
     "type": "netstream recv bytes",
-    "url": "SWE.NetStream.RecvBytes(table,number)",
+    "url": "SWE.NetStream.RecvBytes(self,length)",
     "title": "SWE.NetStream.RecvBytes",
     "group": "SWE_NetStream",
     "name": "RecvBytes",
@@ -4516,15 +4538,15 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           },
           {
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "size",
-            "description": "<p>recv data size</p>"
+            "field": "length",
+            "description": "<p>length data</p>"
           }
         ]
       }
@@ -4548,7 +4570,7 @@ define({ "api": [
   },
   {
     "type": "netstream recv 16 bit value",
-    "url": "SWE.NetStream.RecvLE16(table,number)",
+    "url": "SWE.NetStream.RecvLE16(self)",
     "title": "SWE.NetStream.RecvLE16",
     "group": "SWE_NetStream",
     "name": "RecvLE16",
@@ -4559,7 +4581,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           }
         ]
@@ -4584,7 +4606,7 @@ define({ "api": [
   },
   {
     "type": "netstream recv 32 bit value",
-    "url": "SWE.NetStream.RecvLE32(table,number)",
+    "url": "SWE.NetStream.RecvLE32(self)",
     "title": "SWE.NetStream.RecvLE32",
     "group": "SWE_NetStream",
     "name": "RecvLE32",
@@ -4595,7 +4617,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           }
         ]
@@ -4620,7 +4642,7 @@ define({ "api": [
   },
   {
     "type": "netstream recv 64 bit value",
-    "url": "SWE.NetStream.RecvLE64(table,number)",
+    "url": "SWE.NetStream.RecvLE64(self)",
     "title": "SWE.NetStream.RecvLE64",
     "group": "SWE_NetStream",
     "name": "RecvLE64",
@@ -4631,7 +4653,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           }
         ]
@@ -4656,7 +4678,7 @@ define({ "api": [
   },
   {
     "type": "netstream recv string",
-    "url": "SWE.NetStream.RecvString(table,number)",
+    "url": "SWE.NetStream.RecvString(self,endl)",
     "title": "SWE.NetStream.RecvString",
     "group": "SWE_NetStream",
     "name": "RecvString",
@@ -4706,7 +4728,7 @@ define({ "api": [
   },
   {
     "type": "netstream send 16 bit value",
-    "url": "SWE.NetStream.SendBE16(table,number)",
+    "url": "SWE.NetStream.SendBE16(self,value)",
     "title": "SWE.NetStream.SendBE16",
     "group": "SWE_NetStream",
     "name": "SendBE16",
@@ -4717,7 +4739,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           },
           {
@@ -4736,7 +4758,7 @@ define({ "api": [
   },
   {
     "type": "netstream send 32 bit value",
-    "url": "SWE.NetStream.SendBE32(table,number)",
+    "url": "SWE.NetStream.SendBE32(self,value)",
     "title": "SWE.NetStream.SendBE32",
     "group": "SWE_NetStream",
     "name": "SendBE32",
@@ -4747,7 +4769,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           },
           {
@@ -4766,7 +4788,7 @@ define({ "api": [
   },
   {
     "type": "netstream send 64 bit value",
-    "url": "SWE.NetStream.SendBE64(table,number)",
+    "url": "SWE.NetStream.SendBE64(self,value)",
     "title": "SWE.NetStream.SendBE64",
     "group": "SWE_NetStream",
     "name": "SendBE64",
@@ -4777,7 +4799,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           },
           {
@@ -4796,7 +4818,7 @@ define({ "api": [
   },
   {
     "type": "netstream send 8 bit value",
-    "url": "SWE.NetStream.SendByte(table,number)",
+    "url": "SWE.NetStream.SendByte(self,value)",
     "title": "SWE.NetStream.SendByte",
     "group": "SWE_NetStream",
     "name": "SendByte",
@@ -4807,7 +4829,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           },
           {
@@ -4826,7 +4848,7 @@ define({ "api": [
   },
   {
     "type": "netstream send bytes",
-    "url": "SWE.NetStream.SendBytes(table,table)",
+    "url": "SWE.NetStream.SendBytes(self,inputbuf)",
     "title": "SWE.NetStream.SendBytes",
     "group": "SWE_NetStream",
     "name": "SendBytes",
@@ -4837,14 +4859,14 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           },
           {
             "group": "Parameter",
             "type": "SWE.BinaryBuf",
             "optional": false,
-            "field": "data",
+            "field": "inputbuf",
             "description": "<p>binarybuf object</p>"
           }
         ]
@@ -4856,7 +4878,7 @@ define({ "api": [
   },
   {
     "type": "netstream send 16 bit value",
-    "url": "SWE.NetStream.SendLE16(table,number)",
+    "url": "SWE.NetStream.SendLE16(self,value)",
     "title": "SWE.NetStream.SendLE16",
     "group": "SWE_NetStream",
     "name": "SendLE16",
@@ -4867,7 +4889,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           },
           {
@@ -4886,7 +4908,7 @@ define({ "api": [
   },
   {
     "type": "netstream send 32 bit value",
-    "url": "SWE.NetStream.SendLE32(table,number)",
+    "url": "SWE.NetStream.SendLE32(self,value)",
     "title": "SWE.NetStream.SendLE32",
     "group": "SWE_NetStream",
     "name": "SendLE32",
@@ -4897,7 +4919,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           },
           {
@@ -4916,7 +4938,7 @@ define({ "api": [
   },
   {
     "type": "netstream send 64 bit value",
-    "url": "SWE.NetStream.SendLE64(table,number)",
+    "url": "SWE.NetStream.SendLE64(self,value)",
     "title": "SWE.NetStream.SendLE64",
     "group": "SWE_NetStream",
     "name": "SendLE64",
@@ -4927,7 +4949,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           },
           {
@@ -4946,7 +4968,7 @@ define({ "api": [
   },
   {
     "type": "netstream send string",
-    "url": "SWE.NetStream.SendString(table,string)",
+    "url": "SWE.NetStream.SendString(self,string)",
     "title": "SWE.NetStream.SendString",
     "group": "SWE_NetStream",
     "name": "SendString",
@@ -4957,44 +4979,14 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           },
           {
             "group": "Parameter",
-            "type": "SWE.BinaryBuf",
+            "type": "string",
             "optional": false,
-            "field": "data",
-            "description": "<p>string data</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream send string",
-    "url": "SWE.NetStream.SendString(table,string)",
-    "title": "SWE.NetStream.SendString",
-    "group": "SWE_NetStream",
-    "name": "SendString",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "owner",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "SWE.BinaryBuf",
-            "optional": false,
-            "field": "data",
+            "field": "string",
             "description": "<p>string data</p>"
           }
         ]
@@ -5006,7 +4998,7 @@ define({ "api": [
   },
   {
     "type": "netstream rady timeout",
-    "url": "SWE.NetStream.SetReadyTimeout(table,number)",
+    "url": "SWE.NetStream.SetReadyTimeout(self,timeout)",
     "title": "SWE.NetStream.SetReadyTimeout",
     "group": "SWE_NetStream",
     "name": "SetReadyTimeout",
@@ -5017,7 +5009,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           },
           {
@@ -5035,8 +5027,44 @@ define({ "api": [
     "groupTitle": "SWE_NetStream"
   },
   {
+    "type": "convert netstream to json string",
+    "url": "SWE.NetStream.ToJson(self)",
+    "title": "SWE.NetStream.ToJson",
+    "group": "SWE_NetStream",
+    "name": "ToJson",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.NetStream",
+            "optional": false,
+            "field": "self",
+            "description": "<p>netstream object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>json string</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_netstream.js",
+    "groupTitle": "SWE_NetStream"
+  },
+  {
     "type": "netstream wait accept",
-    "url": "SWE.NetStream.WaitAccept(table)",
+    "url": "SWE.NetStream.WaitAccept(self)",
     "title": "SWE.NetStream.WaitAccept",
     "group": "SWE_NetStream",
     "name": "WaitAccept",
@@ -5047,7 +5075,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           }
         ]
@@ -5079,7 +5107,7 @@ define({ "api": [
   },
   {
     "type": "netstream send string",
-    "url": "SWE.NetStream.WaitString(table,string)",
+    "url": "SWE.NetStream.WaitString(self,string)",
     "title": "SWE.NetStream.WaitString",
     "group": "SWE_NetStream",
     "name": "WaitString",
@@ -5090,15 +5118,15 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.NetStream",
             "optional": false,
-            "field": "owner",
+            "field": "self",
             "description": "<p>netstream object</p>"
           },
           {
             "group": "Parameter",
             "type": "string",
             "optional": false,
-            "field": "data",
-            "description": "<p>wait string data</p>"
+            "field": "string",
+            "description": "<p>wait this string</p>"
           }
         ]
       }
@@ -5129,7 +5157,7 @@ define({ "api": [
   },
   {
     "type": "point constructor",
-    "url": "SWE.Point(number,number)",
+    "url": "SWE.Point(posx,posy)",
     "title": "SWE.Point",
     "group": "SWE_Point",
     "name": "Constructor",
@@ -5183,11 +5211,11 @@ define({ "api": [
     "groupTitle": "SWE_Point"
   },
   {
-    "type": "get point string",
-    "url": "SWE.Point.ToString(table)",
-    "title": "SWE.Point.ToString",
+    "type": "convert point to json string",
+    "url": "SWE.Point.ToJson(self)",
+    "title": "SWE.Point.ToJson",
     "group": "SWE_Point",
-    "name": "ToString",
+    "name": "ToJson",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -5195,7 +5223,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Point",
             "optional": false,
-            "field": "point",
+            "field": "self",
             "description": "<p>point object</p>"
           }
         ]
@@ -5209,18 +5237,25 @@ define({ "api": [
             "type": "string",
             "optional": false,
             "field": "result",
-            "description": "<p>string point value</p>"
+            "description": "<p>json string</p>"
           }
         ]
       }
     },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local pt = SWE.Point(10, 20)\nprint(pt:ToJson())\n.....\n'{\"posx\":10,\"posy\":20}'",
+        "type": "json"
+      }
+    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_rect.js",
     "groupTitle": "SWE_Point"
   },
   {
     "type": "get list point fields",
-    "url": "SWE.Point.Unpack(table)",
+    "url": "SWE.Point.Unpack(self)",
     "title": "SWE.Point.Unpack",
     "group": "SWE_Point",
     "name": "Unpack",
@@ -5231,7 +5266,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Point",
             "optional": false,
-            "field": "point",
+            "field": "self",
             "description": "<p>point object</p>"
           }
         ]
@@ -5250,13 +5285,20 @@ define({ "api": [
         ]
       }
     },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local pt = SWE.Point(10, 20)\nprint(pt:Unpack())\n.....\n10    20",
+        "type": "json"
+      }
+    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_rect.js",
     "groupTitle": "SWE_Point"
   },
   {
     "type": "check iteration hits",
-    "url": "SWE.RandomHit.Check(table)",
+    "url": "SWE.RandomHit.Check(self)",
     "title": "SWE.RandomHit.Check",
     "group": "SWE_RandomHit",
     "name": "Check",
@@ -5267,7 +5309,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.RandomHit",
             "optional": false,
-            "field": "hit",
+            "field": "self",
             "description": "<p>randomhit object</p>"
           }
         ]
@@ -5292,7 +5334,7 @@ define({ "api": [
   },
   {
     "type": "randomhit constructor",
-    "url": "SWE.RandomHit(number)",
+    "url": "SWE.RandomHit(chance)",
     "title": "SWE.RandomHit",
     "group": "SWE_RandomHit",
     "name": "Constructor",
@@ -5325,7 +5367,7 @@ define({ "api": [
     "examples": [
       {
         "title": "usage",
-        "content": "    local hit = SWE.RandomHit(33)\n    print(hit:ToString())\n\n    for i = 1,100 do\n\tlocal check = hit:Check()\n    end\n\n    local check = hit:Check()\n    print(hit:ToString())\n\n    for i = 2,100 do\n\tlocal check = hit:Check()\n    end\n\n    local check = hit:Check()\n    print(hit:ToString())\n\n    for i = 2,100 do\n\tlocal check = hit:Check()\n    end",
+        "content": "    local hit = SWE.RandomHit(33)\n    print(hit:ToJson())\n\n    for i = 1,100 do\n\tlocal check = hit:Check()\n    end\n\n    local check = hit:Check()\n    print(hit:ToJson())\n\n    for i = 2,100 do\n\tlocal check = hit:Check()\n    end\n\n    local check = hit:Check()\n    print(hit:ToJson())\n\n    for i = 2,100 do\n\tlocal check = hit:Check()\n    end",
         "type": "json"
       },
       {
@@ -5340,7 +5382,7 @@ define({ "api": [
   },
   {
     "type": "get last checked",
-    "url": "SWE.RandomHit.Last(table)",
+    "url": "SWE.RandomHit.Last(self)",
     "title": "SWE.RandomHit.Last",
     "group": "SWE_RandomHit",
     "name": "Last",
@@ -5351,7 +5393,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.RandomHit",
             "optional": false,
-            "field": "hit",
+            "field": "self",
             "description": "<p>randomhit object</p>"
           }
         ]
@@ -5375,8 +5417,44 @@ define({ "api": [
     "groupTitle": "SWE_RandomHit"
   },
   {
+    "type": "convert randomhit to json string",
+    "url": "SWE.RandomHit.ToJson(self)",
+    "title": "SWE.RandomHit.ToJson",
+    "group": "SWE_RandomHit",
+    "name": "ToJson",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.RandomHit",
+            "optional": false,
+            "field": "self",
+            "description": "<p>randomhit object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>json string</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_randomhit.js",
+    "groupTitle": "SWE_RandomHit"
+  },
+  {
     "type": "rect constructor",
-    "url": "SWE.Rect(number,number,number,number)",
+    "url": "SWE.Rect(posx,posy,width,height)",
     "title": "SWE.Rect",
     "group": "SWE_Rect",
     "name": "Constructor",
@@ -5430,7 +5508,7 @@ define({ "api": [
     "examples": [
       {
         "title": "usage",
-        "content": "local rt = SWE.Rect(10,20,100, 200)\nprint(rt.posx,rt.posy,rt.width,rt.height)",
+        "content": "local rt = SWE.Rect(10, 20, 100, 200)\nprint(rt.posx,rt.posy,rt.width,rt.height)",
         "type": "json"
       },
       {
@@ -5445,7 +5523,7 @@ define({ "api": [
   },
   {
     "type": "get intersect rects",
-    "url": "SWE.Rect.GetIntersectRect(table,table)",
+    "url": "SWE.Rect.GetIntersectRect(rect1,rect2)",
     "title": "SWE.Rect.GetIntersectRect",
     "group": "SWE_Rect",
     "name": "GetIntersectRect",
@@ -5485,7 +5563,7 @@ define({ "api": [
     "examples": [
       {
         "title": "usage",
-        "content": "local rt1 = SWE.Rect(10,20,100, 200)\nlocal rt2 = SWE.Rect(50,80,100, 200)\nlocal res = rt1:GetIntersectRect(rt2)\nprint(\"intersect rect\",res.ToString())",
+        "content": "local rt1 = SWE.Rect(10,20,100, 200)\nlocal rt2 = SWE.Rect(50,80,100, 200)\nlocal res = rt1:GetIntersectRect(rt2)\nprint(\"intersect rect\",res.ToJson())",
         "type": "json"
       }
     ],
@@ -5495,7 +5573,7 @@ define({ "api": [
   },
   {
     "type": "check has intersection rects",
-    "url": "SWE.Rect.HasIntersection(table,table)",
+    "url": "SWE.Rect.HasIntersection(rect1,rect2)",
     "title": "SWE.Rect.HasIntersection",
     "group": "SWE_Rect",
     "name": "HasIntersection",
@@ -5545,7 +5623,7 @@ define({ "api": [
   },
   {
     "type": "check point in rect",
-    "url": "SWE.Rect.PointInRect(table,table)",
+    "url": "SWE.Rect.PointInRect(self,point)",
     "title": "SWE.Rect.PointInRect",
     "group": "SWE_Rect",
     "name": "PointInRect",
@@ -5556,7 +5634,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Rect",
             "optional": false,
-            "field": "rect",
+            "field": "self",
             "description": "<p>rect object</p>"
           },
           {
@@ -5595,7 +5673,7 @@ define({ "api": [
   },
   {
     "type": "check rect equals",
-    "url": "SWE.Rect.RectEquals(table,table)",
+    "url": "SWE.Rect.RectEquals(rect1,rect2)",
     "title": "SWE.Rect.RectEquals",
     "group": "SWE_Rect",
     "name": "RectEquals",
@@ -5637,11 +5715,11 @@ define({ "api": [
     "groupTitle": "SWE_Rect"
   },
   {
-    "type": "get rect string",
-    "url": "SWE.Rect.ToString(table)",
-    "title": "SWE.Rect.ToString",
+    "type": "convert rect to json string",
+    "url": "SWE.Rect.ToJson(self)",
+    "title": "SWE.Rect.ToJson",
     "group": "SWE_Rect",
-    "name": "ToString",
+    "name": "ToJson",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -5649,7 +5727,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Rect",
             "optional": false,
-            "field": "rect",
+            "field": "self",
             "description": "<p>rect object</p>"
           }
         ]
@@ -5663,18 +5741,25 @@ define({ "api": [
             "type": "string",
             "optional": false,
             "field": "result",
-            "description": "<p>string rect value</p>"
+            "description": "<p>json string</p>"
           }
         ]
       }
     },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local rt = SWE.Rect(10, 20, 100, 200)\nprint(rt:ToJson())\n.....\n'{\"posx\":10,\"posy\":20,\"width\":100,\"height\":200}'",
+        "type": "json"
+      }
+    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_rect.js",
     "groupTitle": "SWE_Rect"
   },
   {
     "type": "get list rect fields",
-    "url": "SWE.Rect.Unpack(table)",
+    "url": "SWE.Rect.Unpack(self)",
     "title": "SWE.Rect.Unpack",
     "group": "SWE_Rect",
     "name": "Unpack",
@@ -5685,7 +5770,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Rect",
             "optional": false,
-            "field": "rect",
+            "field": "self",
             "description": "<p>rect object</p>"
           }
         ]
@@ -5710,7 +5795,7 @@ define({ "api": [
   },
   {
     "type": "get signal string",
-    "url": "SWE.Signal.ToString(number)",
+    "url": "SWE.Signal.ToString(signal)",
     "title": "SWE.Signal.ToString",
     "group": "SWE_Signal",
     "name": "ToString",
@@ -5825,7 +5910,7 @@ define({ "api": [
   },
   {
     "type": "size constructor",
-    "url": "SWE.Size(number,number)",
+    "url": "SWE.Size(width,height)",
     "title": "SWE.Size",
     "group": "SWE_Size",
     "name": "Constructor",
@@ -5879,11 +5964,11 @@ define({ "api": [
     "groupTitle": "SWE_Size"
   },
   {
-    "type": "get size string",
-    "url": "SWE.Size.ToString(table)",
-    "title": "SWE.Size.ToString",
+    "type": "convert size to json string",
+    "url": "SWE.Size.ToJson(self)",
+    "title": "SWE.Size.ToJson",
     "group": "SWE_Size",
-    "name": "ToString",
+    "name": "ToJson",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -5891,7 +5976,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Size",
             "optional": false,
-            "field": "size",
+            "field": "self",
             "description": "<p>size object</p>"
           }
         ]
@@ -5905,18 +5990,25 @@ define({ "api": [
             "type": "string",
             "optional": false,
             "field": "result",
-            "description": "<p>string size value</p>"
+            "description": "<p>json string</p>"
           }
         ]
       }
     },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local sz = SWE.Size(100, 200)\nprint(sz:ToJson())\n.....\n'{\"width\":100,\"height\":200}'",
+        "type": "json"
+      }
+    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_rect.js",
     "groupTitle": "SWE_Size"
   },
   {
     "type": "get list size fields",
-    "url": "SWE.Size.Unpack(table)",
+    "url": "SWE.Size.Unpack(self)",
     "title": "SWE.Size.Unpack",
     "group": "SWE_Size",
     "name": "Unpack",
@@ -5927,7 +6019,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Size",
             "optional": false,
-            "field": "size",
+            "field": "self",
             "description": "<p>size object</p>"
           }
         ]
@@ -5952,7 +6044,7 @@ define({ "api": [
   },
   {
     "type": "texture constructor",
-    "url": "SWE.Texture(),(number,number)",
+    "url": "SWE.Texture(),(width,height)",
     "title": "SWE.Texture",
     "group": "SWE_Texture",
     "name": "Constructor",
@@ -6007,7 +6099,7 @@ define({ "api": [
   },
   {
     "type": "texture clear",
-    "url": "SWE.Texture.RenderClear(table,number)",
+    "url": "SWE.Texture.RenderClear(self,color)",
     "title": "SWE.Texture.RenderClear",
     "group": "SWE_Texture",
     "name": "RenderClear",
@@ -6018,7 +6110,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Texture",
             "optional": false,
-            "field": "texture",
+            "field": "self",
             "description": "<p>texture object</p>"
           },
           {
@@ -6037,7 +6129,7 @@ define({ "api": [
   },
   {
     "type": "texture render cyrcle",
-    "url": "SWE.Texture.RenderCyrcle(table,number,number,number,number,boolean)",
+    "url": "SWE.Texture.RenderCyrcle(self,color,centerx,centery,radius,filled)",
     "title": "SWE.Texture.RenderCyrcle",
     "group": "SWE_Texture",
     "name": "RenderCyrcle",
@@ -6048,7 +6140,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Texture",
             "optional": false,
-            "field": "texture",
+            "field": "self",
             "description": "<p>texture object</p>"
           },
           {
@@ -6095,7 +6187,7 @@ define({ "api": [
   },
   {
     "type": "texture render line",
-    "url": "SWE.Texture.RenderLine(table,number,number,number,number,number)",
+    "url": "SWE.Texture.RenderLine(self,color,px1,py1,px2,py2)",
     "title": "SWE.Texture.RenderLine",
     "group": "SWE_Texture",
     "name": "RenderLine",
@@ -6106,7 +6198,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Texture",
             "optional": false,
-            "field": "texture",
+            "field": "self",
             "description": "<p>texture object</p>"
           },
           {
@@ -6153,7 +6245,7 @@ define({ "api": [
   },
   {
     "type": "texture render point",
-    "url": "SWE.Texture.RenderPoint(table,number,number,number)",
+    "url": "SWE.Texture.RenderPoint(self,color,posx,posy)",
     "title": "SWE.Texture.RenderPoint",
     "group": "SWE_Texture",
     "name": "RenderPoint",
@@ -6164,7 +6256,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Texture",
             "optional": false,
-            "field": "texture",
+            "field": "self",
             "description": "<p>texture object</p>"
           },
           {
@@ -6197,7 +6289,7 @@ define({ "api": [
   },
   {
     "type": "texture render rect",
-    "url": "SWE.Texture.RenderRect(table,number,number,number,number,number,number,boolean)",
+    "url": "SWE.Texture.RenderRect(self,color,rectx,recty,rectw,recth,filled)",
     "title": "SWE.Texture.RenderRect",
     "group": "SWE_Texture",
     "name": "RenderRect",
@@ -6208,7 +6300,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Texture",
             "optional": false,
-            "field": "texture",
+            "field": "self",
             "description": "<p>texture object</p>"
           },
           {
@@ -6262,7 +6354,7 @@ define({ "api": [
   },
   {
     "type": "texture render text",
-    "url": "SWE.Texture.RenderText(table,table,number,number,number,number,number,boolean)",
+    "url": "SWE.Texture.RenderText(self,frs,color,posx,posy,halign,valign,horizontal)",
     "title": "SWE.Texture.RenderText",
     "group": "SWE_Texture",
     "name": "RenderText",
@@ -6273,7 +6365,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Texture",
             "optional": false,
-            "field": "texture",
+            "field": "self",
             "description": "<p>texture object</p>"
           },
           {
@@ -6341,7 +6433,7 @@ define({ "api": [
   },
   {
     "type": "texture render texture",
-    "url": "SWE.Texture.RenderTexture(table,table,number,number,number,number,number,number,number,number)",
+    "url": "SWE.Texture.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty,dstw,dsth)",
     "title": "SWE.Texture.RenderTexture",
     "group": "SWE_Texture",
     "name": "RenderTexture",
@@ -6352,8 +6444,15 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Texture",
             "optional": false,
-            "field": "texture",
+            "field": "self",
             "description": "<p>texture object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Texture",
+            "optional": false,
+            "field": "texture",
+            "description": "<p>source texture object</p>"
           },
           {
             "group": "Parameter",
@@ -6456,8 +6555,44 @@ define({ "api": [
     "groupTitle": "SWE_Texture"
   },
   {
+    "type": "convert texture to json string",
+    "url": "SWE.Texture.ToJson(self)",
+    "title": "SWE.Texture.ToJson",
+    "group": "SWE_Texture",
+    "name": "ToJson",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Texture",
+            "optional": false,
+            "field": "self",
+            "description": "<p>texture object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>json string</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_texture.js",
+    "groupTitle": "SWE_Texture"
+  },
+  {
     "type": "texture constructor",
-    "url": "SWE.Texture.Image(string,number,number)",
+    "url": "SWE.Texture.Image(filename,cropx,cropy,cropw,croph,colorkey)",
     "title": "SWE.Texture.Image",
     "group": "SWE_Texture_Image",
     "name": "Constructor",
@@ -6504,7 +6639,7 @@ define({ "api": [
             "type": "number",
             "optional": false,
             "field": "colorkey",
-            "description": "<p>sdl color key value</p>"
+            "description": "<p>sdl color key value (if defined)</p>"
           }
         ]
       }
@@ -6540,7 +6675,7 @@ define({ "api": [
   },
   {
     "type": "texture constructor",
-    "url": "SWE.TextureRect(number,number,number,number,number)",
+    "url": "SWE.TextureRect(colrt,colbg,width,height,thickness)",
     "title": "SWE.Texture.Rect",
     "group": "SWE_Texture_Rect",
     "name": "Constructor",
@@ -6616,7 +6751,7 @@ define({ "api": [
   },
   {
     "type": "texture constructor",
-    "url": "SWE.Texture.Text(table,string,number,number)",
+    "url": "SWE.Texture.Text(frs,text,coltx,colbg)",
     "title": "SWE.Texture.Text",
     "group": "SWE_Texture_Text",
     "name": "Constructor",
@@ -6641,7 +6776,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "colrt",
+            "field": "coltx",
             "description": "<p>text color, SWE.Color</p>"
           },
           {
@@ -6685,7 +6820,7 @@ define({ "api": [
   },
   {
     "type": "window constructor",
-    "url": "SWE.Window(number,number,number,number,<table>)",
+    "url": "SWE.Window(posx,posy,width,height,parent)",
     "title": "SWE.Window",
     "group": "SWE_Window",
     "name": "Constructor",
@@ -6760,8 +6895,58 @@ define({ "api": [
     "groupTitle": "SWE_Window"
   },
   {
+    "type": "point in window area",
+    "url": "SWE.Window.PointInArea(self,ptx,pty)",
+    "title": "SWE.Window.PointInArea",
+    "group": "SWE_Window",
+    "name": "PointInArea",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Window",
+            "optional": false,
+            "field": "self",
+            "description": "<p>window object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "ptx",
+            "description": "<p>point coord</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "pty",
+            "description": "<p>point coord</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window"
+  },
+  {
     "type": "window clear",
-    "url": "SWE.Window.RenderClear(table,number)",
+    "url": "SWE.Window.RenderClear(self,color)",
     "title": "SWE.Window.RenderClear",
     "group": "SWE_Window",
     "name": "RenderClear",
@@ -6772,7 +6957,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Window",
             "optional": false,
-            "field": "window",
+            "field": "self",
             "description": "<p>window object</p>"
           },
           {
@@ -6791,7 +6976,7 @@ define({ "api": [
   },
   {
     "type": "window render cyrcle",
-    "url": "SWE.Window.RenderCyrcle(table,number,number,number,number,boolean)",
+    "url": "SWE.Window.RenderCyrcle(self,color,centerx,centery,radius,filled)",
     "title": "SWE.Window.RenderCyrcle",
     "group": "SWE_Window",
     "name": "RenderCyrcle",
@@ -6802,7 +6987,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Window",
             "optional": false,
-            "field": "window",
+            "field": "self",
             "description": "<p>window object</p>"
           },
           {
@@ -6849,7 +7034,7 @@ define({ "api": [
   },
   {
     "type": "window render line",
-    "url": "SWE.Window.RenderLine(table,number,number,number,number,number)",
+    "url": "SWE.Window.RenderLine(self,color,px1,py1,px2,py2)",
     "title": "SWE.Window.RenderLine",
     "group": "SWE_Window",
     "name": "RenderLine",
@@ -6860,7 +7045,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Window",
             "optional": false,
-            "field": "window",
+            "field": "self",
             "description": "<p>window object</p>"
           },
           {
@@ -6907,7 +7092,7 @@ define({ "api": [
   },
   {
     "type": "window render point",
-    "url": "SWE.Window.RenderPoint(table,number,number,number)",
+    "url": "SWE.Window.RenderPoint(self,color,posx,posy)",
     "title": "SWE.Window.RenderPoint",
     "group": "SWE_Window",
     "name": "RenderPoint",
@@ -6918,7 +7103,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Window",
             "optional": false,
-            "field": "window",
+            "field": "self",
             "description": "<p>window object</p>"
           },
           {
@@ -6951,7 +7136,7 @@ define({ "api": [
   },
   {
     "type": "window render rect",
-    "url": "SWE.Window.RenderRect(table,number,number,number,number,number,number,boolean)",
+    "url": "SWE.Window.RenderRect(self,color,rectx,recty,rectw,recth,filled)",
     "title": "SWE.Window.RenderRect",
     "group": "SWE_Window",
     "name": "RenderRect",
@@ -6962,7 +7147,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Window",
             "optional": false,
-            "field": "window",
+            "field": "self",
             "description": "<p>window object</p>"
           },
           {
@@ -7016,7 +7201,7 @@ define({ "api": [
   },
   {
     "type": "window render text",
-    "url": "SWE.Window.RenderText(table,table,number,number,number,number,number,boolean)",
+    "url": "SWE.Window.RenderText(self,frs,color,posx,posy,halign,valign,horizontal)",
     "title": "SWE.Window.RenderText",
     "group": "SWE_Window",
     "name": "RenderText",
@@ -7027,7 +7212,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Window",
             "optional": false,
-            "field": "window",
+            "field": "self",
             "description": "<p>window object</p>"
           },
           {
@@ -7088,7 +7273,7 @@ define({ "api": [
   },
   {
     "type": "window render texture",
-    "url": "SWE.Window.RenderTexture(table,table,number,number,number,number,number,number,number,number)",
+    "url": "SWE.Window.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty,dstw,dsth)",
     "title": "SWE.Window.RenderTexture",
     "group": "SWE_Window",
     "name": "RenderTexture",
@@ -7099,7 +7284,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Window",
             "optional": false,
-            "field": "window",
+            "field": "self",
             "description": "<p>window object</p>"
           },
           {
@@ -7174,7 +7359,7 @@ define({ "api": [
   },
   {
     "type": "window set global key handle mode",
-    "url": "SWE.Window.SetKeyHandle(table,boolean)",
+    "url": "SWE.Window.SetKeyHandle(self,handle)",
     "title": "SWE.Window.SetKeyHandle",
     "group": "SWE_Window",
     "name": "SetKeyHandle",
@@ -7185,7 +7370,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Window",
             "optional": false,
-            "field": "window",
+            "field": "self",
             "description": "<p>window object</p>"
           },
           {
@@ -7204,7 +7389,7 @@ define({ "api": [
   },
   {
     "type": "window set modality mode",
-    "url": "SWE.Window.SetModality(table,boolean)",
+    "url": "SWE.Window.SetModality(self,modality)",
     "title": "SWE.Window.SetModality",
     "group": "SWE_Window",
     "name": "SetModality",
@@ -7215,7 +7400,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Window",
             "optional": false,
-            "field": "window",
+            "field": "self",
             "description": "<p>window object</p>"
           },
           {
@@ -7234,7 +7419,7 @@ define({ "api": [
   },
   {
     "type": "window set position",
-    "url": "SWE.Window.SetPosition(table,number,number)",
+    "url": "SWE.Window.SetPosition(self,posx,posy)",
     "title": "SWE.Window.SetPosition",
     "group": "SWE_Window",
     "name": "SetPosition",
@@ -7245,7 +7430,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Window",
             "optional": false,
-            "field": "window",
+            "field": "self",
             "description": "<p>window object</p>"
           },
           {
@@ -7271,7 +7456,7 @@ define({ "api": [
   },
   {
     "type": "window set result code",
-    "url": "SWE.Window.SetResult(table,number)",
+    "url": "SWE.Window.SetResult(self,code)",
     "title": "SWE.Window.SetResult",
     "group": "SWE_Window",
     "name": "SetResult",
@@ -7282,7 +7467,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Window",
             "optional": false,
-            "field": "window",
+            "field": "self",
             "description": "<p>window object</p>"
           },
           {
@@ -7301,7 +7486,7 @@ define({ "api": [
   },
   {
     "type": "window set position",
-    "url": "SWE.Window.SetSize(table,number,number)",
+    "url": "SWE.Window.SetSize(self,width,height)",
     "title": "SWE.Window.SetSize",
     "group": "SWE_Window",
     "name": "SetSize",
@@ -7312,7 +7497,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Window",
             "optional": false,
-            "field": "window",
+            "field": "self",
             "description": "<p>window object</p>"
           },
           {
@@ -7338,7 +7523,7 @@ define({ "api": [
   },
   {
     "type": "window set visible mode",
-    "url": "SWE.Window.SetVisible(table,boolean)",
+    "url": "SWE.Window.SetVisible(self,visible)",
     "title": "SWE.Window.SetVisible",
     "group": "SWE_Window",
     "name": "SetVisible",
@@ -7349,7 +7534,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "SWE.Window",
             "optional": false,
-            "field": "window",
+            "field": "self",
             "description": "<p>window object</p>"
           },
           {
@@ -7367,8 +7552,44 @@ define({ "api": [
     "groupTitle": "SWE_Window"
   },
   {
+    "type": "convert window to json string",
+    "url": "SWE.Window.ToJson(self)",
+    "title": "SWE.Window.ToJson",
+    "group": "SWE_Window",
+    "name": "ToJson",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Window",
+            "optional": false,
+            "field": "self",
+            "description": "<p>window object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>json string</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window"
+  },
+  {
     "type": "window event: win size changed",
-    "url": "SWE.Window.DisplayResizeEvent(number,number)",
+    "url": "SWE.Window.DisplayResizeEvent(width,height)",
     "title": "SWE.Window.DisplayResizeEvent",
     "group": "SWE_Window_Events",
     "name": "DisplayResizeEvent",
@@ -7405,7 +7626,7 @@ define({ "api": [
   },
   {
     "type": "window event: key event",
-    "url": "SWE.Window.KeyPressEvent(key)",
+    "url": "SWE.Window.KeyPressEvent(keycode)",
     "title": "SWE.Window.KeyPressEvent",
     "group": "SWE_Window_Events",
     "name": "KeyPressEvent",
@@ -7448,7 +7669,7 @@ define({ "api": [
   },
   {
     "type": "window event: key event",
-    "url": "SWE.Window.KeyReleaseEvent(key)",
+    "url": "SWE.Window.KeyReleaseEvent(keycode)",
     "title": "SWE.Window.KeyReleaseEvent",
     "group": "SWE_Window_Events",
     "name": "KeyReleaseEvent",
@@ -7630,6 +7851,13 @@ define({ "api": [
             "group": "Parameter",
             "type": "number",
             "optional": false,
+            "field": "posy",
+            "description": "<p>mouse position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
             "field": "buttons",
             "description": "<p>SDL mouse buttons</p>"
           }
@@ -7680,6 +7908,13 @@ define({ "api": [
             "group": "Parameter",
             "type": "number",
             "optional": false,
+            "field": "posy",
+            "description": "<p>mouse position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
             "field": "buttons",
             "description": "<p>SDL mouse buttons</p>"
           }
@@ -7724,6 +7959,13 @@ define({ "api": [
             "type": "number",
             "optional": false,
             "field": "posx",
+            "description": "<p>mouse position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posy",
             "description": "<p>mouse position</p>"
           },
           {
@@ -7908,10 +8150,10 @@ define({ "api": [
           },
           {
             "group": "Parameter",
-            "type": "userdata",
+            "type": "table",
             "optional": false,
-            "field": "lightuserdata",
-            "description": "<p>user data</p>"
+            "field": "object",
+            "description": "<p>any Lua object</p>"
           }
         ]
       }
@@ -7932,7 +8174,7 @@ define({ "api": [
     "examples": [
       {
         "title": "usage",
-        "content": "    win.SystemUserEvent = function(code,data)\n\tprint(\"code:\",code)\n    end",
+        "content": "    win.SystemUserEvent = function(code,data)\n\tprint(\"code:\",code,type(data))\n    end",
         "type": "json"
       }
     ],

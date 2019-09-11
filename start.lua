@@ -1,6 +1,6 @@
 -- require 'SWE'
 
-SWE.SetDebug(true)
+SWE.SetDebug(false)
 SWE.LuaRegisterDirectory("gui")
 require 'gui_commander'
 
@@ -25,6 +25,7 @@ while true do
 	break
     elseif type(cmd.start) == "string" then
 	SWE.Debug("dofile", cmd.start)
+	cmd:clear()
 	dofile(cmd.start)
     end
 end

@@ -113,10 +113,22 @@ int SWE_music_play(lua_State* L)
     std::string filename = ll.getTopString();
 
     if(! Systems::isFile(filename))
-        filename = SWE_Tools::toFullFileName(ll, filename);
+    {
+        std::string filename2 = SWE_Tools::toCurrentPath(ll, filename);
+	if(Systems::isFile(filename2)) std::swap(filename, filename2);
+    }
 
-    bool res = Music::play(filename);
-    ll.pushBoolean(res);
+    if(Systems::isFile(filename))
+    {
+	DEBUG(filename);
+	bool res = Music::play(filename);
+	ll.pushBoolean(res);
+    }
+    else
+    {
+	ERROR("file not found: " << filename);
+	ll.pushBoolean(false);
+    }
 
     return 1;
 }
@@ -167,10 +179,22 @@ int SWE_sound_play(lua_State* L)
     std::string filename = ll.getTopString();
 
     if(! Systems::isFile(filename))
-        filename = SWE_Tools::toFullFileName(ll, filename);
+    {
+        std::string filename2 = SWE_Tools::toCurrentPath(ll, filename);
+	if(Systems::isFile(filename2)) std::swap(filename, filename2);
+    }
 
-    bool res = Sound::play(filename);
-    ll.pushBoolean(res);
+    if(Systems::isFile(filename))
+    {
+	DEBUG(filename);
+	bool res = Sound::play(filename);
+	ll.pushBoolean(res);
+    }
+    else
+    {
+	ERROR("file not found: " << filename);
+	ll.pushBoolean(false);
+    }
 
     return 1;
 }

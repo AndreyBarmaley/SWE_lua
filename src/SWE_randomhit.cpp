@@ -54,7 +54,8 @@ int SWE_randomhit_last(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.randomhit"))
     {
         ERROR("table not found" << ", " << "swe.randomhit");
         return 0;
@@ -82,7 +83,8 @@ int SWE_randomhit_check(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.randomhit"))
     {
         ERROR("table not found" << ", " << "swe.randomhit");
         return 0;
@@ -104,13 +106,14 @@ int SWE_randomhit_check(lua_State* L)
     return 1;
 }
 
-int SWE_randomhit_tostring(lua_State* L)
+int SWE_randomhit_to_json(lua_State* L)
 {
     // params: swe_randomhit
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.randomhit"))
     {
         ERROR("table not found" << ", " << "swe.randomhit");
         return 0;
@@ -123,7 +126,7 @@ int SWE_randomhit_tostring(lua_State* L)
         int chance = ll.getFieldTableIndex("chance", 1).getTopInteger();
         ll.stackPop(1);
 
-        std::string str = StringFormat("{\"type\":\"swe.randomhit\",\"chance\":\"%1\",\"order\":\"%2\"}").
+        std::string str = StringFormat("{\"type\":\"swe.randomhit\",\"chance\":%1,\"order\":\"%2\"}").
             arg(chance).arg(hit->toString());
 
         ll.pushString(str);
@@ -137,7 +140,7 @@ int SWE_randomhit_tostring(lua_State* L)
 const struct luaL_Reg SWE_randomhit_functions[] = {
     { "Last", SWE_randomhit_last },		// [bool], swe_randomhit
     { "Check", SWE_randomhit_check },		// [bool], swe_randomhit
-    { "ToString", SWE_randomhit_tostring }, 	// [string], swe_randomhit
+    { "ToJson", SWE_randomhit_to_json }, 	// [string], swe_randomhit
     { NULL, NULL }
 };
 
@@ -167,6 +170,9 @@ int SWE_randomhit_create(lua_State* L)
 
     // set functions
     ll.setFunctionsTableIndex(SWE_randomhit_functions, -1);
+
+
+    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
 
     return 1;
 }

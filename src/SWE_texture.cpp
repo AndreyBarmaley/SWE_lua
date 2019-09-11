@@ -53,6 +53,13 @@ int SWE_texture_save_tofile(lua_State* L)
 {
     LuaState ll(L);
 
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture"))
+    {
+        ERROR("table not found" << ", " << "swe.texture");
+        return 0;
+    }
+
     bool res = false;
     SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
 
@@ -76,7 +83,8 @@ int SWE_texture_render_clear(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture"))
     {
         ERROR("table not found" << ", " << "swe.texture");
         return 0;
@@ -103,7 +111,8 @@ int SWE_texture_render_rect(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture"))
     {
         ERROR("table not found" << ", " << "swe.texture");
         return 0;
@@ -141,7 +150,8 @@ int SWE_texture_render_point(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture"))
     {
         ERROR("table not found" << ", " << "swe.texture");
         return 0;
@@ -171,7 +181,8 @@ int SWE_texture_render_line(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture"))
     {
         ERROR("table not found" << ", " << "swe.texture");
         return 0;
@@ -203,7 +214,8 @@ int SWE_texture_render_cyrcle(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture"))
     {
         ERROR("table not found" << ", " << "swe.texture");
         return 0;
@@ -240,7 +252,9 @@ int SWE_texture_render_texture(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1) || ! ll.isTableIndex(2))
+    if(! ll.isTableIndex(1) || ! ll.isTableIndex(2) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture") ||
+	0 != ll.popFieldTableIndex("__type", 2).compare("swe.texture"))
     {
         ERROR("table not found" << ", " << "swe.texture");
         return 0;
@@ -314,15 +328,50 @@ int SWE_texture_render_text(lua_State* L)
     return 0;
 }
 
+int SWE_texture_to_json(lua_State* L)
+{
+    // params: swe_texture
+
+    LuaState ll(L);
+
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.texture"))
+    {
+        ERROR("table not found" << ", " << "swe.texture");
+        return 0;
+    }
+
+    SWE_Texture* tx = SWE_Texture::get(ll, 1, __FUNCTION__);
+
+    if(tx)
+    {
+        int alpha = ll.getFieldTableIndex("alpha", 1).getTopInteger();
+        int width = ll.getFieldTableIndex("width", 1).getTopInteger();
+        int height = ll.getFieldTableIndex("height", 1).getTopInteger();
+        std::string _class = ll.getFieldTableIndex("class", 1).getTopString();
+        ll.stackPop(4);
+
+        std::string str = StringFormat("{\"type\":\"swe.texture\",\"width\":%1,\"height\":%2,\"alpha\":%3,\"class\":%4}").
+            arg(width).arg(height).arg(alpha).arg(_class);
+
+        ll.pushString(str);
+        return 1;
+    }
+
+    ERROR("userdata empty");
+    return 0;
+}
+
 const struct luaL_Reg SWE_texture_functions[] = {
-    { "SaveToFile",     SWE_texture_save_tofile },   	// [boolean], table: texture, string
-    { "RenderClear",    SWE_texture_render_clear },     // table: texture, enum: color
-    { "RenderRect",     SWE_texture_render_rect },      // table: texture, enum: color, rect, bool
-    { "RenderLine",     SWE_texture_render_line },      // table: texture, enum: color, point, point
-    { "RenderCyrcle",   SWE_texture_render_cyrcle },    // table: texture, enum: color, point, int, bool
-    { "RenderPoint",    SWE_texture_render_point },     // table: texture, enum: color, point
-    { "RenderTexture",  SWE_texture_render_texture },   // table: texture, table: texture, rect, rect
-    { "RenderText",     SWE_texture_render_text },      // table: texture, table: fontrender, color, point
+    { "SaveToFile",     SWE_texture_save_tofile },   	// [boolean], table texture, string
+    { "RenderClear",    SWE_texture_render_clear },     // [void], table texture, enum: color
+    { "RenderRect",     SWE_texture_render_rect },      // [void], table texture, enum: color, rect, bool
+    { "RenderLine",     SWE_texture_render_line },      // [void], table texture, enum: color, point, point
+    { "RenderCyrcle",   SWE_texture_render_cyrcle },    // [void], table texture, enum: color, point, int, bool
+    { "RenderPoint",    SWE_texture_render_point },     // [void], table texture, enum: color, point
+    { "RenderTexture",  SWE_texture_render_texture },   // [void], table texture, table texture, rect, rect
+    { "RenderText",     SWE_texture_render_text },      // [rect coords], table texture, table fontrender, color, point
+    { "ToJson",         SWE_texture_to_json },          // [void], table texture
     { NULL, NULL }
 };
 
@@ -366,9 +415,13 @@ int SWE_texture_create_rect(lua_State* L)
     ll.pushString("width").pushInteger((*ptr)->width()).setTableIndex(-3);
     ll.pushString("height").pushInteger((*ptr)->height()).setTableIndex(-3);
     ll.pushString("alpha").pushInteger((*ptr)->alphaMod()).setTableIndex(-3);
+    std::string _class = StringFormat("{\"type\":\"rect\",\"color\":%1,\"fill\":%2,\"thickness\":%3}").arg(colorRect.getARGB()).arg(colorFill.getARGB()).arg(thickness);
+    ll.pushString("class").pushString(_class).setTableIndex(-3);
 
     // set functions
     ll.setFunctionsTableIndex(SWE_texture_functions, -1);
+
+    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
 
     return 1;
 }
@@ -387,6 +440,8 @@ int SWE_texture_create_text(lua_State* L)
     }
 
     SWE_FontRender* frs = SWE_FontRender::get(ll, 2, __FUNCTION__);
+    std::string frsJson = SWE_Tools::toJson(ll, 2);
+
     std::string text = SWE_Tools::convertEncoding(ll, ll.toStringIndex(3));
     ARGB colorText = ll.toIntegerIndex(4);
     ARGB colorBack = 5 > params ? Color(Color::Transparent).getARGB() : ll.toIntegerIndex(5);
@@ -411,8 +466,13 @@ int SWE_texture_create_text(lua_State* L)
     ll.pushString("height").pushInteger((*ptr)->height()).setTableIndex(-3);
     ll.pushString("alpha").pushInteger((*ptr)->alphaMod()).setTableIndex(-3);
 
+    std::string _class = StringFormat("{\"type\":\"text\",\"color\":%1,\"back\":%2,\"text\":\"%3\",\"frs\":%4}").arg(colorText.getARGB()).arg(colorBack.getARGB()).arg(text).arg(frsJson);
+    ll.pushString("class").pushString(_class).setTableIndex(-3);
+
     // set functions
     ll.setFunctionsTableIndex(SWE_texture_functions, -1);
+
+    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
 
     return 1;
 }
@@ -441,38 +501,59 @@ int SWE_texture_create_image(lua_State* L)
     ll.pushFunction(SWE_texture_destroy).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2).setTableIndex(-3);
 
-    std::string filename = SWE_Tools::toFullFileName(ll, ll.toStringIndex(2));
+    std::string filename = ll.toStringIndex(2);
+
+    if(! Systems::isFile(filename))
+    {
+	std::string filename2 = SWE_Tools::toCurrentPath(ll, filename);
+	if(Systems::isFile(filename2)) std::swap(filename, filename2);
+    }
 
     // SWE_Texture: string (file image)
-    if(2 < params)
+    if(Systems::isFile(filename))
     {
-	int cropx = ll.toIntegerIndex(3);
-	int cropy = ll.toIntegerIndex(4);
-	int cropw = ll.toIntegerIndex(5);
-	int croph = ll.toIntegerIndex(6);
-	Surface sf(filename);
+	DEBUG(filename);
 
-	if(0 == cropw || 0 == croph)
-	    ERROR("crop size empty");
+	Rect croprt;
+	croprt.x = ll.toIntegerIndex(3);
+	croprt.y = ll.toIntegerIndex(4);
+	croprt.w = ll.toIntegerIndex(5);
+	croprt.h = ll.toIntegerIndex(6);
+	Surface sf(filename);
 
 	if(sf.isValid())
 	{
-	    Surface crop(Size(cropw, croph));
-
-	    if(7 > params)
+	    // empty crop
+	    if(0 == croprt.w || 0 == croprt.h)
 	    {
-		ARGB argb = ll.toIntegerIndex(7);
-		crop.setColorKey(Color(argb));
+		*ptr = new SWE_Texture(Display::createTexture(sf));
 	    }
+	    else
+	    {
+		Surface cropsf(croprt.toSize());
 
-	    sf.blit(Rect(cropx, cropy, cropw, croph), crop.rect(), crop);
-	    *ptr = new SWE_Texture(Display::createTexture(crop));
+		if(7 > params)
+		{
+		    ARGB argb = ll.toIntegerIndex(7);
+		    cropsf.setColorKey(Color(argb));
+		}
+
+		sf.blit(croprt, cropsf.rect(), cropsf);
+		*ptr = new SWE_Texture(Display::createTexture(cropsf));
+	    }
 	}
 	else
 	    *ptr = new SWE_Texture();
+    
+	std::string _class = croprt.isEmpty() ? StringFormat("{\"type\":\"image\",\"file\":\"%1\"}").arg(filename) :
+			StringFormat("{\"type\":\"image\",\"file\":\"%1\",\"crop\":[%2,%3,%4,%5]}").arg(filename).arg(croprt.x).arg(croprt.y).arg(croprt.w).arg(croprt.h);
+	ll.pushString("class").pushString(_class).setTableIndex(-3);
     }
     else
+    {
+	ERROR("file not found: " << filename);
 	*ptr = new SWE_Texture(Display::createTexture(filename));
+    }
 
     // add values
     ll.pushString("__type").pushString("swe.texture").setTableIndex(-3);
@@ -483,8 +564,7 @@ int SWE_texture_create_image(lua_State* L)
     // set functions
     ll.setFunctionsTableIndex(SWE_texture_functions, -1);
 
-    if(ptr && *ptr)
-        DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
 
     return 1;
 }
@@ -524,12 +604,12 @@ int SWE_texture_create(lua_State* L)
     ll.pushString("width").pushInteger((*ptr)->width()).setTableIndex(-3);
     ll.pushString("height").pushInteger((*ptr)->height()).setTableIndex(-3);
     ll.pushString("alpha").pushInteger((*ptr)->alphaMod()).setTableIndex(-3);
+    ll.pushString("class").pushString("").setTableIndex(-3);
 
     // set functions
     ll.setFunctionsTableIndex(SWE_texture_functions, -1);
 
-    if(ptr && *ptr)
-        DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
 
     return 1;
 }

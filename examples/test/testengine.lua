@@ -161,41 +161,41 @@ SWE.Dump(pt)
 SWE.Dump(sz)
 SWE.Dump(rt)
 
-print(pt:ToString())
-print(sz:ToString())
-print(rt:ToString())
+print(pt:ToJson())
+print(sz:ToJson())
+print(rt:ToJson())
 
 print(pt:Unpack())
 print(sz:Unpack())
 print(rt:Unpack())
 
 local rt1 = SWE.Rect(10,20,100, 200)
-print("rect1",rt1:ToString())
+print("rect1",rt1:ToJson())
 local rt2 = SWE.Rect(50,80,100, 200)
-print("rect2",rt2:ToString())
+print("rect2",rt2:ToJson())
 
 local res1 = rt1:HasIntersection(rt2)
 print("has intersection",res1)
 
 local res2 = rt1:GetIntersectRect(rt2)
-print("intersect rects",res2:ToString())
+print("intersect rects",res2:ToJson())
 
 local hit = SWE.RandomHit(33)
-print(hit:ToString())
+print(hit:ToJson())
 
 for i = 1,100 do
     local check = hit:Check()
 end
 
 local check = hit:Check()
-print(hit:ToString())
+print(hit:ToJson())
 
 for i = 2,100 do
     local check = hit:Check()
 end
 
 local check = hit:Check()
-print(hit:ToString())
+print(hit:ToJson())
 
 for i = 2,100 do
     local check = hit:Check()

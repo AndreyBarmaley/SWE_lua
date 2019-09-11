@@ -44,7 +44,7 @@ std::string SWE_Tools::convertEncoding(LuaState & ll, const std::string & str)
     return res;
 }
 
-std::string SWE_Tools::toFullFileName(LuaState & ll, const std::string & file)
+std::string SWE_Tools::toCurrentPath(LuaState & ll, const std::string & file)
 {
 #ifdef ANDROID
     // check assets
@@ -133,4 +133,31 @@ int SWE_Tools::pushJsonObject(LuaState & ll, const JsonObject* jo)
     }
 
     return 0;
+}
+
+std::string SWE_Tools::toJson(LuaState & ll, int index)
+{
+    std::string res;
+
+    if(ll.isTableIndex(index))
+    {
+        // clone table
+        ll.pushValueIndex(index);
+
+        if(ll.getFieldTableIndex("ToJson", -1).isTopFunction())
+	{
+    	    // run as ToObject(table)
+    	    ll.pushValueIndex(index);
+            res = ll.callFunction(1, 1).getTopString();
+	}
+
+        // remove string, table
+        ll.stackPop(2);
+    }
+    else
+    {
+        ERROR("table not found, index: " << index);
+    }
+
+    return res;
 }

@@ -25,7 +25,8 @@
 
 SWE_BinaryBuf* SWE_BinaryBuf::get(LuaState & ll, int tableIndex, const char* funcName)
 {
-    if(! ll.isTableIndex(tableIndex))
+    if(! ll.isTableIndex(tableIndex) ||
+	0 != ll.popFieldTableIndex("__type", tableIndex).compare("swe.binarybuf"))
     {
         ERROR("table not found, index: " << tableIndex);
         return NULL;
@@ -50,7 +51,8 @@ int SWE_binarybuf_zlib_compress(lua_State* L)
     // params: table binarybuf
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.binarybuf"))
     {
         ERROR("table not found" << ", " << "swe.binarybuf");
 	return 0;
@@ -85,7 +87,8 @@ int SWE_binarybuf_zlib_decompress(lua_State* L)
     // params: table binarybuf
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.binarybuf"))
     {
         ERROR("table not found" << ", " << "swe.binarybuf");
 	return 0;
@@ -120,7 +123,8 @@ int SWE_binarybuf_base64_encode(lua_State* L)
     // params: table binarybuf
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.binarybuf"))
     {
         ERROR("table not found" << ", " << "swe.binarybuf");
 	return 0;
@@ -148,7 +152,8 @@ int SWE_binarybuf_base64_decode1(lua_State* L)
     // params: table binarybuf
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.binarybuf"))
     {
         ERROR("table not found" << ", " << "swe.binarybuf");
 	return 0;
@@ -235,7 +240,8 @@ int SWE_binarybuf_readfile1(lua_State* L)
     // params: table binarybuf, string
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.binarybuf"))
     {
         ERROR("table not found" << ", " << "swe.binarybuf");
 	return 0;
@@ -245,33 +251,38 @@ int SWE_binarybuf_readfile1(lua_State* L)
 
     if(! Systems::isFile(filename))
     {
-	std::string filename2 = SWE_Tools::toFullFileName(ll, filename);
+	std::string filename2 = SWE_Tools::toCurrentPath(ll, filename);
 	if(Systems::isFile(filename2)) std::swap(filename, filename2);
     }
 
-    if(! Systems::isFile(filename))
-    { 
-        ERROR("file not found: " << filename);
-	ll.pushBoolean(false);
-	return 1;
-    }
-
-    SWE_BinaryBuf* buf = SWE_BinaryBuf::get(ll, 1, __FUNCTION__);
-
-    if(buf)
+    if(Systems::isFile(filename))
     {
-	int offset = ll.isNumberIndex(2) ? ll.toNumberIndex(2) : 0;
-	int size = ll.isNumberIndex(3) ? ll.toNumberIndex(3) : 0;
-	BinaryBuf res = Systems::readFile(filename, offset, size);
+	DEBUG(filename);
 
-	buf->swap(res);
-	ll.pushInteger(buf->size()).setFieldTableIndex("size", 1);
-	ll.pushBoolean(buf->size());
-	return 1;
+	SWE_BinaryBuf* buf = SWE_BinaryBuf::get(ll, 1, __FUNCTION__);
+	if(buf)
+	{
+	    int offset = ll.isNumberIndex(2) ? ll.toNumberIndex(2) : 0;
+	    int size = ll.isNumberIndex(3) ? ll.toNumberIndex(3) : 0;
+	    BinaryBuf res = Systems::readFile(filename, offset, size);
+
+	    buf->swap(res);
+	    ll.pushInteger(buf->size()).setFieldTableIndex("size", 1);
+	    ll.pushBoolean(buf->size());
+	    return 1;
+	}	
+	else
+	{
+	    ERROR("userdata empty");
+	}
+    }
+    else
+    {
+	ERROR("file not found: " << filename);
     }
 
-    ERROR("userdata empty");
-    return 0;
+    ll.pushBoolean(false);
+    return 1;
 }
 
 int SWE_binarybuf_readfile2(lua_State* L)
@@ -283,12 +294,14 @@ int SWE_binarybuf_readfile2(lua_State* L)
 
     if(! Systems::isFile(filename))
     {
-	std::string filename2 = SWE_Tools::toFullFileName(ll, filename);
+	std::string filename2 = SWE_Tools::toCurrentPath(ll, filename);
 	if(Systems::isFile(filename2)) std::swap(filename, filename2);
     }
 
     if(Systems::isFile(filename))
     {
+	DEBUG(filename);
+
 	int offset = ll.isNumberIndex(2) ? ll.toNumberIndex(2) : 0;
 	int size = ll.isNumberIndex(3) ? ll.toNumberIndex(3) : 0;
 	BinaryBuf res = Systems::readFile(filename, offset, size);
@@ -301,10 +314,12 @@ int SWE_binarybuf_readfile2(lua_State* L)
 	buf->swap(res);
 
 	ll.pushString("size").pushInteger(buf->size()).setTableIndex(-3);
+	// return table
 	return 1;
     }
 
     ERROR("file not found: " << filename);
+    // return nil
     return 0;
 }
 
@@ -328,7 +343,8 @@ int SWE_binarybuf_savefile(lua_State* L)
     // params: table binarybuf, string
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.binarybuf"))
     {
         ERROR("table not found" << ", " << "swe.binarybuf");
 	return 0;
@@ -364,7 +380,8 @@ int SWE_binarybuf_to_hexstring(lua_State* L)
     // params: table binarybuf, string, boolean
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.binarybuf"))
     {
         ERROR("table not found" << ", " << "swe.binarybuf");
 	return 0;
@@ -392,7 +409,8 @@ int SWE_binarybuf_to_cstring(lua_State* L)
     // params: table binarybuf
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.binarybuf"))
     {
         ERROR("table not found" << ", " << "swe.binarybuf");
 	return 0;
@@ -586,7 +604,8 @@ int SWE_binarybuf_getcrc32b(lua_State* L)
     // params: table binarybuf, int offset
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.binarybuf"))
     {
         ERROR("table not found" << ", " << "swe.binarybuf");
         return 0;
@@ -604,12 +623,13 @@ int SWE_binarybuf_getcrc32b(lua_State* L)
     return 0;
 }
 
-int SWE_binarybuf_tostring(lua_State* L)
+int SWE_binarybuf_to_json(lua_State* L)
 {
     // params: table binarybuf
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.binarybuf"))
     {
         ERROR("table not found" << ", " << "swe.binarybuf");
 	return 0;
@@ -619,8 +639,8 @@ int SWE_binarybuf_tostring(lua_State* L)
 
     if(buf)
     {
-	std::string str = StringFormat("{\"type\":\"swe.binarybuf\",\"data\":[%1]}").arg(buf->toHexString(",", true));
-	ll.pushString(str);
+	std::string json = StringFormat("[%1]").arg(buf->toHexString(",", true));
+	ll.pushString(json);
 	return 1;
     }
 
@@ -633,7 +653,8 @@ int SWE_binarybuf_clear(lua_State* L)
     // params: table binarybuf, int offset
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.binarybuf"))
     {
         ERROR("table not found" << ", " << "swe.binarybuf");
         return 0;
@@ -646,8 +667,10 @@ int SWE_binarybuf_clear(lua_State* L)
 	buf->clear();
 	ll.pushInteger(0).setFieldTableIndex("size", -2);
     }
-
-    ERROR("userdata empty");
+    else
+    {
+	ERROR("userdata empty");
+    }
     return 0;
 }
 
@@ -659,7 +682,7 @@ const struct luaL_Reg SWE_binarybuf_functions[] = {
     { "ReadFromFile", SWE_binarybuf_readfile },		// [bool], table binarybuf, string filename, number
     { "SaveToFile", SWE_binarybuf_savefile },		// [bool], table binarybuf, string filename, number
     { "ToString", SWE_binarybuf_to_cstring },		// [string], table binarybuf
-    { "ToHexString", SWE_binarybuf_to_hexstring },	// [string], table binarybuf, string sep, bool prefix
+    { "ToJson", SWE_binarybuf_to_json },		// [string], table binarybuf
     { "SetByte", SWE_binarybuf_setbyte },		// [bool], table binarybuf, int offset, int byte
     { "GetByte", SWE_binarybuf_getbyte },		// [int byte], table binarybuf, int offset
     { "SetBytes", SWE_binarybuf_setbytes },		// [bool], table binarybuf, int offset, table binarybuf, int offset, int size
@@ -735,8 +758,7 @@ int SWE_binarybuf_create(lua_State* L)
 	*ptr = new SWE_BinaryBuf();
     }
 
-    if(ptr && *ptr)
-	DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
 
     ll.pushString("__type").pushString("swe.binarybuf").setTableIndex(-3);
     ll.pushString("size").pushInteger((*ptr)->size()).setTableIndex(-3);

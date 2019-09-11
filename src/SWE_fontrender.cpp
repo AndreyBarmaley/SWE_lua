@@ -49,13 +49,13 @@ SWE_FontRender* SWE_FontRender::get(LuaState & ll, int tableIndex, const char* f
 }
 
 /////////////////////////////////////////////////////////////////////
-int SWE_fontrender_tostring(lua_State* L)
+int SWE_fontrender_to_json(lua_State* L)
 {
     // params: swe_fontrender
 
     LuaState ll(L);
-
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.fontrender"))
     {
         ERROR("table not found" << ", " << "swe.fontrender");
         return 0;
@@ -66,16 +66,27 @@ int SWE_fontrender_tostring(lua_State* L)
     if(frs)
     {
 	std::string font = ll.getFieldTableIndex("font", 1).getTopString();
-	int size = ll.getFieldTableIndex("size", 1).getTopInteger();
-	std::string blended = ll.getFieldTableIndex("blended", 1).getTopString();
-	int style = ll.getFieldTableIndex("style", 1).getTopInteger();
-	int hinting = ll.getFieldTableIndex("hinting", 1).getTopInteger();
+	if(font == "system")
+	{
+	    ll.stackPop(1);
 
-	ll.stackPop(5);
-        std::string str = StringFormat("{\"type\":\"swe.fontrender\",\"font\":\"%1\",\"size\":%2,\"blended\":%3,\"style\":%4,\"hinting\":%5}").
-	    arg(font).arg(size).arg(blended).arg(style).arg(hinting);
+    	    std::string str = StringFormat("{\"type\":\"swe.fontrender\",\"font\":\"%1\"}").arg(font);
+    	    ll.pushString(str);
+	}
+	else
+	{
+	    int size = ll.getFieldTableIndex("size", 1).getTopInteger();
+	    std::string blended = ll.getFieldTableIndex("blended", 1).getTopString();
+	    int style = ll.getFieldTableIndex("style", 1).getTopInteger();
+	    int hinting = ll.getFieldTableIndex("hinting", 1).getTopInteger();
 
-        ll.pushString(str);
+	    ll.stackPop(5);
+
+    	    std::string str = StringFormat("{\"type\":\"swe.fontrender\",\"font\":\"%1\",\"size\":%2,\"blended\":%3,\"style\":%4,\"hinting\":%5}").
+		arg(font).arg(size).arg(blended).arg(style).arg(hinting);
+    	    ll.pushString(str);
+	}
+	
         return 1;
     }
 
@@ -89,7 +100,8 @@ int SWE_fontrender_symbol_advance(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.fontrender"))
     {
         ERROR("table not found" << ", " << "swe.fontrender");
         return 0;
@@ -112,7 +124,7 @@ int SWE_fontrender_symbol_advance(lua_State* L)
 }
 
 const struct luaL_Reg SWE_fontrender_functions[] = {
-    { "ToString", SWE_fontrender_tostring },		// [string], swe_fontrender
+    { "ToJson", SWE_fontrender_to_json },		// [string], swe_fontrender
     { "SymbolAdvance", SWE_fontrender_symbol_advance }, // [int], swe_fontrender, symbol integer
     { NULL, NULL }
 };
@@ -141,33 +153,65 @@ int SWE_fontrender_create_ttf(lua_State* L)
     ll.pushFunction(SWE_fontrender_destroy).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2).setTableIndex(-3);
 
-    std::string font = SWE_Tools::toFullFileName(ll, ll.toStringIndex(2));
-    int fontsz = ll.toIntegerIndex(3);
-    bool blended = 4 > params ? false : ll.toBooleanIndex(4);
-    int style = 5 > params ? StyleNormal : ll.toIntegerIndex(5);
-    int hinting = 6 > params ? HintingNormal : ll.toIntegerIndex(6);
-
-    // SWE_FontRender: font, size, blend, style, hinting
-    const FontRender* frs = new FontRenderTTF(font, fontsz, blended, style, hinting);
-    if(! frs->isValid())
+    std::string font = ll.toStringIndex(2);
+    if(! Systems::isFile(font))
     {
-	delete frs;
-	frs = & systemFont();
-	DEBUG("used system font: FontAltC8x16");
+	std::string font2 = SWE_Tools::toCurrentPath(ll, font);
+	if(Systems::isFile(font2)) std::swap(font, font2);
     }
 
-    *ptr = (SWE_FontRender*) frs;
+    if(Systems::isFile(font))
+    {
+	DEBUG(font);
 
-    // add values
-    ll.pushString("__type").pushString("swe.fontrender").setTableIndex(-3);
-    ll.pushString("font").pushString(font).setTableIndex(-3);
-    ll.pushString("size").pushInteger(fontsz).setTableIndex(-3);
-    ll.pushString("blended").pushBoolean(blended).setTableIndex(-3);
-    ll.pushString("style").pushInteger(style).setTableIndex(-3);
-    ll.pushString("hinting").pushInteger(hinting).setTableIndex(-3);
+	int fontsz = ll.toIntegerIndex(3);
+	bool blended = 4 > params ? false : ll.toBooleanIndex(4);
+	int style = 5 > params ? StyleNormal : ll.toIntegerIndex(5);
+	int hinting = 6 > params ? HintingNormal : ll.toIntegerIndex(6);
+
+	// SWE_FontRender: font, size, blend, style, hinting
+	const FontRender* frs = new FontRenderTTF(font, fontsz, blended, style, hinting);
+
+	if(frs->isValid())
+	{
+	    // add values
+	    ll.pushString("__type").pushString("swe.fontrender").setTableIndex(-3);
+	    ll.pushString("font").pushString(font).setTableIndex(-3);
+	    ll.pushString("size").pushInteger(fontsz).setTableIndex(-3);
+	    ll.pushString("blended").pushBoolean(blended).setTableIndex(-3);
+	    ll.pushString("style").pushInteger(style).setTableIndex(-3);
+	    ll.pushString("hinting").pushInteger(hinting).setTableIndex(-3);
+	}
+	else
+	{
+	    delete frs;
+	    frs = & systemFont();
+	    DEBUG("used system font: FontAltC8x16");
+
+	    // add values
+	    ll.pushString("__type").pushString("swe.fontrender").setTableIndex(-3);
+	    ll.pushString("font").pushString("system").setTableIndex(-3);
+	}
+
+	*ptr = (SWE_FontRender*) frs;
+    }
+    else
+    {
+	ERROR("file not found: " << font);
+
+	// SWE_FontRender: system
+	const FontRender* frs = & systemFont();
+	*ptr = (SWE_FontRender*) frs;
+
+	// add values
+	ll.pushString("__type").pushString("swe.fontrender").setTableIndex(-3);
+	ll.pushString("font").pushString("system").setTableIndex(-3);
+    }
 
     ll.pushString("fixedWidth").pushInteger((*ptr)->symbolAdvance(0x20)).setTableIndex(-3);
     ll.pushString("lineHeight").pushInteger((*ptr)->lineSkipHeight()).setTableIndex(-3);
+
+    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
 
     // set functions
     ll.setFunctionsTableIndex(SWE_fontrender_functions, -1);
@@ -199,27 +243,53 @@ int SWE_fontrender_create_psf(lua_State* L)
     ll.pushFunction(SWE_fontrender_destroy).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2).setTableIndex(-3);
 
-    std::string font = SWE_Tools::toFullFileName(ll, ll.toStringIndex(2));
-    int fsw = ll.toIntegerIndex(3);
-    int fsh = ll.toIntegerIndex(4);
-
-    // SWE_FontRender: font, size
-    const FontRender* frs = new FontRenderPSF(font, Size(fsw, fsh));
-    if(! frs->isValid())
+    std::string font = ll.toStringIndex(2);
+    if(! Systems::isFile(font))
     {
-	delete frs;
-	frs = & systemFont();
-	DEBUG("used system font: FontAltC8x16");
+	std::string font2 = SWE_Tools::toCurrentPath(ll, font);
+	if(Systems::isFile(font2)) std::swap(font, font2);
     }
 
-    *ptr = (SWE_FontRender*) frs;
+    if(Systems::isFile(font))
+    {
+	DEBUG(font);
 
-    // add values
-    ll.pushString("__type").pushString("swe.fontrender").setTableIndex(-3);
-    ll.pushString("font").pushString(font).setTableIndex(-3);
+	int fsw = ll.toIntegerIndex(3);
+	int fsh = ll.toIntegerIndex(4);
+
+	// SWE_FontRender: font, size
+	const FontRender* frs = new FontRenderPSF(font, Size(fsw, fsh));
+	if(! frs->isValid())
+	{
+	    delete frs;
+	    frs = & systemFont();
+	    DEBUG("used system font: FontAltC8x16");
+	}
+
+	*ptr = (SWE_FontRender*) frs;
+
+	// add values
+	ll.pushString("__type").pushString("swe.fontrender").setTableIndex(-3);
+	ll.pushString("font").pushString(font).setTableIndex(-3);
+    }
+    else
+    {
+	ERROR("file not found: " << font);
+
+	// SWE_FontRender: system
+	const FontRender* frs = & systemFont();
+	*ptr = (SWE_FontRender*) frs;
+
+	// add values
+	ll.pushString("__type").pushString("swe.fontrender").setTableIndex(-3);
+	ll.pushString("font").pushString("system").setTableIndex(-3);
+    }
 
     ll.pushString("fixedWidth").pushInteger((*ptr)->symbolAdvance(0x20)).setTableIndex(-3);
     ll.pushString("lineHeight").pushInteger((*ptr)->lineSkipHeight()).setTableIndex(-3);
+
+
+    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
 
     // set functions
     ll.setFunctionsTableIndex(SWE_fontrender_functions, -1);
@@ -253,6 +323,8 @@ int SWE_fontrender_create_sys(lua_State* L)
 
     ll.pushString("fixedWidth").pushInteger((*ptr)->symbolAdvance(0x20)).setTableIndex(-3);
     ll.pushString("lineHeight").pushInteger((*ptr)->lineSkipHeight()).setTableIndex(-3);
+
+    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
 
     // set functions
     ll.setFunctionsTableIndex(SWE_fontrender_functions, -1);

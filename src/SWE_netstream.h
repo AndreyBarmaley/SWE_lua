@@ -32,9 +32,14 @@ int SWE_netstream_destroy(lua_State*);
 
 class SWE_NetStream : public StreamNetwork
 {
+    bool	enabled;
+
 public:
-    SWE_NetStream() {}
-    SWE_NetStream(const std::string & srv, int port) : StreamNetwork(srv, port) {}
+    SWE_NetStream() : enabled(true) {}
+    SWE_NetStream(const std::string & srv, int port) : StreamNetwork(srv, port), enabled(true) {}
+
+    bool isEnabled(void) const { return enabled; }
+    void setDisable(bool f) { enabled = ! f; }
 
     static SWE_NetStream* get(LuaState &, int tableIndex, const char* funcName);
     static void registers(LuaState &);

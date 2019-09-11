@@ -54,7 +54,8 @@ int SWE_netstream_recv_byte(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -83,7 +84,8 @@ int SWE_netstream_recv_be16(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -112,7 +114,8 @@ int SWE_netstream_recv_be32(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -141,7 +144,8 @@ int SWE_netstream_recv_be64(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -170,7 +174,8 @@ int SWE_netstream_recv_le16(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -199,7 +204,8 @@ int SWE_netstream_recv_le32(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -228,7 +234,8 @@ int SWE_netstream_recv_le64(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -257,7 +264,8 @@ int SWE_netstream_recv_bytes(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -291,7 +299,8 @@ int SWE_netstream_recv_string(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -305,7 +314,7 @@ int SWE_netstream_recv_string(lua_State* L)
 	int endl = ll.toIntegerIndex(2);
 	int byte = 0;
 
-	while(1)
+	while(net->isEnabled())
 	{
 	    if(net->ready())
 	    {
@@ -322,7 +331,8 @@ int SWE_netstream_recv_string(lua_State* L)
         	}
 
     	        Display::redraw();
-        	Tools::delay(10);
+        	Tools::delay(1000);
+		DEBUG("not data ready");
 	    }
 	}
 
@@ -343,7 +353,9 @@ int SWE_netstream_send_bytes(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1) || ! ll.isTableIndex(2))
+    if(! ll.isTableIndex(1) || ! ll.isTableIndex(2) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream") ||
+	0 != ll.popFieldTableIndex("__type", 2).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -370,7 +382,8 @@ int SWE_netstream_send_string(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -397,7 +410,8 @@ int SWE_netstream_send_byte(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -424,7 +438,8 @@ int SWE_netstream_send_be16(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -451,7 +466,8 @@ int SWE_netstream_send_be32(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -478,7 +494,8 @@ int SWE_netstream_send_be64(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -505,7 +522,8 @@ int SWE_netstream_send_le16(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -532,7 +550,8 @@ int SWE_netstream_send_le32(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -559,7 +578,8 @@ int SWE_netstream_send_le64(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -586,7 +606,8 @@ int SWE_netstream_setready_timeout(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -613,7 +634,8 @@ int SWE_netstream_wait_string(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -647,7 +669,8 @@ int SWE_netstream_connect(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -678,7 +701,8 @@ int SWE_netstream_data_ready(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -703,7 +727,8 @@ int SWE_netstream_listen(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -733,7 +758,8 @@ int SWE_netstream_wait_accept(lua_State* L)
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -745,7 +771,7 @@ int SWE_netstream_wait_accept(lua_State* L)
     {
 	TCPsocket sock;
 
-	while(1)
+	while(net->isEnabled())
 	{
 	    sock = net->accept();
 	    if(sock) break;
@@ -755,6 +781,7 @@ int SWE_netstream_wait_accept(lua_State* L)
     		ERROR("break events");
 		break;
 	    }
+
     	    Display::redraw();
     	    Tools::delay(10);
 	}
@@ -790,13 +817,43 @@ int SWE_netstream_wait_accept(lua_State* L)
     return 0;
 }
 
+int SWE_netstream_disable(lua_State* L)
+{
+    // params: swe_netstream
+
+    LuaState ll(L);
+
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
+    {
+        ERROR("table not found" << ", " << "swe.netstream");
+        return 0;
+    }
+
+    SWE_NetStream* net = SWE_NetStream::get(ll, 1, __FUNCTION__);
+
+    if(net)
+    {
+	bool enabled = ll.toBooleanIndex(2);
+	net->setDisable(enabled);
+	ll.pushString("enabled").pushBoolean(enabled).setTableIndex(1);
+    }
+    else
+    {
+        ERROR("userdata empty");
+    }
+
+    return 0;
+}
+
 int SWE_netstream_close(lua_State* L)
 {
     // params: swe_netstream
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -816,13 +873,14 @@ int SWE_netstream_close(lua_State* L)
     return 0;
 }
 
-int SWE_netstream_tostring(lua_State* L)
+int SWE_netstream_to_json(lua_State* L)
 {   
     // params: swe_netstream
 
     LuaState ll(L);
 
-    if(! ll.isTableIndex(1))
+    if(! ll.isTableIndex(1) ||
+	0 != ll.popFieldTableIndex("__type", 1).compare("swe.netstream"))
     {
         ERROR("table not found" << ", " << "swe.netstream");
         return 0;
@@ -870,10 +928,11 @@ const struct luaL_Reg SWE_netstream_functions[] = {
     { "WaitString", SWE_netstream_wait_string },	// [bool], swe_netstream, string
     { "Connect", SWE_netstream_connect },		// [bool], swe_netstream, string, int port
     { "Listen", SWE_netstream_listen },			// [bool], swe_netstream, int port
+    { "SetDisable", SWE_netstream_disable },		// [void], swe_netstream, bool
     { "DataReady", SWE_netstream_data_ready },		// [bool], swe_netstream
     { "WaitAccept", SWE_netstream_wait_accept }, 	// [swe_netstream], swe_netstream
     { "Close", SWE_netstream_close }, 			// [swe_netstream], swe_netstream
-    { "ToString", SWE_netstream_tostring },		// [string], swe_netstream
+    { "ToJson", SWE_netstream_to_json },		// [string], swe_netstream
     { NULL, NULL }
 };
 
@@ -904,6 +963,7 @@ int SWE_netstream_create(lua_State* L)
 	ll.pushString("__type").pushString("swe.netstream").setTableIndex(-3);
 	ll.pushString("address").pushString(server).setTableIndex(-3);
 	ll.pushString("port").pushInteger(port).setTableIndex(-3);
+	ll.pushString("enabled").pushBoolean(true).setTableIndex(-3);
     }
     else
     {
@@ -916,6 +976,8 @@ int SWE_netstream_create(lua_State* L)
 
     // set functions
     ll.setFunctionsTableIndex(SWE_netstream_functions, -1);
+
+    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
 
     return 1;
 }

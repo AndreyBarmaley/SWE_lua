@@ -17,9 +17,10 @@ local orders = SWE.JsonParse(SWE.BinaryBuf.ReadFromFile("game2048.json"):ToStrin
 local frs14 = SWE.FontRender("terminus.ttf", 14, true)
 local frs28 = SWE.FontRender("terminus.ttf", 22, true)
 local colors = {}
-local animation = {}
-local moveDirect = 0
-local stackTurn = false
+local animationMove = {}
+local animationStack = {}
+local directoMove = 0
+local keyHandle = true
 local number4Hit = SWE.RandomHit(10)
 
 local sndTada = SWE.BinaryBuf.ReadFromFile("tada.ogg")
@@ -76,6 +77,16 @@ function CreateNumber(pos, val)
     t.item = bit
 end
 
+function FillAnimations(animations)
+    -- check if need move item: insert to animationMove
+    for i = 1, 16 do
+	if orders[i].item ~= nil and orders[i].item.move ~= nil then
+	    table.insert(animations, orders[i].item)
+	    orders[i].item = nil
+	end
+    end
+end
+
 local btnX = SWE.Window(275, 10, 36, 36, win)
 
 btnX.RenderWindow = function()
@@ -102,11 +113,6 @@ btnS.MouseClickEvent = function(x,y,btn)
     ResetGame()
 end
 
-function tointeger(x)
-    local integral, fractal = math.modf(x)
-    return integral
-end
-
 -- WIN
 function win.DisplayResizeEvent(w,h)
 end
@@ -128,17 +134,13 @@ end
 
 function win.SystemUserEvent(a,b)
     if a == SWE.Signal.GestureFingerUp then
-	MoveNumbers(3)
-	return true
+	return win.KeyPressEvent(SWE.Key.UP)
     elseif a == SWE.Signal.GestureFingerDown then
-	MoveNumbers(4)
-	return true
+	return win.KeyPressEvent(SWE.Key.DOWN)
     elseif a == SWE.Signal.GestureFingerLeft then
-	MoveNumbers(1)
-	return true
+	return win.KeyPressEvent(SWE.Key.LEFT)
     elseif a == SWE.Signal.GestureFingerRight then
-	MoveNumbers(2)
-	return true
+	return win.KeyPressEvent(SWE.Key.RIGHT)
     end
     return false
 end
@@ -150,24 +152,33 @@ function win.KeyPressEvent(key)
 	return true
     end
 
-    if 0 < #animation then
+    if not keyHandle then
 	return false
     end
 
     if key == SWE.Key.LEFT then
-	MoveNumbers(1)
-	return true
-
+	directMove = 1
     elseif key == SWE.Key.RIGHT then
-	MoveNumbers(2)
-	return true
-
+	directMove = 2
     elseif key == SWE.Key.UP then
-	MoveNumbers(3)
-	return true
-
+	directMove = 3
     elseif key == SWE.Key.DOWN then
-	MoveNumbers(4)
+	directMove = 4
+    end
+
+    keyHandle = false
+
+    if 0 < directMove then
+	local move = MoveToDirect(directMove)
+
+	if move then
+	    FillAnimations(animationMove)
+	else
+	    if StackToDirect(directMove) then
+		CreateNumber( GetFreePosVal() )
+	    end
+	end
+
 	return true
     end
 
@@ -175,39 +186,25 @@ function win.KeyPressEvent(key)
 end
 
 function win.SystemTickEvent(ms)
-    -- check if move animation
-    if 0 < #animation then
-	MoveAnimationItem()
-	--end turn
-	if 0 == #animation then
-	    if not stackTurn then
-		StackNumbers()
-	    end
+    -- check if animationMove
+    if 0 < #animationMove then
 
-	    if CheckWins() then
-		print("game wins")
-	    end
+	MoveAnimationItem(animationMove)
 
+	--end animationMove
+	if 0 == #animationMove then
+	    StackToDirect(directMove)
 	    CreateNumber( GetFreePosVal() )
-
-	    if CheckLoss() then
-		print("game loss")
-	    end
-	end
-    else
-	-- check if need move item: insert to animation
-	for i = 1, 16 do
-	    if orders[i].item ~= nil and orders[i].item.move ~= nil then
-		table.insert(animation, orders[i].item)
-		orders[i].item = nil
-	    end
 	end
     end
-    collectgarbage()
+    if 0 < #animationStack then
+
+	MoveAnimationItem(animationStack)
+    end
 end
 
-function MoveAnimationItem()
-    for k,v in pairs(animation) do
+function MoveAnimationItem(animations)
+    for k,v in pairs(animations) do
 	local dst = v.move
 
 	if v.posx ~= orders[dst].posx then
@@ -225,66 +222,58 @@ function MoveAnimationItem()
 	else
 	    v.move = nil
 	    orders[dst].item = v
-	    table.remove(animation,k)
+	    table.remove(animations,k)
 	end
     end
 end
 
-function MoveNumbers(dir)
-    moveDirect = dir
-    stackTurn = false
-
+function MoveToDirect(dir)
+    local res1, res2, res3, res4 = false, false, false, false
     -- left
     if dir == 1 then
-	MoveRow( 1, 2, 3, 4)
-	MoveRow( 5, 6, 7, 8)
-	MoveRow( 9,10,11,12)
-	MoveRow(13,14,15,16)
+	res1 = MoveNumbers( 1, 2, 3, 4)
+	res2 = MoveNumbers( 5, 6, 7, 8)
+	res3 = MoveNumbers( 9,10,11,12)
+	res4 = MoveNumbers(13,14,15,16)
     -- right
     elseif dir == 2 then
-	MoveRow( 4, 3, 2, 1)
-	MoveRow( 8, 7, 6, 5)
-	MoveRow(12,11,10, 9)
-	MoveRow(16,15,14,13)
+	res1 = MoveNumbers( 4, 3, 2, 1)
+	res2 = MoveNumbers( 8, 7, 6, 5)
+	res3 = MoveNumbers(12,11,10, 9)
+	res4 = MoveNumbers(16,15,14,13)
     -- up
     elseif dir == 3 then
-	MoveCol( 1, 5, 9,13)
-	MoveCol( 2, 6,10,14)
-	MoveCol( 3, 7,11,15)
-	MoveCol( 4, 8,12,16)
+	res1 = MoveNumbers( 1, 5, 9,13)
+	res2 = MoveNumbers( 2, 6,10,14)
+	res3 = MoveNumbers( 3, 7,11,15)
+	res4 = MoveNumbers( 4, 8,12,16)
     -- down
     elseif dir == 4 then
-	MoveCol(13, 9, 5, 1)
-	MoveCol(14,10, 6, 2)
-	MoveCol(15,11, 7, 3)
-	MoveCol(16,12, 8, 4)
+	res1 = MoveNumbers(13, 9, 5, 1)
+	res2 = MoveNumbers(14,10, 6, 2)
+	res3 = MoveNumbers(15,11, 7, 3)
+	res4 = MoveNumbers(16,12, 8, 4)
     else
 	print("unknown direct")
+	return false
     end
+
+    return res1 or res2 or res3 or res4
 end
 
-function MoveRow(...)
+function MoveNumbers(...)
     local space = 0
     local res = 0
     local argc = select('#', ...)
-    local toleft = select(1, ...) < select(argc, ...)
-    local iter = 1
-
-    if not toleft then
-	iter = -1
-    end
 
     for i = 1, argc do
-	local arg = select(i, ...)
+	local i1 = select(i, ...)
 
-	if orders[arg].item ~= nil then
-	    if (toleft and orders[arg].left ~= nil) or
-		(not toleft and orders[arg].right ~= nil) then
-
-		if space > 0 then
-		    orders[arg].item.move = select(i - space, ...)
-		    res = res + 1
-		end
+	if orders[i1].item ~= nil then
+	    if i > 1 and space > 0 then
+		local i2 = select(i - space, ...)
+		orders[i1].item.move = i2
+		res = res + 1
 	    end
 	else
 	    space = space + 1
@@ -294,93 +283,86 @@ function MoveRow(...)
     return res > 0
 end
 
-function MoveCol(...)
-    local space = 0
-    local res = 0
-    local argc = select('#', ...)
-    local toup = select(1, ...) < select(argc, ...)
-    local iter = 1
-
-    if not toup then
-	iter = -1
-    end
-
-    for i = 1, argc do
-	local arg = select(i, ...)
-
-	if orders[arg].item ~= nil then
-	    if (toup and orders[arg].up ~= nil) or
-		(not toup and orders[arg].down ~= nil) then
-
-		if space > 0 then
-		    orders[arg].item.move = select(i - space, ...)
-		    res = res + 1
-		end
-	    end
-	else
-	    space = space + 1
-	end
-    end
-
-    return res > 0
-end
-
-function StackNumbers()
+function StackToDirect(dir)
+    local res1, res2, res3, res4 = false, false, false, false
     -- left
-    if moveDirect == 1 then
-	StackRow( 2, 3, 4)
-	StackRow( 6, 7, 8)
-	StackRow(10,11,12)
-	StackRow(14,15,16)
+    if dir == 1 then
+	res1 = StackNumbers( 1, 2, 3, 4)
+	res2 = StackNumbers( 5, 6, 7, 8)
+	res3 = StackNumbers( 9,10,11,12)
+	res4 = StackNumbers(13,14,15,16)
     -- right
-    elseif moveDirect == 2 then
-	StackRow( 3, 2, 1)
-	StackRow( 7, 6, 5)
-	StackRow(11,10, 9)
-	StackRow(15,14,13)
+    elseif dir == 2 then
+	res1 = StackNumbers( 4, 3, 2, 1)
+	res2 = StackNumbers( 8, 7, 6, 5)
+	res3 = StackNumbers(12,11,10, 9)
+	res4 = StackNumbers(16,15,14,13)
     -- up
-    elseif moveDirect == 3 then
-	StackCol( 5, 9,13)
-	StackCol( 6,10,14)
-	StackCol( 7,11,15)
-	StackCol( 8,12,16)
+    elseif dir == 3 then
+	res1 = StackNumbers( 1, 5, 9,13)
+	res2 = StackNumbers( 2, 6,10,14)
+	res3 = StackNumbers( 3, 7,11,15)
+	res4 = StackNumbers( 4, 8,12,16)
     -- down
-    elseif moveDirect == 4 then
-	StackCol( 9, 5, 1)
-	StackCol(10, 6, 2)
-	StackCol(11, 7, 3)
-	StackCol(12, 8, 4)
+    elseif dir == 4 then
+	res1 = StackNumbers(13, 9, 5, 1)
+	res2 = StackNumbers(14,10, 6, 2)
+	res3 = StackNumbers(15,11, 7, 3)
+	res4 = StackNumbers(16,12, 8, 4)
     else
 	print("unknown direct")
+	return false
     end
 
-    stackTurn = true
+    FillAnimations(animationStack)
+
+    local stack = res1 or res2 or res3 or res4
+    local res = false
+
+    if stack then
+        if sndClick ~= nil then
+	    SWE.Audio.SoundPlayBuf(sndClick)
+        end
+	keyHandle = true
+	res = true
+    else
+	if CheckWins() then
+	    print("game wins")
+	    if sndTada ~= nil then
+		SWE.Audio.SoundPlayBuf(sndTada)
+	    end
+	elseif CheckLoss() then
+	    print("game loss")
+	else
+	    keyHandle = true
+	end
+    end
+
+    collectgarbage()
+
+    return res
 end
 
-function StackRow(...)
+function StackNumbers(...)
     local argc = select('#', ...)
-    local toleft = select(1, ...) < select(argc, ...)
+    local res = false
 
-    for i = 1, argc do
+    for i = 2, argc do
 	local i1 = select(i, ...)
 
 	if orders[i1].item ~= nil then
-	    local i2 = 0
+	    local i2 = select(i - 1, ...)
 	    local nextmove = 0
-
-	    if toleft then
-		i2 = orders[i1].left
-	    else
-		i2 = orders[i1].right
-	    end
 
 	    if orders[i2].item == nil then
 		orders[i1].item.move = i2
 		nextmove = i1
 	    elseif orders[i2].item.value == orders[i1].item.value then
 		orders[i2].item.value = orders[i2].item.value * 2
+		orders[i1].item:SetVisible(false) -- don't rely: collect garbage
 		orders[i1].item = nil
-	    elseif nextmove > 0 then
+		res = true
+	    elseif nextmove == i2 then
 		orders[i1].item.move = nextmove
 		nextmove = i1
 	    end
@@ -388,39 +370,8 @@ function StackRow(...)
 	    break
 	end
     end
-end
 
-function StackCol(...)
-    local argc = select('#', ...)
-    local toup = select(1, ...) < select(argc, ...)
-
-    for i = 1, argc do
-	local i1 = select(i, ...)
-
-	if orders[i1].item ~= nil then
-	    local i2 = 0
-	    local nextmove = 0
-
-	    if toup then
-		i2 = orders[i1].up
-	    else
-		i2 = orders[i1].down
-	    end
-
-	    if orders[i2].item == nil then
-		orders[i1].item.move = i2
-		nextmove = i1
-	    elseif orders[i2].item.value == orders[i1].item.value then
-		orders[i2].item.value = orders[i2].item.value * 2
-		orders[i1].item = nil
-	    elseif nextmove > 0 then
-		orders[i1].item.move = nextmove
-		nextmove = i1
-	    end
-	else
-	    break
-	end
-    end
+    return res
 end
 
 function CheckWins()
@@ -446,6 +397,9 @@ end
 
 function ResetGame()
     for i = 1, 16 do
+	if orders[i].item ~= nil then
+	    orders[i].item:SetVisible(false)
+	end
 	orders[i].item = nil
     end
     CreateNumber( GetFreePosVal() )

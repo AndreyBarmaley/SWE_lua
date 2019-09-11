@@ -162,7 +162,7 @@ int SWE_rect_intersect(lua_State* L)
     return 0;
 }
 
-int SWE_rect_tostring(lua_State* L)
+int SWE_rect_to_json(lua_State* L)
 {
     // params: swe_rect
 
@@ -176,7 +176,7 @@ int SWE_rect_tostring(lua_State* L)
 	int rh = ll.getFieldTableIndex("height", 1).getTopInteger();
 	ll.stackPop(4);
 
-	std::string str = StringFormat("{\"posx\":%1,\"posy\":%2,\"width\":%3,\"height\":%4}").arg(rx).arg(ry).arg(rw).arg(rh);
+	std::string str = StringFormat("{\"type\":\"swe.rect\",\"posx\":%1,\"posy\":%2,\"width\":%3,\"height\":%4}").arg(rx).arg(ry).arg(rw).arg(rh);
 	ll.pushString(str);
 
 	return 1;
@@ -220,7 +220,7 @@ const struct luaL_Reg SWE_rect_functions[] = {
     { "HasIntersection", SWE_rect_has_intersection },	// [bool], swe_rect, swe_rect
     { "RectEquals", SWE_rect_equals },			// [bool], swe_rect, swe_rect
     { "GetIntersectRect", SWE_rect_intersect },		// [swe_rect], swe_rect, swe_rect
-    { "ToString", SWE_rect_tostring }, 			// [string], swe_rect
+    { "ToJson", SWE_rect_to_json }, 			// [string], swe_rect
     { "Unpack", SWE_rect_unpack }, 			// [list int], swe_rect
     { NULL, NULL }
 };
@@ -263,7 +263,7 @@ void SWE_Rect::registers(LuaState & ll)
 }
 
 /////////////////////////////////////////////////////////////////////
-int SWE_point_tostring(lua_State* L)
+int SWE_point_to_json(lua_State* L)
 {
     // params: swe_point
 
@@ -275,7 +275,7 @@ int SWE_point_tostring(lua_State* L)
 	int py = ll.getFieldTableIndex("posy", 1).getTopInteger();
 	ll.stackPop(2);
 
-	std::string str = StringFormat("{\"posx\":%1,\"posy\":%2}").arg(px).arg(py);
+	std::string str = StringFormat("{\"type\":\"swe.point\",\"posx\":%1,\"posy\":%2}").arg(px).arg(py);
 	ll.pushString(str);
 
 	return 1;
@@ -314,8 +314,8 @@ int SWE_point_unpack(lua_State* L)
 }
 
 const struct luaL_Reg SWE_point_functions[] = {
-    { "ToString", SWE_point_tostring }, 	// [string], swe_point
-    { "Unpack", SWE_point_unpack }, 		// [list int], swe_point
+    { "ToJson", SWE_point_to_json }, 	// [string], swe_point
+    { "Unpack", SWE_point_unpack }, 	// [list int], swe_point
     { NULL, NULL }
 };
 
@@ -348,7 +348,7 @@ void SWE_Point::registers(LuaState & ll)
 }
 
 /////////////////////////////////////////////////////////////////////
-int SWE_size_tostring(lua_State* L)
+int SWE_size_to_json(lua_State* L)
 {
     // params: swe_size
 
@@ -360,7 +360,7 @@ int SWE_size_tostring(lua_State* L)
 	int sh = ll.getFieldTableIndex("height", 1).getTopInteger();
 	ll.stackPop(2);
 
-	std::string str = StringFormat("{\"width\":%1,\"height\":%2}").arg(sw).arg(sh);
+	std::string str = StringFormat("{\"type\":\"swe.size\",\"width\":%1,\"height\":%2}").arg(sw).arg(sh);
 	ll.pushString(str);
 
 	return 1;
@@ -399,7 +399,7 @@ int SWE_size_unpack(lua_State* L)
 }
 
 const struct luaL_Reg SWE_size_functions[] = {
-    { "ToString", SWE_size_tostring }, 		// [string], swe_size
+    { "ToJson", SWE_size_to_json }, 		// [string], swe_size
     { "Unpack", SWE_size_unpack }, 		// [list int], swe_size
     { NULL, NULL }
 };

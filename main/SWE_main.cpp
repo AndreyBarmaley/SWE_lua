@@ -43,13 +43,27 @@ int main(int argc, char** argv)
 #endif
     {
 	const char* app = "SWE_lua";
+	std::string cwd = Systems::dirname(argv[0]);
+
 	LogWrapper::init(app, argv[0]);
+	Engine::setDebugMode(true);
+
+#if defined (_GNU_SOURCE) && ! defined (ANDROID) && ! defined(__MINGW32CE__)
+	if(cwd == ".")
+	{
+	    char* ptr = get_current_dir_name();
+	    if(ptr)
+	    {
+		cwd = ptr;
+		free(ptr);
+	    }
+	}
+#endif
 
 	const char* start = 1 < argc ? argv[1] : Systems::environment("SWE_START");
 	if(! start) start = "start.lua";
 
 	std::string runfile;
-	Engine::setDebugMode(true);
 	StringList dirs = Systems::shareDirectories(app);
 
 #ifdef ANDROID
@@ -89,7 +103,8 @@ int main(int argc, char** argv)
 	if(Systems::isFile(start))
 	    runfile = start;
 
-	dirs.push_back(Systems::dirname(argv[0]));
+	if(cwd.size()) 
+	    dirs.push_back(cwd);
 #endif
 
 	for(auto it = dirs.begin(); it != dirs.end(); ++it)
@@ -111,35 +126,28 @@ int main(int argc, char** argv)
 	// check params
 	if(runfile.empty())
 	{
-	    ERROR("file not found: " << runfile);
+	    ERROR("file not found runfile");
 	    return EXIT_FAILURE;
 	}
 
+#if defined ANDROID
+	cwd = Systems::dirname(runfile);
+	if(cwd.size()) chdir(cwd.c_str());
+#endif
+
         LuaState ll = LuaState::newState();
 
-#if defined ANDROID
-	std::string swedir = Systems::dirname(runfile);
-	if(swedir.size())
-	{
-	    ll.registerDirectory(swedir);
-	    chdir(swedir.c_str());
-	}
-#else
-	ll.registerDirectory(Systems::dirname(argv[0]));
-#endif
+	if(cwd.size())
+	    ll.registerDirectory(cwd);
 
         luaopen_SWE(ll.L());
 
-#if defined __MINGW32__
-	ll.pushString(Systems::dirname(argv[0]));
-	ll.setFieldTableIndex("getcwd", -2);
-#elif defined ANDROID
-	if(swedir.size())
+	if(cwd.size())
 	{
-	    ll.pushString(swedir);
+	    DEBUG("SWE.getcwd: " << cwd);
+	    ll.pushString(cwd);
 	    ll.setFieldTableIndex("getcwd", -2);
 	}
-#endif
 
         ll.doFile(runfile);
 

@@ -109,7 +109,7 @@ namespace SWE_Scene
     bool	window_remove(LuaState &, SWE_Window*);
     SWE_Window* window_getindex(LuaState &, int);
 
-    void	clean(LuaState &);
+    void	clean(LuaState &, bool skipFirst);
     void	registers(LuaState &);
 }
 

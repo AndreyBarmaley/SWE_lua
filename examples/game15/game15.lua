@@ -155,19 +155,9 @@ end
 
 -- WIN
 function win.RenderWindow()
-    local memusage = tointeger(SWE.SystemMemoryUsage() / 1024)
-    local txMUK = SWE.Texture.Text(frs14, "mem: " .. tostring(memusage) .. "K", SWE.Color.Blue)
-
     win:RenderClear(SWE.Color.Silver)
     win:RenderRect(SWE.Color.Red, 0, 0, win.width, win.height)
     win:RenderText(frs28, tostring(score), SWE.Color.Red, 292, 115, SWE.Align.Center, SWE.Align.Center)
-
-    win:RenderTexture(txMUK, 0, 0, txMUK.width, txMUK.height, win.width - txMUK.width - 10,
-			    win.height - txMUK.height - 10, txMUK.width, txMUK.height)
-
-    -- free texture
-    txMUK = nil
-    collectgarbage()
     return true
 end
 

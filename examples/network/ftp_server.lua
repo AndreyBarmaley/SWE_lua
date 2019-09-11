@@ -1,11 +1,12 @@
 -- FTP Lua Server: concept
 --
 -- FTP port listen 2121
--- FTP data port set 45001 - 450099
+-- FTP data port set 45001 - 450999
 
 -- require 'SWE'
+SWE.SetDebug(true)
 
-SWE.SetDebug(false)
+local version = "LuaFTP 01"
 
 local function ToInt(x)
     local integral, fractal = math.modf(x)
@@ -22,7 +23,8 @@ local function StringSplit(str, sep)
 end
 
 function FixedPath(path)
-    local t = StringSplit(path, "/")
+    local dirsep = "/"
+    local t = StringSplit(path, dirsep)
     local r = {}
     for i = 1,#t do
         if t[i] ~= "." and t[i] ~= ".." then
@@ -31,27 +33,37 @@ function FixedPath(path)
             table.remove(r)
         end
     end
-    return "/" .. table.concat(r, "/")
+    if 0 < #t then
+        return table.concat(r, dirsep)
+    else
+        return ""
+    end
 end
 
-function FtpCommands(client,ipaddr)
+function FtpCommands(client)
 
     local ftp = {}
 
-    ftp.banner = "LuaFTP 01"
+    ftp.banner = version
     ftp.client = client
     ftp.user = "anonymous"
     ftp.exit = false
     ftp.login = false
-    ftp.root = "/var/tmp"
+    ftp.root = "/var/tmp/"
     ftp.pwd = "/"
     ftp.ascii = true
+    ftp.net = SWE.NetStream()
+
+    if SWE.SystemMobileOs() == "wince" then
+	ftp.root = "/"
+    end
 
     ftp.data = {}
     ftp.data.pasv = false
     ftp.data.ipaddr = ""
     ftp.data.port = 0
     ftp.data.sock = nil
+    ftp.debug = print
 
     ftp.cmdUSER = function(user)
 	ftp.client:SendString("331 please specify the password\r\n")
@@ -83,7 +95,7 @@ function FtpCommands(client,ipaddr)
         ftp.client:SendString("211-ftp server status\r\n")
         ftp.client:SendString("\tconnected to " .. ftp.client.address .. "\r\n")
         ftp.client:SendString("\tlogged in as " .. ftp.user .. "\r\n")
-        ftp.client:SendString("\t" .. ftp.banner .. ", memory usage " .. ToInt(SWE.SystemMemoryUsage() /1052672) .. "M\r\n")
+        ftp.client:SendString("\t" .. ftp.banner .. ", memory usage " .. ToInt(SWE.SystemMemoryUsage() / 1052672) .. "M\r\n")
         ftp.client:SendString("211 end of status\r\n")
     end
 
@@ -105,7 +117,7 @@ function FtpCommands(client,ipaddr)
     end
 
     ftp.cmdCWD = function(name)
-	local dir = FixedPath(ftp.root .. name)
+	local dir = ftp.root .. FixedPath(name)
 	local stat = SWE.SystemFileStat(dir)
 	if stat ~= nil and stat.isdir then
 	    ftp.pwd = name
@@ -116,7 +128,7 @@ function FtpCommands(client,ipaddr)
     end
 
     ftp.cmdMKD = function(name)
-	local dir = FixedPath(ftp.root .. name)
+	local dir = ftp.root .. FixedPath(name)
 	ftp.client:SendString("550 permission denied\r\n")
     end
 
@@ -141,7 +153,7 @@ function FtpCommands(client,ipaddr)
             
         ftp.client:SendString("150 here comes the directory listing\r\n")
 
-	local names = SWE.SystemReadDirectory(ftp.root .. ftp.pwd)
+	local names = SWE.SystemReadDirectory(ftp.root .. FixedPath(ftp.pwd))
 	for k,v in pairs(names) do
 	    local dirname,basename = SWE.SystemDirnameBasename(k)
 	    ftp.data.sock:SendString(basename .. "\r\n")
@@ -173,7 +185,7 @@ function FtpCommands(client,ipaddr)
             
         ftp.client:SendString("150 here comes the directory listing\r\n")
 
-	local names = SWE.SystemReadDirectory(ftp.root .. ftp.pwd)
+	local names = SWE.SystemReadDirectory(ftp.root .. FixedPath(ftp.pwd))
 	for k,v in pairs(names) do
 	    local stat = SWE.SystemFileStat(k)
 	    local dirname,basename = SWE.SystemDirnameBasename(k)
@@ -216,19 +228,30 @@ function FtpCommands(client,ipaddr)
 	end
 
 	-- send file
-	local file = FixedPath(ftp.root .. name)
-	local fh = io.open(file, "r")
-	if fh ~= nil then
-	    local stat = SWE.SystemFileStat(file)
-	    local size = 0
+	local file = ftp.root .. FixedPath(name)
+
+	local offset = 0
+	local block = 64 * 1024
+	local stat = SWE.SystemFileStat(file)
+	local buf = SWE.BinaryBuf()
+	if stat ~= nil then
 	    ftp.client:SendString("150 ok to send data\r\n")
-	    while size < stat.size do
-		local buf = SWE.BinaryBuf(fh:read(64 * 1024))
-		ftp.data.sock:SendBytes(buf)
-		size = size + buf.size
+	    while offset < stat.size do
+		buf:ReadFromFile(file, offset, block)
+		if 0 < buf.size then
+		    ftp.data.sock:SendBytes(buf)
+    		    offset = offset + buf.size
+		else
+		    SWE.Debug("swe.binarybuf read error",file,offset)
+		    break
+		end
+		buf:Clear()
 	    end
-	    fh:close()
-	    ftp.client:SendString("226 transfer complete\r\n")
+	    if offset < stat.size then
+		ftp.client:SendString("550 failed to read file\r\n")
+	    else
+		ftp.client:SendString("226 transfer complete\r\n")
+	    end
 	else
 	    ftp.client:SendString("550 failed to open file\r\n")
 	end
@@ -257,34 +280,37 @@ function FtpCommands(client,ipaddr)
 	end
 
 	-- recv file
-	local file = FixedPath(ftp.root .. name)
+	local file = ftp.root .. FixedPath(name)
+	-- check write
 	local fh = io.open(file, "w")
 	if fh ~= nil then
-	    local size = 0
-	    local continue = true
-	    ftp.client:SendString("150 ok to recv data\r\n")
-	    while continue do
-		local buf = ftp.data.sock:RecvBytes(buf, 64 * 1024)
-		if buf ~= nil and buf.size > 0 then
-		    buf:SaveToFile(file, -1)
-		    size = size + buf.size
-		else
-		    continue = false
-		end
-	    end
 	    fh:close()
-	    ftp.client:SendString("226 transfer complete (size " .. tostring(size) .. ")\r\n")
 	else
 	    ftp.client:SendString("550 failed to open file\r\n")
+	    return
 	end
 
+	local size = 0
+	local continue = true
+	ftp.client:SendString("150 ok to recv data\r\n")
+	while continue do
+	    local buf = ftp.data.sock:RecvBytes(buf, 64 * 1024)
+	    if buf ~= nil and buf.size > 0 then
+		buf:SaveToFile(file, -1)
+		size = size + buf.size
+	    else
+		continue = false
+	    end
+	end
+
+	ftp.client:SendString("226 transfer complete (size " .. tostring(size) .. ")\r\n")
 	ftp.data.sock:Close()
 	ftp.data.sock = nil
     end
 
 
     ftp.cmdSIZE = function(name)
-	local file = FixedPath(ftp.root .. name)
+	local file = ftp.root .. FixedPath(name)
 	local stat = SWE.SystemFileStat(file)
 	if stat ~= nil then
     	    ftp.client:SendString("213 " .. stat.size .. "\r\n")
@@ -294,7 +320,7 @@ function FtpCommands(client,ipaddr)
     end
 
     ftp.cmdMDTM = function(name)
-	local file = FixedPath(ftp.root .. name)
+	local file = ftp.root .. FixedPath(name)
 	local stat = SWE.SystemFileStat(file)
 	if stat ~= nil then
     	    ftp.client:SendString("213 " .. os.date("%Y%m%d%H%M%S", stat.ctime) .. "\r\n")
@@ -326,10 +352,9 @@ function FtpCommands(client,ipaddr)
     ftp.cmdPASV = function()
 	ftp.data.sock = nil
 	ftp.data.pasv = true
-	ftp.data.port = math.random(45001, 45099)
+	ftp.data.port = math.random(45001, 45999)
 
-	local net = SWE.NetStream()
-	local res = net:Listen(ftp.data.port)
+	local res = ftp.net:Listen(ftp.data.port)
 
 	if res then
 	    local ipaddr = "127.0.0.1"
@@ -343,7 +368,7 @@ function FtpCommands(client,ipaddr)
 		end
 	    end
 
-	    print(ipaddr, ftp.data.port)
+	    ftp.debug("data port:", ipaddr, ftp.data.port)
 
 	    local octets = StringSplit(ipaddr, "%.")
 	    local p1 = ToInt(ftp.data.port / 256)
@@ -352,7 +377,7 @@ function FtpCommands(client,ipaddr)
 			tostring(octets[3]) .. "," .. tostring(octets[4]) .. "," .. tostring(p1) .. "," .. tostring(p2)
 
 	    ftp.client:SendString("227 entering passive mode (" .. mode .. ")\r\n")
-	    ftp.data.sock = net:WaitAccept()
+	    ftp.data.sock = ftp.net:WaitAccept()
 	else
 	    ftp.client:SendString("425 failed to listen port\r\n")
 	end
@@ -365,6 +390,8 @@ function FtpCommands(client,ipaddr)
 	ftp.data.sock = nil
 	ftp.data.pasv = false
         ftp.client:SendString("200 port command successful\r\n")
+
+	ftp.debug("data port:", ftp.data.ipaddr, ftp.data.port)
     end
 
     ftp.cmdUNKNOWN = function()
@@ -381,19 +408,33 @@ function FtpCommands(client,ipaddr)
 	while not ftp.exit do
 	    local str = ftp.client:RecvString(0x0A)
 	    if 0 < string.len(str) then
-		local argv = StringSplit(str, "%s")
-		local cmd = string.upper(argv[1])
-		local func = "cmd" .. cmd
 
-		print("recv command:", table.unpack(argv))
+		--local buf = SWE.BinaryBuf(str)
+		--SWE.Debug("BINARY:", buf:ToJson())
+
+		-- chomp string
+		str = string.gsub(str, "[\r\n]+", "")
+
+		-- slit command, args
+		local i1, i2, cmd, argv = string.find(str,"(%a+)%s*(.*)")
+		cmd = string.upper(cmd)
+
+		local func = "cmd" .. cmd
+		local info = "FTP recv: " .. cmd
+
+		if argv ~= nil then
+		    ftp.debug(info, argv)
+		else
+		    ftp.debug(info)
+		end
 
 		local answer = false
 
 		for k,v in pairs(ftp) do
 		    if k == func and type(v) == "function" then
-			ftp[func](select(2, table.unpack(argv)))
+			ftp[func](argv)
 			answer = true
-			break;
+			break
 		    end
 		end
 
@@ -402,6 +443,7 @@ function FtpCommands(client,ipaddr)
 		end
 	    else
 		SWE.SystemSleep(500)
+		ftp.debug("empty data")
 	    end
 	end
     end
@@ -419,7 +461,7 @@ if res then
     -- single thread mode
     local client = net:WaitAccept()
     if client ~= nil then
-	FtpCommands(client):parse()
+        FtpCommands(client):parse()
     end
 else
     print("error: res false")

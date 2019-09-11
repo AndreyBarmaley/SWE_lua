@@ -40,7 +40,7 @@
 #include "SWE_netstream.h"
 #include "SWE_randomhit.h"
 
-#define SWE_LUA_VERSION 20190830
+#define SWE_LUA_VERSION 20190904
 #define SWE_LUA_LICENSE "GPL3"
 
 int SWE_window_create(lua_State*);
@@ -58,18 +58,24 @@ int SWE_init2(lua_State* L)
     if((landscape && dsz.w > dsz.h) ||
 	(! landscape && dsz.w < dsz.h))
     {
+	SWE_Scene::clean(ll, true);
 	// return display window
 	SWE_Window* win = SWE_Scene::window_getindex(ll, 1);
+
 	if(win)
 	{
+	    DisplayScene::destroyChilds(*win);
+
 	    DEBUG("display found: " << dsz.toString());
 	    win->setVisible(true);
+
+	    // push to stack
 	    SWE_Scene::window_push(ll, win);
 	    return 1;
 	}
     }
 
-    SWE_Scene::clean(ll);
+    SWE_Scene::clean(ll, false);
 
     if(Display::init(title, landscape))
     {
@@ -102,18 +108,24 @@ int SWE_init(lua_State* L)
     // check also initialized
     if(! dsz.isEmpty() && (winsz.isEmpty() || winsz == dsz))
     {
+	SWE_Scene::clean(ll, true);
+
 	// return display window
 	SWE_Window* win = SWE_Scene::window_getindex(ll, 1);
 	if(win)
 	{
+	    DisplayScene::destroyChilds(*win);
+
 	    DEBUG("display found: " << dsz.toString());
 	    win->setVisible(true);
+
+	    // push to stack
 	    SWE_Scene::window_push(ll, win);
 	    return 1;
 	}
     }
-
-    SWE_Scene::clean(ll);
+    
+    SWE_Scene::clean(ll, false);
 
     if(Display::init(title, winsz, fullscreen))
     {
@@ -313,17 +325,24 @@ int SWE_register_directory(lua_State* L)
     std::string name = ll.getTopString();
 
     if(! Systems::isDirectory(name))
-	name = SWE_Tools::toFullFileName(ll, name);
+    {
+	std::string name2 = SWE_Tools::toCurrentPath(ll, name);
+	if(Systems::isDirectory(name2)) std::swap(name, name2);
+    }
 
     if(Systems::isDirectory(name))
     {
 	DEBUG(name);
 	bool res = ll.registerDirectory(name);
 	ll.pushBoolean(res);
-	return 1;
+    }
+    else
+    {
+	ERROR("directory not found: " << name);
+	ll.pushBoolean(false);
     }
 
-    return 0;
+    return 1;
 }
 
 int SWE_system_delay(lua_State* L)
@@ -414,6 +433,9 @@ int SWE_system_share_directories(lua_State* L)
     LuaState ll(L);
     StringList dirs = Systems::shareDirectories("SWE_lua");
 
+    // getcwd
+    dirs.push_back(SWE_Tools::toCurrentPath(ll, ""));
+
     for(auto it = dirs.begin(); it != dirs.end(); ++it)
 	ll.pushString(*it);
 
@@ -434,23 +456,36 @@ int SWE_system_read_directory(lua_State* L)
     std::string dirpath = ll.getTopString();
 
     if(! Systems::isDirectory(dirpath))
-	dirpath = SWE_Tools::toFullFileName(ll, dirpath);
-
-    StringList res = Systems::readDir(dirpath, true);
-
-    ll.pushTable();
-    for(auto it = res.begin(); it != res.end(); ++it)
     {
-	if(Systems::isDirectory(*it))
-	    ll.pushString("directory");
-	else
-	if(Systems::isFile(*it))
-	    ll.pushString("file");
-	else
-	    ll.pushString("unknown");
-	ll.setFieldTableIndex(*it, -2);
+	std::string dirpath2 = SWE_Tools::toCurrentPath(ll, dirpath);
+	if(Systems::isDirectory(dirpath2)) std::swap(dirpath, dirpath2);
     }
 
+    ll.pushTable();
+
+    if(Systems::isDirectory(dirpath))
+    {
+	DEBUG(dirpath);
+	StringList res = Systems::readDir(dirpath, true);
+
+	for(auto it = res.begin(); it != res.end(); ++it)
+	{
+	    if(Systems::isDirectory(*it))
+		ll.pushString("directory");
+	    else
+	    if(Systems::isFile(*it))
+		ll.pushString("file");
+	    else
+		ll.pushString("unknown");
+	    ll.setFieldTableIndex(*it, -2);
+	}
+    }
+    else
+    {
+	ERROR("directory not found: " << dirpath);
+    }
+
+    // return table
     return 1;
 }
 
@@ -505,7 +540,7 @@ int SWE_system_file_stat(lua_State* L)
 
     if(0 > stat(path.c_str(), & st))
     {
-        ERROR("error stat for:" << path);
+        ERROR("error stat for: " << path);
 	ll.pushNil();
 	return 1;
     }
@@ -520,13 +555,58 @@ int SWE_system_file_stat(lua_State* L)
     ll.pushInteger(st.st_ctime).setFieldTableIndex("ctime", -2);
     ll.pushInteger(st.st_nlink).setFieldTableIndex("nlink", -2);
 
-    bool isdir = Systems::isDirectory(path);
-    std::string access = StringFormat("%1%2%3%4%5%6%7%8%9%10").arg(isdir ? "d" : "-").
+    int type = '-';
+    bool isdir = false;
+
+    if(S_ISSOCK(st.st_mode))
+    {
+	ll.pushString("sock").setFieldTableIndex("type", -2);
+	type = 's';
+    }
+    else
+    if(S_ISLNK(st.st_mode))
+    {
+	ll.pushString("link").setFieldTableIndex("type", -2);
+	type = 'l';
+    }
+    else
+    if(S_ISBLK(st.st_mode))
+    {
+	ll.pushString("block").setFieldTableIndex("type", -2);
+	type = 'b';
+    }
+    else
+    if(S_ISCHR(st.st_mode))
+    {
+	ll.pushString("char").setFieldTableIndex("type", -2);
+	type = 'c';
+    }
+    else
+    if(S_ISFIFO(st.st_mode))
+    {
+	ll.pushString("fifo").setFieldTableIndex("type", -2);
+	type = 'p';
+    }
+    else
+    if(S_ISDIR(st.st_mode))
+    {
+	ll.pushString("dir").setFieldTableIndex("type", -2);
+	type = 'd';
+	isdir = true;
+    }
+    else
+    if(S_ISREG(st.st_mode))
+    {
+	ll.pushString("file").setFieldTableIndex("type", -2);
+	type = '-';
+    }
+
+    std::string access = StringFormat("%1%2%3%4%5%6%7%8%9%10").arg(std::string(1, type)).
 	arg(st.st_mode & S_IRUSR ? "r" : "-").arg(st.st_mode & S_IWUSR ? "w" : "-").arg(st.st_mode & S_IXUSR ? "x" : "-").
 	arg(st.st_mode & S_IRGRP ? "r" : "-").arg(st.st_mode & S_IWGRP ? "w" : "-").arg(st.st_mode & S_IXGRP ? "x" : "-").
 	arg(st.st_mode & S_IROTH ? "r" : "-").arg(st.st_mode & S_IWOTH ? "w" : "-").arg(st.st_mode & S_IXOTH ? "x" : "-");
 
-    ll.pushBoolean(Systems::isDirectory(path)).setFieldTableIndex("isdir", -2);
+    ll.pushBoolean(isdir).setFieldTableIndex("isdir", -2);
     ll.pushString(access).setFieldTableIndex("access", -2);
 
     return 1;
@@ -543,7 +623,7 @@ int SWE_render_screenshot(lua_State* L)
 	return 0;
     }
 
-    bool res = Display::renderScreenshot(SWE_Tools::toFullFileName(ll, ll.getTopString()));
+    bool res = Display::renderScreenshot(SWE_Tools::toCurrentPath(ll, ll.getTopString()));
     ll.pushBoolean(res);
 
     return 1;
@@ -707,18 +787,6 @@ extern "C" {
     // set metatable: __gc
     ll.pushTable(0, 1).pushFunction(SWE_quit).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2);
-
-    // set getpwd
-#if defined __MINGW32__
-    // set from main
-#elif defined ANDROID
-    // set from main
-#else
-    char* pwd = get_current_dir_name();
-    ll.pushString(pwd);
-    free(pwd);
-    ll.setFieldTableIndex("getcwd", -2);
-#endif
 
     // SWE.Audio
     SWE_Audio::registers(ll);

@@ -54,7 +54,7 @@ local function DialogSelectCwd(posx, posy, width, height, cwd, parent)
 	return true
     end
 
-    list.ItemSelectedAction = function(item)
+    list.ItemSelectedAction = function(list, item)
 	res = item.label
 	list:SetVisible(false)
     end
@@ -73,6 +73,13 @@ local function DialogSelectCwd(posx, posy, width, height, cwd, parent)
 	return true
     end
 
+    list.MouseClickEvent = function(px,py,pb,rx,ry,rb)
+	-- click outside, hide list
+	if not list:PointInArea(px, py) then
+	    list:SetVisible(false)
+	end
+    end
+
     local function ListFillItems(dirs)
 	items = {}
 
@@ -82,7 +89,7 @@ local function DialogSelectCwd(posx, posy, width, height, cwd, parent)
 	    table.insert(items, item)
 	end
 
-	list.InsertItems(table.unpack(items))
+	list:AssignItems(table.unpack(items))
     end
 
 
@@ -129,7 +136,7 @@ local function GetDirsFiles(cwd)
 	end
     end
 
-    if not dotIndex then
+    if not dotIndex and cwd ~= "/" then
 	table.insert(dirs, 1, SWE.SystemConcatePath(cwd, ".."))
     end
 
@@ -193,7 +200,7 @@ local function ListFillItems(list,cwd,old)
         table.insert(items, item)
     end
 
-    list.InsertItems(table.unpack(items))
+    list:AssignItems(table.unpack(items))
     list.cwd = cwd
 
     if old ~= nil then
@@ -215,7 +222,8 @@ function CommanderInit(win)
     local sharedir = SWE.SystemShareDirectories()
     if sharedir ~= nil then
 	local buf = SWE.BinaryBuf()
-	local file = SWE.SystemConcatePath(sharedir, "config.json")
+	local file = SWE.SystemConcatePath(sharedir, "commander.json")
+	SWE.Debug("check config:", file)
 	if buf:ReadFromFile(file) then
 	    local config = SWE.JsonParse(buf:ToString())
 	    if config ~= nil then
@@ -249,7 +257,7 @@ function CommanderInit(win)
 
     local posx = 10
     local posy = cmd.btnx.height + 5
-    cmd.list = ListCreate(posx, posy, cmd.win.width - 2 * posx, cmd.win.height - posy - cmd.btnx.height - 6, cmd.win)
+    cmd.list = ListCreate(posx, posy, cmd.win.width - posx - 6, cmd.win.height - posy - cmd.btnx.height - 6, cmd.win)
     cmd.list.cwd = cfgcwd
     cmd.list.hotkeys.GotoFirst = SWE.Key.LEFT
     cmd.list.hotkeys.GotoLast = SWE.Key.RIGHT
@@ -260,7 +268,36 @@ function CommanderInit(win)
     cmd.list.hotkeys.PageDown = SWE.Key.PAGEDOWN
     cmd.list:SetKeyHandle(true)
 
+    cmd.scroll = SWE.Window(cmd.list.posx + cmd.list.width, cmd.list.posy, 5, cmd.list.height, cmd.win)
     cmd.cwd = SWE.Window(cmd.list.posx, 3, cmd.list.width, cmd.btnx.height, cmd.win)
+
+    cmd.clear = function(cmd)
+	cmd.cwd = nil
+	cmd.list = nil
+	cmd.btnzi = nil
+	cmd.btnzo = nil
+	cmd.btnx = nil
+	cmd.win = nil
+    end
+
+    cmd.scroll.MouseClickEvent = function(px,py,pb,rx,ry,rb)
+	local maxh = #cmd.list.items * frs.lineHeight
+	local posh = maxh * py / cmd.scroll.height
+	cmd.list:SetItemTop(ToInt(posh / frs.lineHeight, cmd.list.lastIndex))
+	SWE.DisplayDirty()
+	return true
+    end
+
+    cmd.scroll.RenderWindow = function()
+	cmd.scroll:RenderClear(SWE.Color.LightCyan)
+	local maxh = #cmd.list.items * frs.lineHeight
+	if 0 < maxh then
+	    local curh = ToInt((cmd.list.height - 2) * cmd.list.maxItems * frs.lineHeight / maxh)
+	    local cury = ToInt((cmd.list.topIndex - 1) * frs.lineHeight * (cmd.list.height - 2) / maxh)
+	    cmd.scroll:RenderRect(SWE.Color.Sienna, 0, cury, cmd.scroll.width, curh, true)
+	end
+	return true
+    end
 
     cmd.cwd.RenderWindow = function()
 	cmd.cwd:RenderClear(SWE.Color.DarkSlateGray)
@@ -269,7 +306,7 @@ function CommanderInit(win)
 	return true
     end
 
-    cmd.cwd.MouseClickEvent = function(x,y,btn)
+    cmd.cwd.MouseClickEvent = function(px,py,pb,rx,ry,rb)
 	local cwd = DialogSelectCwd(cmd.cwd.posx, cmd.cwd.posy, cmd.cwd.width, cmd.btnx.height, cmd.list.cwd, cmd.win)
 
 	if cwd ~= cmd.list.cwd then
@@ -293,13 +330,13 @@ function CommanderInit(win)
 	return false
     end
 
-    cmd.btnx.MouseClickEvent = function(x,y,btn)
+    cmd.btnx.MouseClickEvent = function(px,py,pb,rx,ry,rb)
 	cmd.win:SetVisible(false)
 	cmd.exit = true
 	return true
     end
 
-    cmd.btnzo.MouseClickEvent = function(x,y,btn)
+    cmd.btnzo.MouseClickEvent = function(px,py,pb,rx,ry,rb)
 	local fsz = tonumber(frs.size) - 2
 	if fsz > 10 then
 	    frs = SWE.FontRender("terminus.ttf", fsz, true)
@@ -309,7 +346,7 @@ function CommanderInit(win)
 	end
     end
 
-    cmd.btnzi.MouseClickEvent = function(x,y,btn)
+    cmd.btnzi.MouseClickEvent = function(px,py,pb,rx,ry,rb)
 	local fsz = tonumber(frs.size) + 2
 	frs = SWE.FontRender("terminus.ttf", fsz, true)
 	ListFillItems(cmd.list, cmd.list.cwd)
@@ -317,7 +354,7 @@ function CommanderInit(win)
 	SWE.DisplayDirty()
     end
 
-    cmd.list.ItemSelectedAction = function(item)
+    cmd.list.ItemSelectedAction = function(list, item)
 	local selitem = cmd.list:GetItemSelected()
 	if selitem ~= nil then
 	    local current =  selitem.label
@@ -354,6 +391,9 @@ function CommanderInit(win)
 	cmd.list:SetPosition(posx, posy)
 	cmd.list:SetSize(cmd.win.width - cmd.list.posx * 2, cmd.win.height - cmd.list.posy - cmd.btnx.height - 6)
 	cmd.cwd:SetSize(cmd.list.width, cmd.btnx.height)
+	cmd.scroll:SetPosition(cmd.list.posx + cmd.list.width, cmd.list.posy)
+	cmd.scroll:SetSize(5, cmd.list.height)
+
 	ListFillItems(cmd.list, cmd.list.cwd)
         SWE.DisplayDirty()
     end
@@ -367,16 +407,19 @@ function CommanderInit(win)
 	cmd.list:SetPosition(posx, posy)
 	cmd.list:SetSize(cmd.win.width - cmd.list.posx * 2, cmd.win.height - cmd.list.posy - cmd.btnx.height - 6)
 	cmd.cwd:SetSize(cmd.list.width, cmd.btnx.height)
+	cmd.scroll:SetPosition(cmd.list.posx + cmd.list.width, cmd.list.posy)
+	cmd.scroll:SetSize(5, cmd.list.height)
     end
 
     cmd.list.WindowCloseEvent = function()
 	local sharedir = SWE.SystemShareDirectories()
 	if sharedir ~= nil then
 	    SWE.SystemMakeDirectory(sharedir)
-	    config = SWE.SystemConcatePath(sharedir, "config.json")
+	    config = SWE.SystemConcatePath(sharedir, "commander.json")
 	    -- json format
 	    local buf = SWE.BinaryBuf("{" .. "\"fsz\":" .. frs.size .. ",\"cwd\":" .. "\"" .. cmd.list.cwd .. "\"}")
 	    buf:SaveToFile(config)
+	    SWE.Debug("save config:", config)
 	end
     end
 
