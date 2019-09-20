@@ -579,7 +579,7 @@ int SWE_netstream_wait_accept(lua_State* L)
 
     if(net)
     {
-	TCPsocket sock;
+	TCPsocket sock = NULL;
 
 	while(net->isEnabled())
 	{

@@ -1656,6 +1656,479 @@ define({ "api": [
     "groupTitle": "SWE_BinaryBuf"
   },
   {
+    "type": "unicode box drawings: up and horizontal",
+    "url": "SWE.Char.BTee(line)",
+    "title": "SWE.Char.BTee",
+    "group": "SWE_Char",
+    "name": "BTee",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "line",
+            "description": "<p>line type, (SWE.Line enum)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>unicode code</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Char"
+  },
+  {
+    "type": "unicode box drawings: horizontal",
+    "url": "SWE.Char.HLine(line)",
+    "title": "SWE.Char.HLine",
+    "group": "SWE_Char",
+    "name": "HLine",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "line",
+            "description": "<p>line type, (SWE.Line enum)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>unicode code</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Char"
+  },
+  {
+    "type": "unicode box drawings: up and right",
+    "url": "SWE.Char.LLCorner(line)",
+    "title": "SWE.Char.LLCorner",
+    "group": "SWE_Char",
+    "name": "LLCorner",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "line",
+            "description": "<p>line type, (SWE.Line enum)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>unicode code</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Char"
+  },
+  {
+    "type": "unicode box drawings: up and left",
+    "url": "SWE.Char.LRCorner(line)",
+    "title": "SWE.Char.LRCorner",
+    "group": "SWE_Char",
+    "name": "LRCorner",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "line",
+            "description": "<p>line type, (SWE.Line enum)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>unicode code</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Char"
+  },
+  {
+    "type": "unicode box drawings: vertical and right",
+    "url": "SWE.Char.LTee(line)",
+    "title": "SWE.Char.LTee",
+    "group": "SWE_Char",
+    "name": "LTee",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "line",
+            "description": "<p>line type, (SWE.Line enum)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>unicode code</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Char"
+  },
+  {
+    "type": "unicode box drawings: vertical and horizontal",
+    "url": "SWE.Char.Plus(line)",
+    "title": "SWE.Char.Plus",
+    "group": "SWE_Char",
+    "name": "Plus",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "line",
+            "description": "<p>line type, (SWE.Line enum)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>unicode code</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Char"
+  },
+  {
+    "type": "unicode box drawings: vertical and left",
+    "url": "SWE.Char.RTee(line)",
+    "title": "SWE.Char.RTee",
+    "group": "SWE_Char",
+    "name": "RTee",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "line",
+            "description": "<p>line type, (SWE.Line enum)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>unicode code</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Char"
+  },
+  {
+    "type": "unicode box drawings: down and horizontal",
+    "url": "SWE.Char.TTee(line)",
+    "title": "SWE.Char.TTee",
+    "group": "SWE_Char",
+    "name": "TTee",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "line",
+            "description": "<p>line type, (SWE.Line enum)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>unicode code</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Char"
+  },
+  {
+    "type": "unicode box drawings: down and right",
+    "url": "SWE.Char.ULCorner(line)",
+    "title": "SWE.Char.ULCorner",
+    "group": "SWE_Char",
+    "name": "ULCorner",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "line",
+            "description": "<p>line type, (SWE.Line enum)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>unicode code</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Char"
+  },
+  {
+    "type": "unicode box drawings: down and left",
+    "url": "SWE.Char.URCorner(line)",
+    "title": "SWE.Char.URCorner",
+    "group": "SWE_Char",
+    "name": "URCorner",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "line",
+            "description": "<p>line type, (SWE.Line enum)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>unicode code</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Char"
+  },
+  {
+    "type": "unicode box drawings: vertical",
+    "url": "SWE.Char.VLine(line)",
+    "title": "SWE.Char.VLine",
+    "group": "SWE_Char",
+    "name": "VLine",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "line",
+            "description": "<p>line type, (SWE.Line enum)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>unicode code</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Char"
+  },
+  {
     "type": "get color string",
     "url": "SWE.Color.ToString(colval)",
     "title": "SWE.Color.ToString",
@@ -4175,6 +4648,57 @@ define({ "api": [
     "groupTitle": "SWE_Key"
   },
   {
+    "type": "line enums",
+    "url": "SWE.Line.<EnumConstant>",
+    "title": "SWE.Line.<EnumConstant>",
+    "group": "SWE_Line",
+    "name": "_EnumConstant_",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "LineAscii",
+            "description": "<p>line ascii code</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "LineThin",
+            "description": "<p>line thin utf16</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "LineBold",
+            "description": "<p>line bold utf16</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "LineDouble",
+            "description": "<p>line double utf16</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Line"
+  },
+  {
     "type": "netstream close connect",
     "url": "SWE.NetStream.Close(self)",
     "title": "SWE.NetStream.Close",
@@ -5295,6 +5819,85 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "./api/apidoc_rect.js",
     "groupTitle": "SWE_Point"
+  },
+  {
+    "type": "terminal char property enums",
+    "url": "SWE.Property.<EnumConstant>",
+    "title": "SWE.Property.<EnumConstant>",
+    "group": "SWE_Property",
+    "name": "_EnumConstant_",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "StyleNormal",
+            "description": "<p>SDL ttf style constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "StyleBold",
+            "description": "<p>SDL ttf style constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "StyleItalic",
+            "description": "<p>SDL ttf style constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "StyleUnderLine",
+            "description": "<p>SDL ttf style constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "StyleStrikeThrough",
+            "description": "<p>SDL ttf style constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "HintingNormal",
+            "description": "<p>SDL ttf hinting constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "HintingLight",
+            "description": "<p>SDL ttf hinting constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "HintingMono",
+            "description": "<p>SDL ttf hinting constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "HintingNone",
+            "description": "<p>SDL ttf hinting constant</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Property"
   },
   {
     "type": "check iteration hits",

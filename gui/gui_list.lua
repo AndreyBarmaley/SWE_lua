@@ -260,13 +260,13 @@ function ListCreate(x, y, w, h, parent)
 	if list.hotkeys.GotoFirst ~= nil and list.hotkeys.GotoFirst == key and 1 < list.selIndex then
 	    list:SetItemSelected(1)
 	    list:SetItemTop(1)
-	    list:RenderWindow()
+	    SWE.DisplayDirty()
 	    return true
 	-- goto last
 	elseif list.hotkeys.GotoLast ~= nil and list.hotkeys.GotoLast == key and list.selIndex < #list.items then
 	    list:SetItemSelected(#list.items)
 	    list:SetItemTop(#list.items - list.maxItems + 1)
-	    list:RenderWindow()
+	    SWE.DisplayDirty()
 	    return true
 	-- goto up
 	elseif list.hotkeys.GotoUp ~= nil and list.hotkeys.GotoUp == key and 1 < list.selIndex then
@@ -274,7 +274,7 @@ function ListCreate(x, y, w, h, parent)
 	    if list.selIndex < list.topIndex then
 		list:SetItemTop(list.topIndex - 1)
 	    end
-	    list:RenderWindow()
+	    SWE.DisplayDirty()
 	    return true
 	-- goto down
 	elseif list.hotkeys.GotoDown ~= nil and list.hotkeys.GotoDown == key and list.selIndex < #list.items then
@@ -282,7 +282,7 @@ function ListCreate(x, y, w, h, parent)
 	    if list.selIndex > list.topIndex + list.maxItems - 1 then
 		list:SetItemTop(list.topIndex + 1)
 	    end
-	    list:RenderWindow()
+	    SWE.DisplayDirty()
 	    return true
 	-- action
 	elseif list.hotkeys.Action ~= nil and list.hotkeys.Action == key then
@@ -297,13 +297,13 @@ function ListCreate(x, y, w, h, parent)
 		index = 1
 	    end
 	    list:SetItemSelected(index)
-	    list:RenderWindow()
+	    SWE.DisplayDirty()
 	    return true
 	-- page down
 	elseif list.hotkeys.PageDown ~= nil and list.hotkeys.PageDown == key and list.selIndex < #list.items then
 	    list:SetItemTop(list.topIndex + list.maxItems)
 	    list:SetItemSelected(list.selIndex + list.maxItems)
-	    list:RenderWindow()
+	    SWE.DisplayDirty()
 	    return true
 	end
         return false
@@ -313,7 +313,7 @@ function ListCreate(x, y, w, h, parent)
     list.ScrollUpEvent = function(x,y)
 	if 1 < list.topIndex then
 	    list:SetItemTop(list.topIndex - 1)
-	    list:RenderWindow()
+	    SWE.DisplayDirty()
 	end
 	return true
     end
@@ -322,7 +322,7 @@ function ListCreate(x, y, w, h, parent)
     list.ScrollDownEvent = function(x,y)
 	if list.topIndex < list.lastIndex then
 	    list:SetItemTop(list.topIndex + 1)
-	    list:RenderWindow()
+	    SWE.DisplayDirty()
 	end
 	return true
     end
@@ -345,7 +345,7 @@ function ListCreate(x, y, w, h, parent)
 	    return true
 	-- list dirty
 	elseif a == SWE.Action.ListDirty then
-    	    list:RenderWindow()
+    	    SWE.DisplayDirty()
 	    return true
 	elseif a == SWE.Action.FontChanged then
 	    list:FontChanged(b)

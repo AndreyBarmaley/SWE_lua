@@ -239,7 +239,7 @@ function CommanderInit(win)
 	    local dw,dh,df = SWE.DisplaySize()
 	    -- calculate font size
 	    local fsz = ToInt(dw / 320 * 12)
-	    frs = SWE.FontRender("terminus.ttf", fsz, true)
+	    frs = SWE.FontRender("terminus.ttf", fsz, false)
 	    SWE.Debug("set font size", fsz)
 	else
 	    frs = SWE.FontRender("terminus.ttf", cfgfsz, true)

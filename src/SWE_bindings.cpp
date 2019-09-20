@@ -35,12 +35,13 @@
 #include "SWE_signal.h"
 #include "SWE_window.h"
 #include "SWE_texture.h"
+#include "SWE_terminal.h"
 #include "SWE_binarybuf.h"
 #include "SWE_fontrender.h"
 #include "SWE_netstream.h"
 #include "SWE_randomhit.h"
 
-#define SWE_LUA_VERSION 20190906
+#define SWE_LUA_VERSION 20190912
 #define SWE_LUA_LICENSE "GPL3"
 
 int SWE_window_create(lua_State*);
@@ -60,7 +61,7 @@ int SWE_init2(lua_State* L)
     {
 	SWE_Scene::clean(ll, true);
 	// return display window
-	SWE_Window* win = SWE_Scene::window_getindex(ll, 1);
+	Window* win = SWE_Scene::window_getindex(ll, 1);
 
 	if(win)
 	{
@@ -111,7 +112,7 @@ int SWE_init(lua_State* L)
 	SWE_Scene::clean(ll, true);
 
 	// return display window
-	SWE_Window* win = SWE_Scene::window_getindex(ll, 1);
+	Window* win = SWE_Scene::window_getindex(ll, 1);
 	if(win)
 	{
 	    DisplayScene::destroyChilds(*win);
@@ -155,7 +156,7 @@ int SWE_display_window(lua_State* L)
     // params: none
     LuaState ll(L);
 
-    SWE_Window* win = SWE_Scene::window_getindex(ll, 1);
+    Window* win = SWE_Scene::window_getindex(ll, 1);
     SWE_Scene::window_push(ll, win);
 
     return 1;
@@ -705,7 +706,7 @@ int SWE_push_event(lua_State* L)
     if(data)
     {
 	// main window
-	SWE_Window* win = SWE_Scene::window_getindex(ll, 1);
+	Window* win = SWE_Scene::window_getindex(ll, 1);
 	DisplayScene::pushEvent(win, Signal::LuaUnrefAction, data);
     }
 
@@ -798,6 +799,10 @@ extern "C" {
     SWE_FontRender::registers(ll);
     // SWE.Scene
     SWE_Scene::registers(ll);
+    // SWE.Window
+    SWE_Window::registers(ll);
+    // SWE.Polygon
+    SWE_Polygon::registers(ll);
     // SWE.Texture
     SWE_Texture::registers(ll);
     // SWE.BinaryBuf
@@ -814,6 +819,8 @@ extern "C" {
     SWE_Rect::registers(ll);
     // SWE.Signal
     SWE_Signal::registers(ll);
+    // SWE.Terminal
+    SWE_Terminal::registers(ll);
 
     bool res = Engine::init();
     if(! res) ERROR("engine init failed");

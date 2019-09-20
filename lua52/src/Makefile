@@ -6,13 +6,17 @@
 # Your platform. See PLATS for possible values.
 PLAT= none
 
-CC= gcc
+CC= $(CROSS_PREFIX)gcc
+ifdef LUA_DEBUG
+CFLAGS= -O0 -g -Wall -DLUA_COMPAT_ALL $(SYSCFLAGS) $(MYCFLAGS)
+else
 CFLAGS= -O2 -Wall -DLUA_COMPAT_ALL $(SYSCFLAGS) $(MYCFLAGS)
+endif
 LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
 
-AR= ar rcu
-RANLIB= ranlib
+AR= $(CROSS_PREFIX)ar rcu
+RANLIB= $(CROSS_PREFIX)ranlib
 RM= rm -f
 
 SYSCFLAGS=
@@ -49,7 +53,7 @@ ALL_A= $(LUA_A)
 # Targets start here.
 default: $(PLAT)
 
-all:	$(ALL_T)
+all:	$(ALL_A)
 
 o:	$(ALL_O)
 
@@ -110,7 +114,7 @@ macosx:
 
 mingw:
 	$(MAKE) "LUA_A=lua52.dll" "LUA_T=lua.exe" \
-	"AR=$(CC) -shared -o" "RANLIB=strip --strip-unneeded" \
+	"AR=$(CC) -shared -o" "RANLIB=$(CROSS_PREFIX)strip --strip-unneeded" \
 	"SYSCFLAGS=-DLUA_BUILD_AS_DLL" "SYSLIBS=" "SYSLDFLAGS=-s" lua.exe
 	$(MAKE) "LUAC_T=luac.exe" luac.exe
 

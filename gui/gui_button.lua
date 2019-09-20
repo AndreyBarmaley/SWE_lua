@@ -44,7 +44,7 @@ function TextButtonCreate(posx, posy, text, frs, parent)
     btn.SystemUserEvent = function(a,b)
         -- button dirty
         if a == SWE.Action.ButtonDirty then
-            btn:RenderWindow()
+            SWE.DisplayDirty()
 	    return true
         elseif a == SWE.Action.FontChanged then
 	    btn.frs = b

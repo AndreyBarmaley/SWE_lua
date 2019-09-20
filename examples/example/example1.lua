@@ -15,9 +15,7 @@ function win.RenderWindow()
 end
 
 function win.KeyPressEvent(key)
-    if SWE.Key.F1 == key then
-	return true
-    elseif SWE.Key.ESCAPE == key then
+    if SWE.Key.ESCAPE == key then
         -- close scene, see SWE.MainLoop
         win:SetVisible(false)
         return true
