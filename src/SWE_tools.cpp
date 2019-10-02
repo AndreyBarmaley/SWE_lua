@@ -135,24 +135,35 @@ int SWE_Tools::pushJsonObject(LuaState & ll, const JsonObject* jo)
     return 0;
 }
 
-std::string SWE_Tools::toJson(LuaState & ll, int index)
+std::string SWE_Tools::toJsonString(LuaState & ll, int index)
 {
     std::string res;
 
     if(ll.isTableIndex(index))
     {
-        // clone table
-        ll.pushValueIndex(index);
-
-        if(ll.getFieldTableIndex("ToJson", -1).isTopFunction())
+        if(ll.getFieldTableIndex("ToJson", index, false).isTopFunction())
 	{
-    	    // run as ToObject(table)
+	    ll.stackPop(1);
+    	    // clone table
     	    ll.pushValueIndex(index);
-            res = ll.callFunction(1, 1).getTopString();
+	    // set function
+    	    ll.getFieldTableIndex("ToJson", -1);
+    	    // set params: self
+    	    ll.pushValueIndex(index);
+	    // run as obj:ToJson(obj)
+    	    res = ll.callFunction(1, 1).getTopString();
+    	    // remove string, table
+    	    ll.stackPop(2);
 	}
-
-        // remove string, table
-        ll.stackPop(2);
+	else
+	{
+	    ll.stackPop(1);
+	    // dump table to json
+	    if(ll.isSequenceTableIndex(index))
+		res = ll.toJsonArrayTableIndex(index).toString();
+	    else
+		res = ll.toJsonObjectTableIndex(index).toString();
+	}
     }
     else
     {

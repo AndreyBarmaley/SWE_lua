@@ -20,52 +20,29 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "SWE_color.h"
+#ifndef _SWE_LUA_VIDEOCAM_
+#define _SWE_LUA_VIDEOCAM_
 
-int SWE_color_index(lua_State* L)
+#include "SWE_videocam_context.h"
+
+struct lua_State;
+
+int SWE_videocam_create(lua_State*);
+int SWE_videocam_destroy(lua_State*);
+
+class SWE_VideoCam
 {
-    // params: table, string name
-    LuaState ll(L);
+    CaptureContext*	context;
 
-    ARGB argb(ll.getTopString());
-    std::string color = Color(argb).toString();
+public:
+    SWE_VideoCam(const JsonObject & params);
+    ~SWE_VideoCam();
 
-    return ll.getFieldTableIndex(color, 1).isTopNil() ? 0 : 1;
-}
+    bool		contextCapture(void);
+    const Texture*	contextFrame(void) const;
 
-int SWE_color_tostring(lua_State* L)
-{
-    // params: int key
-    LuaState ll(L);
-
-    if(! ll.isTopInteger())
-    {
-        ERROR("color not found");
-        return 0;
-    }
-
-    ARGB color = ll.getTopInteger();
-    ll.pushString(Color(color).toString());
-
-    return 1;
-}
-
-const struct luaL_Reg SWE_colors_functions[] = {
-    { "ToString", SWE_color_tostring },	// [string], int key
-    { NULL, NULL }
+    static SWE_VideoCam* get(LuaState &, int tableIndex, const char* funcName);
+    static void registers(LuaState &);
 };
 
-void SWE_Color::registers(LuaState & ll)
-{
-    // SWE.Color
-    ll.pushTable("SWE.Color");
-    ll.setFunctionsTableIndex(SWE_colors_functions, -1);
-
-    // SWE.Color: insert values
-    for(int col = Color::Black; col <= Color::Transparent; ++col)
-        ll.pushInteger(Color(col).getARGB()).setFieldTableIndex(Color::name(static_cast<Color::color_t>(col)), -2);
-
-    // SWE.Color: set metatable: __index
-    ll.pushTable(0, 1).pushFunction(SWE_color_index).setFieldTableIndex("__index", -2);
-    ll.setMetaTableIndex(-2).stackPop();
-}
+#endif

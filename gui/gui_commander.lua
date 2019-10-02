@@ -101,8 +101,8 @@ local function DialogSelectCwd(posx, posy, width, height, cwd, parent)
 end
 
 local function PrettySize(sz)
-
-    local szlen= string.len(tostring(sz))
+    local str = tostring(sz)
+    local szlen = string.len(str)
     if szlen > 11 then
 	return tostring(ToInt(sz / 1073741824)) .. "G"
     elseif szlen > 8 then
@@ -110,7 +110,7 @@ local function PrettySize(sz)
     elseif szlen > 5 then
 	return tostring(ToInt(sz / 1024)) .. "K"
     end
-    return tostring(sz)
+    return str
 end
 
 local function GetDirsFiles(cwd)
@@ -234,7 +234,7 @@ function CommanderInit(win)
     end
 
     -- init frs
-    if frs.fixeWidth == nil then
+    if frs.fixedWidth == nil then
 	if cfgfsz == 0 then
 	    local dw,dh,df = SWE.DisplaySize()
 	    -- calculate font size
@@ -242,7 +242,7 @@ function CommanderInit(win)
 	    frs = SWE.FontRender("terminus.ttf", fsz, false)
 	    SWE.Debug("set font size", fsz)
 	else
-	    frs = SWE.FontRender("terminus.ttf", cfgfsz, true)
+	    frs = SWE.FontRender("terminus.ttf", cfgfsz, false)
 	end
     end
 

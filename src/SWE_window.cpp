@@ -275,14 +275,14 @@ void SWE_Window::displayResizeEvent(const Size & winsz, bool fromsdl)
     ll.stackPop();
 }
 
-bool SWE_Window::keyPressEvent(int key)
+bool SWE_Window::keyPressEvent(const KeySym & key)
 {
     if(SWE_Scene::window_push(ll, this))
     {
 	if(ll.getFieldTableIndex("KeyPressEvent", -1).isTopFunction())
 	{
-	    ll.pushInteger(key);
-	    int res = ll.callFunction(1, 1).getTopBoolean();
+	    ll.pushInteger(key.keycode()).pushInteger(key.keymod()).pushInteger(key.scancode());
+	    int res = ll.callFunction(3, 1).getTopBoolean();
 	    // remove boolean, table
 	    ll.stackPop(2);
 	    return res;
@@ -297,14 +297,14 @@ bool SWE_Window::keyPressEvent(int key)
     return false;
 }
 
-bool SWE_Window::keyReleaseEvent(int key)
+bool SWE_Window::keyReleaseEvent(const KeySym & key)
 {
     if(SWE_Scene::window_push(ll, this))
     {
 	if(ll.getFieldTableIndex("KeyReleaseEvent", -1).isTopFunction())
 	{
-	    ll.pushInteger(key);
-	    int res = ll.callFunction(1, 1).getTopBoolean();
+	    ll.pushInteger(key.keycode()).pushInteger(key.keymod()).pushInteger(key.scancode());
+	    int res = ll.callFunction(3, 1).getTopBoolean();
 	    // remove boolean, table
 	    ll.stackPop(2);
 	    return res;
@@ -901,7 +901,6 @@ int SWE_window_render_text(lua_State* L)
     if(win && frs)
     {
 	int params = ll.stackSize();
-
 	std::string text = SWE_Tools::convertEncoding(ll, ll.toStringIndex(3));
 	ARGB argb = ll.toIntegerIndex(4);
 	Point dst;
@@ -1179,6 +1178,7 @@ int SWE_Scene::window_add(LuaState & ll)
     if(! ll.pushTable("SWE.Scene").isTopTable())
     {
 	ERROR("table not found" << ": " << "swe.scene");
+	ll.stackPop();
 	return 0;
     }
 
@@ -1189,9 +1189,8 @@ int SWE_Scene::window_add(LuaState & ll)
     while(ll.nextTableIndex(-2))
     {
 	// key: index -2, value: empty -1
-	if(ll.isIntegerIndex(-2))
+	if(ll.isNumberIndex(-2))
 	{
-
 	    if(index < ll.toIntegerIndex(-2))
 	    {
 		// value, key, scene, swe_window
@@ -1222,17 +1221,29 @@ Window* SWE_Scene::window_getindex(LuaState & ll, int index)
 {
     if(ll.pushTable("SWE.Scene").isTopTable())
     {
-	if(ll.getIndexTableIndex(index, -1).isTopTable())
+	ll.pushNil();
+	// iterate SWE.Scene: find index
+	while(ll.nextTableIndex(-2))
 	{
-	    if(ll.getFieldTableIndex("userdata", -1).isTopUserData())
+	    // key: index -2, value: empty -1
+	    if(ll.isNumberIndex(-2))
 	    {
-		auto ptr = static_cast<Window**>(ll.getTopUserData());
-		return ptr ? *ptr : NULL;
-	    }
-	    ll.stackPop();
+		if(index == ll.toIntegerIndex(-2))
+		{
+		    if(ll.getFieldTableIndex("userdata", -1).isTopUserData())
+		    {
+			auto ptr = static_cast<Window**>(ll.getTopUserData());
+			ll.stackPop(4);
+			return ptr ? *ptr : NULL;
+		    }
 
+		    break;
+		}
+		index++;
+	    }
+	    // pop value
+	    ll.stackPop();
 	}
-	ll.stackPop();
     }
     ll.stackPop();
 
@@ -1279,6 +1290,7 @@ const struct luaL_Reg SWE_window_functions[] = {
     // virtual
     { "TextureInvalidEvent",SWE_window_empty },
     { "WindowCreateEvent", SWE_window_empty },
+    { "WindowCloseEvent",  SWE_window_empty },
     { "DisplayResizeEvent",SWE_window_empty },
     { "MousePressEvent",   SWE_window_empty },
     { "MouseReleaseEvent", SWE_window_empty },
@@ -1335,7 +1347,7 @@ int SWE_window_create(lua_State* L)
     ll.pushString("keyhandle").pushBoolean(false).setTableIndex(-3);
     ll.pushString("result").pushInteger(0).setTableIndex(-3);
 
-    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << (*ptr)->toString() << "]");
+    DEBUG(String::pointer(ptr) << ": [" << (*ptr)->toString() << "]");
 
     // set functions
     ll.setFunctionsTableIndex(SWE_window_functions, -1);
@@ -1354,7 +1366,7 @@ int SWE_window_destroy(lua_State* L)
 	auto ptr = static_cast<SWE_Window**>(ll.getTopUserData());
 	if(ptr && *ptr)
 	{
-	    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+	    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
 	    // auto remove SWE_Scene::window_remove(ll, *ptr);
 
 	    (*ptr)->windowCloseEvent();
@@ -1424,6 +1436,7 @@ const struct luaL_Reg SWE_polygon_functions[] = {
     // window virtual
     { "TextureInvalidEvent",SWE_window_empty },
     { "WindowCreateEvent", SWE_window_empty },
+    { "WindowCloseEvent",  SWE_window_empty },
     { "DisplayResizeEvent",SWE_window_empty },
     { "MousePressEvent",   SWE_window_empty },
     { "MouseReleaseEvent", SWE_window_empty },
@@ -1677,7 +1690,7 @@ int SWE_polygon_create(lua_State* L)
     // set functions
     ll.setFunctionsTableIndex(SWE_polygon_functions, -1);
 
-    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
 
     SWE_Scene::window_add(ll);
 
@@ -1693,9 +1706,11 @@ int SWE_polygon_destroy(lua_State* L)
         auto ptr = static_cast<SWE_Polygon**>(ll.getTopUserData());
         if(ptr && *ptr)
         {
-            DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+            DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
 	    // auto remove SWE_Scene::window_remove(ll, *ptr);
-    
+
+	    (*ptr)->windowCloseEvent();
+
             delete *ptr;
             *ptr = NULL;
         }

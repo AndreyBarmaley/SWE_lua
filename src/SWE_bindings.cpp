@@ -35,13 +35,14 @@
 #include "SWE_signal.h"
 #include "SWE_window.h"
 #include "SWE_texture.h"
+#include "SWE_videocam.h"
 #include "SWE_terminal.h"
 #include "SWE_binarybuf.h"
-#include "SWE_fontrender.h"
 #include "SWE_netstream.h"
 #include "SWE_randomhit.h"
+#include "SWE_fontrender.h"
 
-#define SWE_LUA_VERSION 20190912
+#define SWE_LUA_VERSION 20190928
 #define SWE_LUA_LICENSE "GPL3"
 
 int SWE_window_create(lua_State*);
@@ -649,6 +650,25 @@ int SWE_string_encode_utf8(lua_State* L)
     return 1;
 }
 
+int SWE_table_json(lua_State* L)
+{
+    // params: string json
+    LuaState ll(L);
+
+    if(! ll.isTableIndex(-1))
+    {
+	ERROR("table not found");
+	return 0;
+    }
+
+    if(ll.isSequenceTableIndex(-1))
+	ll.pushString(ll.toJsonArrayTableIndex(-1).toString());
+    else
+	ll.pushString(ll.toJsonObjectTableIndex(-1).toString());
+
+    return 1;
+}
+
 int SWE_json_parse(lua_State* L)
 {
     // params: string json
@@ -723,6 +743,24 @@ int SWE_set_debug(lua_State* L)
     return 0;
 }
 
+int SWE_display_keyboard(lua_State* L)
+{
+    // params: bool
+    LuaState ll(L);
+    bool show = ll.toBooleanIndex(1);
+
+    if(show)
+    {
+	SDL_StartTextInput();
+    }
+    else
+    {
+	SDL_StopTextInput();
+    }
+
+    return 0;
+}
+
 // library interface
 const struct luaL_Reg SWE_functions[] = {
     { "DisplayInit", SWE_init },	// [table swe_window], string title, int width, int height
@@ -734,12 +772,14 @@ const struct luaL_Reg SWE_functions[] = {
     { "CursorLoad", SWE_cursor_load },	// [void], table swe_texture, int offsetx, int offsety
     { "CursorInfo", SWE_cursor_info },	// [table cursor], void
     { "JsonParse", SWE_json_parse },	// [table], string json
+    { "ToJson", SWE_table_json },	// [string], table
     { "PushEvent", SWE_push_event },	// [void], int code, pointer data, table window
     { "SetDebug", SWE_set_debug }, 	// [void], bool
     { "DisplayWindow", SWE_display_window }, 			// [table swe_window], void
     { "DisplayDirty", SWE_display_dirty }, 			// [void], void
     { "DisplayVideoModes", SWE_display_videomodes }, 		// [string list], void
     { "DisplaySize", SWE_display_size }, 			// [int list], void
+    { "DisplayKeyboard", SWE_display_keyboard }, 		// [void], bool show
     { "RenderScreenshot", SWE_render_screenshot }, 		// [bool], string filename
     { "LuaRegisterDirectory", SWE_register_directory }, 	// [bool], string directory
     { "SystemSleep", SWE_system_delay }, 			// [void], int
@@ -821,6 +861,8 @@ extern "C" {
     SWE_Signal::registers(ll);
     // SWE.Terminal
     SWE_Terminal::registers(ll);
+    // SWE.VideoCam
+    SWE_VideoCam::registers(ll);
 
     bool res = Engine::init();
     if(! res) ERROR("engine init failed");

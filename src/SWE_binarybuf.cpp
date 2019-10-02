@@ -609,7 +609,7 @@ int SWE_binarybuf_create(lua_State* L)
     ll.setFunctionsTableIndex(SWE_binarybuf_functions, -1);
 
     // SWE_BinaryBuf: length, fill value
-    if(ll.isIntegerIndex(2) && ll.isIntegerIndex(3))
+    if(ll.isNumberIndex(2) && ll.isNumberIndex(3))
     {
 	int bsz = ll.toIntegerIndex(2);
 	int bvl = ll.toIntegerIndex(3);
@@ -626,7 +626,7 @@ int SWE_binarybuf_create(lua_State* L)
     }
     else
     // SWE_BinaryBuf: pointer, size
-    if((ll.isUserDataIndex(2) || ll.isLightUserDataIndex(2)) && ll.isIntegerIndex(3))
+    if((ll.isUserDataIndex(2) || ll.isLightUserDataIndex(2)) && ll.isNumberIndex(3))
     {
 	void* buf = ll.toUserDataIndex(2);
 	int bsz = ll.toIntegerIndex(3);
@@ -639,7 +639,7 @@ int SWE_binarybuf_create(lua_State* L)
 	*ptr = new SWE_BinaryBuf();
     }
 
-    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
 
     ll.pushString("__type").pushString("swe.binarybuf").setTableIndex(-3);
     ll.pushString("size").pushInteger((*ptr)->size()).setTableIndex(-3);
@@ -656,7 +656,7 @@ int SWE_binarybuf_destroy(lua_State* L)
         auto ptr = static_cast<SWE_BinaryBuf**>(ll.getTopUserData());
         if(ptr && *ptr)
         {
-            DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+            DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
 
             delete *ptr;
             *ptr = NULL;

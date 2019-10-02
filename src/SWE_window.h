@@ -49,8 +49,8 @@ protected:
     bool	mouseClickEvent(const ButtonsEvent &) override;
     void        mouseFocusEvent(void) override;
     void        mouseLeaveEvent(void) override;
-    bool	keyPressEvent(int) override;
-    bool	keyReleaseEvent(int) override;
+    bool	keyPressEvent(const KeySym &) override;
+    bool	keyReleaseEvent(const KeySym &) override;
     bool        scrollUpEvent(const Point &) override;
     bool        scrollDownEvent(const Point &) override;
     bool        userEvent(int, void*) override;

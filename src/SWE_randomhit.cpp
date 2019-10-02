@@ -149,7 +149,7 @@ int SWE_randomhit_create(lua_State* L)
     ll.setFunctionsTableIndex(SWE_randomhit_functions, -1);
 
 
-    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
 
     return 1;
 }
@@ -163,7 +163,7 @@ int SWE_randomhit_destroy(lua_State* L)
         auto ptr = static_cast<SWE_RandomHit**>(ll.getTopUserData());
         if(ptr && *ptr)
         {
-            DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+            DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
 
 	    delete *ptr;
             *ptr = NULL;

@@ -27,7 +27,7 @@
 
 namespace SWE_Tools
 {
-    std::string		toJson(LuaState &, int tableIndex);
+    std::string		toJsonString(LuaState &, int tableIndex);
     std::string		toCurrentPath(LuaState &, const std::string &);
     std::string		convertEncoding(LuaState &, const std::string &);
 

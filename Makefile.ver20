@@ -25,4 +25,14 @@ ENGINE_CFLAGS   := $(ENGINE_CFLAGS) $(shell pkg-config SDL2_mixer --cflags)
 ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config SDL2_mixer --libs)
 endif
 
+ifndef DISABLE_FFMPEG
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DWITH_VIDEOCAM_FFMPEG $(shell pkg-config --cflags libavdevice libavformat libavcodec libswscale libavutil) -D__STDC_CONSTANT_MACROS
+ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config --libs libavdevice libavformat libavcodec libswscale libavutil)
+endif
+
+ifndef DISABLE_FIREWARE
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DWITH_VIDEOCAM_FIREWARE $(shell pkg-config --cflags libraw1394 libavc1394 libiec61883 libdv libmpeg2 libmpeg2convert)
+ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config --libs libraw1394 libavc1394 libiec61883 libdv libmpeg2 libmpeg2convert)
+endif
+
 CFLAGS 		:= $(CFLAGS) -UOLDENGINE

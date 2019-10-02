@@ -121,7 +121,7 @@ int SWE_fontrender_create_ttf(lua_State* L)
     LuaState ll(L);
     int params = ll.stackSize();
 
-    if(3 > params || ! ll.isStringIndex(2) || ! ll.isIntegerIndex(3))
+    if(3 > params || ! ll.isStringIndex(2) || ! ll.isNumberIndex(3))
     {
 	ERROR("require minimum params: " << "string font, int size");
 	ll.pushNil();
@@ -197,7 +197,7 @@ int SWE_fontrender_create_ttf(lua_State* L)
     ll.pushString("fixedWidth").pushInteger((*ptr)->symbolAdvance(0x20)).setTableIndex(-3);
     ll.pushString("lineHeight").pushInteger((*ptr)->lineSkipHeight()).setTableIndex(-3);
 
-    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
 
     // set functions
     ll.setFunctionsTableIndex(SWE_fontrender_functions, -1);
@@ -211,7 +211,7 @@ int SWE_fontrender_create_psf(lua_State* L)
     LuaState ll(L);
     int params = ll.stackSize();
 
-    if(4 > params || ! ll.isStringIndex(2) || ! ll.isIntegerIndex(3) || ! ll.isIntegerIndex(4))
+    if(4 > params || ! ll.isStringIndex(2) || ! ll.isNumberIndex(3) || ! ll.isNumberIndex(4))
     {
 	ERROR("require minimum params: " << "string font, int width, int height");
 	ll.pushNil();
@@ -275,7 +275,7 @@ int SWE_fontrender_create_psf(lua_State* L)
     ll.pushString("lineHeight").pushInteger((*ptr)->lineSkipHeight()).setTableIndex(-3);
 
 
-    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
 
     // set functions
     ll.setFunctionsTableIndex(SWE_fontrender_functions, -1);
@@ -310,7 +310,7 @@ int SWE_fontrender_create_sys(lua_State* L)
     ll.pushString("fixedWidth").pushInteger((*ptr)->symbolAdvance(0x20)).setTableIndex(-3);
     ll.pushString("lineHeight").pushInteger((*ptr)->lineSkipHeight()).setTableIndex(-3);
 
-    DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
 
     // set functions
     ll.setFunctionsTableIndex(SWE_fontrender_functions, -1);
@@ -327,7 +327,7 @@ int SWE_fontrender_destroy(lua_State* L)
         auto ptr = static_cast<SWE_FontRender**>(ll.getTopUserData());
         if(ptr && *ptr)
         {
-            DEBUG(String::hex64(reinterpret_cast<u64>(ptr)) << ": [" << String::hex64(reinterpret_cast<u64>(*ptr)) << "]");
+            DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
 
 	    if((FontRender*) *ptr != (FontRender*) & systemFont())
 	    {

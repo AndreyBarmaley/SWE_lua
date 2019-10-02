@@ -1,20 +1,18 @@
 ifndef DISABLE_AUDIO
-LIBS := $(LIBS) -lSDL2 -lmad -lvorbisfile -lvorbis -logg
+LIBS	:= $(LIBS) -lSDL2 -lmad -lvorbisfile -lvorbis -logg
 endif
 
 ifndef WITHOUT_UNICODE
-LIBS := $(LIBS) -lfreetype
+LIBS	:= $(LIBS) -lfreetype
 endif
 
-ifdef WITH_ICONS
-IDICON := 1099
-CFLAGS := $(CFLAGS) -DID_ICON=$(IDICON)
-export IDICON
-endif
-
-AR := i686-w64-mingw32-ar
-CXX := i686-w64-mingw32-g++
-WINDRES := i686-w64-mingw32-windres
-CFLAGS := $(CFLAGS) -static
-LIBS := -Wl,-Bstatic $(LIBS) -lwinmm -limm32 -lws2_32 -liphlpapi -lsetupapi -lole32 -loleaut32 -lversion 
-LDFLAGS := -static $(LDFLAGS) -Wl,--gc-sections
+IDICON	:= 1099
+RESICON	:= SWE_lua.res
+AR	:= i686-w64-mingw32-ar
+CXX	:= i686-w64-mingw32-g++
+WINDRES	:= i686-w64-mingw32-windres
+STRIP	:= i686-w64-mingw32-strip
+EXT	:= _win32.exe
+CFLAGS	:= $(CFLAGS) -static
+LIBS	:= -Wl,-Bstatic $(LIBS) -lwinmm -limm32 -lws2_32 -liphlpapi -lsetupapi -lole32 -loleaut32 -lversion 
+LDFLAGS	:= -static $(LDFLAGS) -Wl,--gc-sections

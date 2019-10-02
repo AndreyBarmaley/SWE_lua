@@ -1,10 +1,11 @@
-AR := ar
+AR	:= ar
+EXT	:= .bin
 
 ifndef CXX
-CXX := g++
+CXX	:= g++
 endif
 
 ifndef WITHOUT_UNICODE
-CFLAGS := $(CFLAGS) -DWITH_ICONV
-LIBS := $(LIBS) -lfreetype
+CFLAGS	:= $(CFLAGS) -DWITH_ICONV
+LIBS	:= $(LIBS) -lfreetype
 endif

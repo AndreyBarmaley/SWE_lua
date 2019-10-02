@@ -22,38 +22,13 @@
 
 #include "SWE_keys.h"
 
-int SWE_key_lower(lua_State* L)
+int SWE_key_index(lua_State* L)
 {
-    // params: int key
+    // params: table, string name
     LuaState ll(L);
-    
-    if(! ll.isTopInteger())
-    {
-        ERROR("integer not found");
-        return 0;
-    }
 
-    int res = Key::lower(ll.getTopInteger());
-    ll.pushInteger(res);
-
-    return 1;
-}
-
-int SWE_key_upper(lua_State* L)
-{
-    // params: int key
-    LuaState ll(L);
-    
-    if(! ll.isTopInteger())
-    {
-        ERROR("integer not found");
-        return 0;
-    }
-
-    int res = Key::upper(ll.getTopInteger());
-    ll.pushInteger(res);
-
-    return 1;
+    std::string upper = String::toUpper(ll.getTopString());
+    return ll.getFieldTableIndex(upper, 1).isTopNil() ? 0 : 1;
 }
 
 int SWE_key_tochar(lua_State* L)
@@ -67,8 +42,9 @@ int SWE_key_tochar(lua_State* L)
         return 0;
     }
 
-    int res = Key::toChar(ll.getTopInteger());
-    ll.pushInteger(res);
+    int sym = ll.getTopInteger();
+    int mod = ll.getTopInteger();
+    ll.pushInteger(KeySym(sym, mod).keychar());
 
     return 1;
 }
@@ -90,29 +66,9 @@ int SWE_key_tostring(lua_State* L)
     return 1;
 }
 
-int SWE_key_tokey(lua_State* L)
-{
-    // params: string keyname
-    LuaState ll(L);
-    
-    if(! ll.isTopString())
-    {
-        ERROR("string not found");
-        return 0;
-    }
-
-    int res = Key::toKey(ll.getTopString());
-    ll.pushInteger(res);
-
-    return 1;
-}
-
 const struct luaL_Reg SWE_keys_functions[] = {
-    { "Lower", SWE_key_lower },		// [int key], int key
-    { "Upper", SWE_key_upper },		// [int key], int key
     { "ToChar", SWE_key_tochar },	// [int char], int key
     { "ToString", SWE_key_tostring },	// [string name], int key
-    { "ToKey", SWE_key_tokey },		// [int key], string name
     { NULL, NULL }
 };
 
@@ -123,7 +79,11 @@ void SWE_Key::registers(LuaState & ll)
     ll.setFunctionsTableIndex(SWE_keys_functions, -1);
 
     // SWE.Key: insert values
-    for(auto it = Key::allKeys(); (*it).name; ++it)
+    auto keys = Key::allKeys();
+    for(auto it = keys.begin(); it != keys.end(); ++it)
         ll.pushInteger((*it).key).setFieldTableIndex((*it).name, -2);
-    ll.stackPop();
+
+    // SWE.Key: set metatable: __index
+    ll.pushTable(0, 1).pushFunction(SWE_key_index).setFieldTableIndex("__index", -2);
+    ll.setMetaTableIndex(-2).stackPop();
 }

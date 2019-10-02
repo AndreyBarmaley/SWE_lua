@@ -20,52 +20,46 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "SWE_color.h"
+#ifndef _SWE_LUA_TERMINAL_
+#define _SWE_LUA_TERMINAL_
 
-int SWE_color_index(lua_State* L)
+#include "engine.h"
+
+struct lua_State;
+
+int SWE_terminal_create(lua_State*);
+int SWE_terminal_destroy(lua_State*);
+
+class SWE_Terminal : public TermWindow
 {
-    // params: table, string name
-    LuaState ll(L);
+protected:
+    LuaState    ll;
 
-    ARGB argb(ll.getTopString());
-    std::string color = Color(argb).toString();
+    void        windowCreateEvent(void) override;
+    void        textureInvalidEvent(void) override;
+    void        displayResizeEvent(const Size &, bool) override;
+    bool        mousePressEvent(const ButtonEvent &) override;
+    bool        mouseReleaseEvent(const ButtonEvent &) override;
+    bool        mouseMotionEvent(const Point &, u32 buttons) override;
+    bool        mouseClickEvent(const ButtonsEvent &) override;
+    void        mouseFocusEvent(void) override;
+    void        mouseLeaveEvent(void) override;
+    bool        keyPressEvent(const KeySym &) override;
+    bool        keyReleaseEvent(const KeySym &) override;
+    bool        scrollUpEvent(const Point &) override;
+    bool        scrollDownEvent(const Point &) override;
+    bool        userEvent(int, void*) override;
+    void        tickEvent(u32 ms) override;
 
-    return ll.getFieldTableIndex(color, 1).isTopNil() ? 0 : 1;
-}
+public:
+    SWE_Terminal(lua_State*, const FontRender &, Window &);
+    SWE_Terminal(lua_State*, const FontRender &, int cols, int rows, Window &);
 
-int SWE_color_tostring(lua_State* L)
-{
-    // params: int key
-    LuaState ll(L);
+    void        renderWindow(void) override;
+    void        windowCloseEvent(void);
 
-    if(! ll.isTopInteger())
-    {
-        ERROR("color not found");
-        return 0;
-    }
-
-    ARGB color = ll.getTopInteger();
-    ll.pushString(Color(color).toString());
-
-    return 1;
-}
-
-const struct luaL_Reg SWE_colors_functions[] = {
-    { "ToString", SWE_color_tostring },	// [string], int key
-    { NULL, NULL }
+    static SWE_Terminal* get(LuaState &, int tableIndex, const char* funcName);
+    static void registers(LuaState &);
 };
 
-void SWE_Color::registers(LuaState & ll)
-{
-    // SWE.Color
-    ll.pushTable("SWE.Color");
-    ll.setFunctionsTableIndex(SWE_colors_functions, -1);
-
-    // SWE.Color: insert values
-    for(int col = Color::Black; col <= Color::Transparent; ++col)
-        ll.pushInteger(Color(col).getARGB()).setFieldTableIndex(Color::name(static_cast<Color::color_t>(col)), -2);
-
-    // SWE.Color: set metatable: __index
-    ll.pushTable(0, 1).pushFunction(SWE_color_index).setFieldTableIndex("__index", -2);
-    ll.setMetaTableIndex(-2).stackPop();
-}
+#endif
