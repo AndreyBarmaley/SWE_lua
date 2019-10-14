@@ -85,9 +85,13 @@ local function TermStyleColor(term, str, posx, length, skip, params)
     end
 end
 
-local function DrawLineColored(term, str, skip, vals)
+local function DrawLineColored(term, ustr, skip, vals)
     term:CursorMoveFirst()
-    term:DrawText(string.sub(str, skip + 1))
+    if 0 < ustr.size and skip < ustr.size then
+	term:DrawText(ustr:SubString(skip))
+    end
+    -- FIXME add UnicodeString find template
+    local str = ustr:ToString()
 
     for i = 1, #vals do
 	local t = vals[i]
@@ -95,6 +99,7 @@ local function DrawLineColored(term, str, skip, vals)
 	if t.pattern ~= nil then
 	    local bs = 1
 	    while bs ~= nil do
+		-- FIXME add UnicodeString find template
 		local fs,ls,ss = string.find(str, t.pattern, bs)
 		if ls ~= nil then
 		    if t.tokens == nil or #t.tokens == 0 or TableFindValue(t.tokens, ss) then
@@ -111,8 +116,11 @@ end
 
 local function AreaHighLightCoords(term, termcol, termrow, pattern)
     local bs = 1
+    -- FIXME add UnicodeString find template
+    local str = term.content[termrow]:ToString()
     while bs ~= nil do
-	local fs,ls,ss = string.find(term.content[termrow], pattern, bs)
+	-- FIXME add UnicodeString find template
+	local fs,ls,ss = string.find(str, pattern, bs)
 
 	if ls ~= nil then
 	    -- focused word
@@ -247,14 +255,14 @@ end
 local function AreaGotoLineEnd(area)
     local textrow = area.cursory + area.skiprows
     local textcol = area.cursorx + area.skipcols
-    local str = area.content[textrow]
-    if str ~= nil then
-	if area.cols - 3 < string.len(str) then
-	    area.skipcols = string.len(str) - area.cols + 3
+    local ustr = area.content[textrow]
+    if ustr ~= nil then
+	if area.cols - 3 < ustr.size then
+	    area.skipcols = ustr.size - area.cols + 3
 	    area.cursorx = area.cols - 2
 	else
 	    area.skipcols = 0
-	    area.cursorx = string.len(str) + 1
+	    area.cursorx = ustr.size + 1
 	end
 	area.virtualx = area.cursorx + area.skipcols
 	SWE.DisplayDirty()
@@ -266,11 +274,11 @@ end
 local function AreaVirtualLineEnd(area)
     local textrow = area.cursory + area.skiprows
     local textcol = area.cursorx + area.skipcols
-    local str = area.content[textrow]
-    if str ~= nil then
-	if string.len(str) < area.virtualx then
+    local ustr = area.content[textrow]
+    if ustr ~= nil then
+	if ustr.size < area.virtualx then
 	    area.skipcols = 0
-	    area.cursorx = string.len(str) + 1
+	    area.cursorx = ustr.size + 1
 	else
 	    area.skipcols = 0
 	    area.cursorx = area.virtualx
@@ -287,10 +295,9 @@ end
 local function AreaKeyReturn(area)
     local textrow = area.cursory + area.skiprows
     local textcol = area.cursorx + area.skipcols
-    local str1 = string.sub(area.content[textrow], 1, textcol - 1)
-    local str2 = string.sub(area.content[textrow], textcol)
-    area.content[textrow] = str1
-    table.insert(area.content, textrow + 1, str2)
+    local ustr2 = area.content[textrow]:SubString(textcol - 1)
+    area.content[textrow]:Resize(textcol - 1)
+    table.insert(area.content, textrow + 1, ustr2)
     area.status.modify = true
     area.cursorx = 1
     area.virtualx = area.cursorx + area.skipcols
@@ -307,9 +314,7 @@ local function AreaKeyBackspace(area)
     local textrow = area.cursory + area.skiprows
     local textcol = area.cursorx + area.skipcols
     if 1 < area.cursorx then
-	local str1 = string.sub(area.content[textrow], 1, textcol - 2)
-	local str2 = string.sub(area.content[textrow], textcol)
-	area.content[textrow] = str1 .. str2
+	area.content[textrow]:Erase(textcol - 2, 1)
 	area.cursorx = area.cursorx - 1
 	area.virtualx = area.cursorx + area.skipcols
 	area.status.modify = true
@@ -318,9 +323,7 @@ local function AreaKeyBackspace(area)
     elseif AreaScrollLeft(area, 1) then
 	local textrow = area.cursory + area.skiprows
 	local textcol = area.cursorx + area.skipcols
-	local str1 = string.sub(area.content[textrow], 1, textcol - 1)
-	local str2 = string.sub(area.content[textrow], textcol + 1)
-	area.content[textrow] = str1 .. str2
+	area.content[textrow]:Erase(textcol - 1, 1)
 	area.status.modify = true
 	SWE.DisplayDirty()
 	return true
@@ -332,7 +335,8 @@ local function AreaKeyBackspace(area)
 	local textrow2 = area.cursory + area.skiprows
 	area.cursory = area.cursory - 1
 	AreaGotoLineEnd(area)
-	area.content[textrow1] = area.content[textrow1] .. area.content[textrow2]
+	local ustr = area.content[textrow1]
+	ustr:Insert(ustr.size, area.content[textrow2])
 	table.remove(area.content, textrow2)
 	area.status.modify = true
 	SWE.DisplayDirty()
@@ -341,7 +345,8 @@ local function AreaKeyBackspace(area)
 	local textrow1 = area.cursory + area.skiprows
 	local textrow2 = area.cursory + area.skiprows + 1
 	AreaGotoLineEnd(area)
-	area.content[textrow1] = area.content[textrow1] .. area.content[textrow2]
+	local ustr = area.content[textrow1]
+	ustr:Insert(ustr.size, area.content[textrow2])
 	table.remove(area.content, textrow2)
 	area.status.modify = true
 	SWE.DisplayDirty()
@@ -398,8 +403,9 @@ end
 local function AreaKeyRight(area)
     local textrow = area.cursory + area.skiprows
     local textcol = area.cursorx + area.skipcols
+    local ustr = area.content[textrow]
 
-    if textcol <= string.len(area.content[textrow]) then
+    if textcol <= ustr.size then
 	if area.cursorx < area.cols - 2 then
 	    area.cursorx = area.cursorx + 1
 	    area.virtualx = area.cursorx + area.skipcols
@@ -424,7 +430,53 @@ local function AreaKeyRight(area)
     return false
 end
 
-function EditorInit(win)
+function AreaSetVisibleChar(area, key, mod)
+    local textrow = area.cursory + area.skiprows
+    local textcol = area.cursorx + area.skipcols
+    local ustr = area.content[textrow]
+
+    if area.insmode then
+	ustr:Insert(textcol - 1, 1, key)
+    else
+	ustr:SetChar(textcol - 1, key)
+    end
+
+    area.cursorx = area.cursorx + 1
+    area.virtualx = area.cursorx + area.skipcols
+    area.status.modify = true
+    SWE.DisplayDirty()
+    return true
+end
+
+function LabelActionCreate(str, frs, tpx, tpy, parent)
+    local term = SWE.Terminal(frs, string.len(str) + 2, 1, parent)
+    term.label = str
+    term.focus = false
+    term:SetPosition(tpx * frs.fixedWidth, tpy * frs.lineHeight)
+
+    term.MouseFocusEvent = function(f)
+	term.focus = f
+	SWE.DisplayDirty()
+	return true
+    end
+
+    term.RenderWindow = function()
+	term:CursorTopLeft():FillColors(SWE.Color.White, parent.colors.back)
+	if term.focus then
+	    term:FillColors(parent.colors.back, SWE.Color.Yellow, term.cols - 2, term.rows)
+	else
+	    term:FillColors(SWE.Color.Yellow, parent.colors.back, term.cols - 2, term.rows)
+	end
+	term:FillColors(SWE.Color.White, parent.colors.back)
+	term:CursorTopLeft():DrawChar("["):DrawText(term.label):DrawChar("]")
+	term:SetFlush()
+	return true
+    end
+
+    return term
+end
+
+function EditorInit(win, filename)
 
     local settings = nil
 
@@ -478,6 +530,14 @@ function EditorInit(win)
     area.colors = { back = SWE.Color.MidnightBlue, text = SWE.Color.Silver, highlight = SWE.Color.MediumBlue, syntaxerror = SWE.Color.FireBrick,
 	cursormarker = SWE.Color.LawnGreen, scrollmarker = SWE.Color.LawnGreen }
 
+    area.close = LabelActionCreate("CLOSE", frs, area.cols - 8, area.rows - 1, area)
+
+    -- close event: mouse click
+    area.close.MouseClickEvent = function(px,py,pb,rx,ry,rb)
+	area:SetVisible(false)
+	return true
+    end
+
     -- load config colors
     if type(area.settings.colors) == "table" then
 	for k,v in pairs(area.colors) do
@@ -495,9 +555,9 @@ function EditorInit(win)
 	if fd ~= nil then
 	    for c in fd:lines() do
 		local str = string.gsub(c, "\t", string.rep(" ", 8))
-		table.insert(area.content, str)
+		table.insert(area.content, SWE.UnicodeString(str))
 	    end
-	    table.insert(area.content, "")
+	    table.insert(area.content, SWE.UnicodeString())
 	    fd:close()
 	    area.status.modify = false
 	    return true
@@ -558,7 +618,7 @@ function EditorInit(win)
     end
 
     -- window event: key press
-    area.KeyPressEvent = function(key)
+    area.KeyPressEvent = function(key,mod,scancode)
 	-- reset highlight
 	if area.highlight.valid then
 	    area.highlight.valid = false
@@ -580,7 +640,11 @@ function EditorInit(win)
 	elseif SWE.Key.RIGHT == key then	return AreaKeyRight(area)
 	end
 
-	print(key)
+	if 0x20 <= key and key < 0xFEFF then
+	    return AreaSetVisibleChar(area, key, mod)
+	end
+
+	print(key, string.format("0x%x", mod))
 
 	return false
     end
@@ -604,7 +668,7 @@ function EditorInit(win)
         local sharedir = SWE.SystemShareDirectories()
         if sharedir ~= nil then
             SWE.SystemMakeDirectory(sharedir)
-            filename = SWE.SystemConcatePath(sharedir, "editor.json")
+            local filename = SWE.SystemConcatePath(sharedir, "editor.json")
             -- json format
 	    local buf = SWE.BinaryBuf(SWE.ToJson(area.settings))
             buf:SaveToFile(filename)
@@ -627,9 +691,10 @@ function EditorInit(win)
 		DrawLineColored(area, area.content[i], area.skipcols, area.settings.highlighting)
 		area:CursorMoveDown()
 		area:CursorMoveFirst()
+		local size = area.content[i].size
 		-- calc maxlen
-		if string.len(area.content[i]) > area.maxlen then
-		    area.maxlen = string.len(area.content[i])
+		if size > area.maxlen then
+		    area.maxlen = size
 		end
 	    end
 	end
@@ -652,6 +717,8 @@ function EditorInit(win)
 	    area:DrawText("-")
 	end
 	area:DrawChar(SWE.Char.LTee(SWE.Line.Thin))
+	-- render footer
+	-- area:CursorPosition(area.cols - 1, area.rows - 1):CursorMoveLeft(7):DrawChar(SWE.Char.RTee(SWE.Line.Thin)):DrawText("CLOSE"):DrawChar(SWE.Char.LTee(SWE.Line.Thin))
 	-- render cursor marker
 	area:CursorPosition(0, area.cursory):FillFGColor(area.colors.cursormarker):CursorMoveLeft():DrawChar(SWE.Char.VLine(SWE.Line.Bold))
 	-- render cursor
@@ -672,6 +739,10 @@ function EditorInit(win)
 	-- sync changes
 	area:SetFlush()
 	return true
+    end
+
+    if filename ~= nil then
+	area:LoadFile(filename)
     end
 
     SWE.DisplayKeyboard(true)

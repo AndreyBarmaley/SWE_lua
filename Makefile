@@ -1,6 +1,8 @@
 # makefile
 #
 
+DEBUG := 1
+
 ifdef OLDENGINE
 ENGINEVER := ver12
 else
@@ -26,9 +28,9 @@ ENGINEDIR := ../../engine
 include Makefile.$(ENGINEVER)
 
 ifdef DEBUG
-CFLAGS          := $(CFLAGS) -std=c++0x -O0 -g -Wall -Werror -Wno-sign-compare
+CFLAGS          := $(CFLAGS) -std=c++11 -O0 -g -Wall -Werror -Wno-sign-compare
 else
-CFLAGS          := $(CFLAGS) -std=c++0x -O2 -Wall -Wno-sign-compare
+CFLAGS          := $(CFLAGS) -std=c++11 -O2 -Wall -Wno-sign-compare
 endif
 
 CFLAGS          := $(CFLAGS) $(ENGINE_CFLAGS) -DBUILD_DEBUG_MESSAGES -DWITH_LUA -DWITH_JSON

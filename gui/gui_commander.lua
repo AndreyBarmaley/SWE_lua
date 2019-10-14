@@ -172,7 +172,7 @@ local function ItemRenderWindow(item)
     return true
 end
 
-local function ListFillItems(list,cwd,old)
+local function ListFillItems(list, cwd, old)
     local dirs, files = GetDirsFiles(cwd)
     local itemHeight = frs.lineHeight + 4
     local items = {}
@@ -208,43 +208,14 @@ local function ListFillItems(list,cwd,old)
     end
 end
 
-function CommanderInit(win)
+function CommanderInit(win, frs2, cwd2)
     local cmd = {}
-
-    local cfgfsz = 0
-    local cfgcwd = SWE.SystemCurrentDirectory()
 
     cmd.win = win
     cmd.start = nil
     cmd.exit = false
 
-    -- check config
-    local sharedir = SWE.SystemShareDirectories()
-    if sharedir ~= nil then
-	local buf = SWE.BinaryBuf()
-	local file = SWE.SystemConcatePath(sharedir, "commander.json")
-	SWE.Debug("check config:", file)
-	if buf:ReadFromFile(file) then
-	    local config = SWE.JsonParse(buf:ToString())
-	    if config ~= nil then
-		cfgfsz = config.fsz
-		cfgcwd = config.cwd
-	    end
-	end
-    end
-
-    -- init frs
-    if frs.fixedWidth == nil then
-	if cfgfsz == 0 then
-	    local dw,dh,df = SWE.DisplaySize()
-	    -- calculate font size
-	    local fsz = ToInt(dw / 320 * 12)
-	    frs = SWE.FontRender("terminus.ttf", fsz, false)
-	    SWE.Debug("set font size", fsz)
-	else
-	    frs = SWE.FontRender("terminus.ttf", cfgfsz, false)
-	end
-    end
+    frs = frs2
 
     cmd.btnx = TextButtonCreate(0, 0, "CLOSE", frs, cmd.win)
     cmd.btnx:SetPosition((cmd.win.width - cmd.btnx.width) / 2, cmd.win.height - cmd.btnx.height - 4)
@@ -252,13 +223,19 @@ function CommanderInit(win)
     cmd.btnzo = TextButtonCreate(0, 0, "Z-", frs, cmd.win)
     cmd.btnzo:SetPosition(4, cmd.win.height - cmd.btnzo.height - 4)
 
+    cmd.btnfn = TextButtonCreate(0, 0, "FN", frs, cmd.win)
+    cmd.btnfn:SetPosition(cmd.btnzo.posx + cmd.btnzo.width + 4, cmd.win.height - cmd.btnfn.height - 4)
+
+    cmd.btned = TextButtonCreate(0, 0, "ED", frs, cmd.win)
+    cmd.btned:SetPosition(cmd.btnfn.posx + cmd.btnfn.width + 4, cmd.win.height - cmd.btned.height - 4)
+
     cmd.btnzi = TextButtonCreate(0, 0, "Z+", frs, cmd.win)
     cmd.btnzi:SetPosition(cmd.win.width - cmd.btnzi.width - 4, cmd.win.height - cmd.btnzi.height - 4)
 
-    local posx = 10
+    local posx = 4
     local posy = cmd.btnx.height + 5
     cmd.list = ListCreate(posx, posy, cmd.win.width - posx - 6, cmd.win.height - posy - cmd.btnx.height - 6, cmd.win)
-    cmd.list.cwd = cfgcwd
+    cmd.list.cwd = cwd2
     cmd.list.hotkeys.GotoFirst = SWE.Key.LEFT
     cmd.list.hotkeys.GotoLast = SWE.Key.RIGHT
     cmd.list.hotkeys.GotoUp = SWE.Key.UP
@@ -384,6 +361,8 @@ function CommanderInit(win)
 
 	cmd.btnx:SetPosition((cmd.win.width - cmd.btnx.width) / 2, cmd.win.height - cmd.btnx.height - 4)
 	cmd.btnzo:SetPosition(4, cmd.win.height - cmd.btnzo.height - 4)
+	cmd.btnfn:SetPosition(cmd.btnzo.posx + cmd.btnzo.width + 4, cmd.win.height - cmd.btnfn.height - 4)
+	cmd.btned:SetPosition(cmd.btnfn.posx + cmd.btnfn.width + 4, cmd.win.height - cmd.btned.height - 4)
 	cmd.btnzi:SetPosition(cmd.win.width - cmd.btnzi.width - 4, cmd.win.height - cmd.btnzi.height - 4)
 
 	local posx = 10
@@ -401,6 +380,8 @@ function CommanderInit(win)
     cmd.list.FontChanged = function(frs)
 	cmd.btnx:SetPosition((cmd.win.width - cmd.btnx.width) / 2, cmd.win.height - cmd.btnx.height - 4)
 	cmd.btnzo:SetPosition(4, cmd.win.height - cmd.btnzo.height - 4)
+	cmd.btnfn:SetPosition(cmd.btnzo.posx + cmd.btnzo.width + 4, cmd.win.height - cmd.btnfn.height - 4)
+	cmd.btned:SetPosition(cmd.btnfn.posx + cmd.btnfn.width + 4, cmd.win.height - cmd.btned.height - 4)
 	cmd.btnzi:SetPosition(cmd.win.width - cmd.btnzi.width - 4, cmd.win.height - cmd.btnzi.height - 4)
 	local posx = 10
 	local posy = cmd.btnx.height + 5

@@ -17,6 +17,7 @@ function TextButtonCreate(posx, posy, text, frs, parent)
     btn.tx1 = tx1
     btn.tx2 = tx2
     btn.focused = false
+    btn.disabled = false
 
     btn.MouseFocusEvent = function(f)
 	btn.focused = f
@@ -29,7 +30,11 @@ function TextButtonCreate(posx, posy, text, frs, parent)
     end
 
     btn.RenderWindow = function()
-	if btn.focused then
+	if btn.disabled then
+	    btn:RenderClear(SWE.Color.LightSlateGray)
+	    btn:RenderRect(SWE.Color.Black, 0, 0, btn.width, btn.height)
+	    btn:RenderTexture(btn.tx1, 0, 0, btn.tx1.width, btn.tx1.height, 3, 3)
+	elseif btn.focused then
 	    btn:RenderClear(SWE.Color.DimGray)
 	    btn:RenderRect(SWE.Color.Black, 0, 0, btn.width, btn.height)
 	    btn:RenderTexture(btn.tx2, 0, 0, btn.tx2.width, btn.tx2.height, 3, 3)

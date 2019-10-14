@@ -331,7 +331,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local win = SWE.DisplayInit(\"Lua SWE\", 640, 480)\nwin.SetResult(123)\n\n......\nwin.KeyPressEvent = function(k)\n    if k == SWE.Key.ESCAPE then\n        win:SetVisible(false)\n    end\n    return true\nend\n......\n\nprint(SWE.MainLoop(win))",
+        "content": "local win = SWE.DisplayInit(\"Lua SWE\", 640, 480)\nwin.SetResult(123)\n\n......\nwin.KeyPressEvent = function(k,m,s)\n    if k == SWE.Key.ESCAPE then\n        win:SetVisible(false)\n    end\n    return true\nend\n......\n\nprint(SWE.MainLoop(win))",
         "type": "json"
       }
     ],
@@ -375,7 +375,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "    local win = SWE.DisplayInit(\"Lua SWE\", 640, 480)\n    local win2 = SWE.Window(50, 50, 200, 100)\n\n    ......\n    win.KeyPressEvent = function(k)\n        if k == SWE.Key.ESCAPE then\n            win:SetVisible(false)\n\t    return true\n\telseif k == SWE.Key.RETURN then\n\t    SWE.PushEvent(3333, nil, win2)\n\t    return true\n        end\n        return false\n    end\n\n    win1.SystemUserEvent = function(c,d)\n\tif c == 3333 then\n\t    print(\"SUCCESS\")\n\tend\n    end\n    ......\n\n    SWE.MainLoop(win)",
+        "content": "    local win = SWE.DisplayInit(\"Lua SWE\", 640, 480)\n    local win2 = SWE.Window(50, 50, 200, 100)\n\n    ......\n    win.KeyPressEvent = function(k,m,s)\n        if k == SWE.Key.ESCAPE then\n            win:SetVisible(false)\n\t    return true\n\telseif k == SWE.Key.RETURN then\n\t    SWE.PushEvent(3333, nil, win2)\n\t    return true\n        end\n        return false\n    end\n\n    win1.SystemUserEvent = function(c,d)\n\tif c == 3333 then\n\t    print(\"SUCCESS\")\n\tend\n    end\n    ......\n\n    SWE.MainLoop(win)",
         "type": "json"
       }
     ],
@@ -1150,6 +1150,56 @@
     "groupTitle": "SWE_BinaryBuf"
   },
   {
+    "type": "erase element",
+    "url": "SWE.BinaryBuf.Erase(self,pos,count)",
+    "title": "SWE.BinaryBuf.Erase",
+    "group": "SWE_BinaryBuf",
+    "name": "Erase",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>binarybuf raw data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "pos",
+            "description": "<p>position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "count",
+            "description": "<p>count erase</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "result",
+            "description": "<p>bynarybuf raw data</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_binarybuf.js",
+    "groupTitle": "SWE_BinaryBuf"
+  },
+  {
     "type": "get byte value",
     "url": "SWE.BinaryBuf.GetByte(self,offset)",
     "title": "SWE.BinaryBuf.GetByte",
@@ -1279,6 +1329,127 @@
     "groupTitle": "SWE_BinaryBuf"
   },
   {
+    "type": "insert byte values",
+    "url": "SWE.BinaryBuf.Insert(self,offset,inputbuf,offset,length)(offset,count,value)",
+    "title": "SWE.BinaryBuf.Insert",
+    "group": "SWE_BinaryBuf",
+    "name": "Insert",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>binarybuf raw data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "inputbuf",
+            "description": "<p>binarybuf input data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "length",
+            "description": "<p>length data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "count",
+            "description": "<p>value counts</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>byte value</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_binarybuf.js",
+    "groupTitle": "SWE_BinaryBuf"
+  },
+  {
+    "type": "push back byte value",
+    "url": "SWE.BinaryBuf.PushBack(self,offset,value",
+    "title": "... value) SWE.BinaryBuf.PushBack",
+    "group": "SWE_BinaryBuf",
+    "name": "PushBack",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>binarybuf raw data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>byte value (list)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_binarybuf.js",
+    "groupTitle": "SWE_BinaryBuf"
+  },
+  {
     "type": "read from file",
     "url": "SWE.BinaryBuf.ReadFromFile(self,filename,offset,length)(filename,offset,length)",
     "title": "SWE.BinaryBuf.ReadFromFile",
@@ -1348,6 +1519,56 @@
     "groupTitle": "SWE_BinaryBuf"
   },
   {
+    "type": "resize buf",
+    "url": "SWE.BinaryBuf.Resize(self,size,value)",
+    "title": "SWE.BinaryBuf.Resize",
+    "group": "SWE_BinaryBuf",
+    "name": "Resize",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>binarybuf raw data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "size",
+            "description": "<p>new size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>default value</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "result",
+            "description": "<p>bynarybuf raw data</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_binarybuf.js",
+    "groupTitle": "SWE_BinaryBuf"
+  },
+  {
     "type": "save to file",
     "url": "SWE.BinaryBuf.SaveToFile(self,filename,offset)",
     "title": "SWE.BinaryBuf.SaveToFile",
@@ -1399,8 +1620,8 @@
   },
   {
     "type": "set byte value",
-    "url": "SWE.BinaryBuf.SetByte(self,offset,value)",
-    "title": "SWE.BinaryBuf.SetByte",
+    "url": "SWE.BinaryBuf.SetByte(self,offset,value",
+    "title": "... value) SWE.BinaryBuf.SetByte",
     "group": "SWE_BinaryBuf",
     "name": "SetByte",
     "parameter": {
@@ -1425,7 +1646,7 @@
             "type": "number",
             "optional": false,
             "field": "value",
-            "description": "<p>byte value</p>"
+            "description": "<p>byte value (list)</p>"
           }
         ]
       }
@@ -1690,7 +1911,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0):DrawChar(SWE.Char.ULCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1):DrawChar(SWE.Char.VLine(line)):CursorMoveRight(1):DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2):DrawChar(SWE.Char.LLCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
         "type": "json"
       }
     ],
@@ -1733,7 +1954,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0):DrawChar(SWE.Char.ULCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1):DrawChar(SWE.Char.VLine(line)):CursorMoveRight(1):DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2):DrawChar(SWE.Char.LLCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
         "type": "json"
       }
     ],
@@ -1776,7 +1997,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0):DrawChar(SWE.Char.ULCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1):DrawChar(SWE.Char.VLine(line)):CursorMoveRight(1):DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2):DrawChar(SWE.Char.LLCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
         "type": "json"
       }
     ],
@@ -1819,7 +2040,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0):DrawChar(SWE.Char.ULCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1):DrawChar(SWE.Char.VLine(line)):CursorMoveRight(1):DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2):DrawChar(SWE.Char.LLCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
         "type": "json"
       }
     ],
@@ -1862,7 +2083,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0):DrawChar(SWE.Char.ULCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1):DrawChar(SWE.Char.VLine(line)):CursorMoveRight(1):DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2):DrawChar(SWE.Char.LLCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
         "type": "json"
       }
     ],
@@ -1905,7 +2126,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0):DrawChar(SWE.Char.ULCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1):DrawChar(SWE.Char.VLine(line)):CursorMoveRight(1):DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2):DrawChar(SWE.Char.LLCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
         "type": "json"
       }
     ],
@@ -1948,7 +2169,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0):DrawChar(SWE.Char.ULCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1):DrawChar(SWE.Char.VLine(line)):CursorMoveRight(1):DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2):DrawChar(SWE.Char.LLCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
         "type": "json"
       }
     ],
@@ -1991,7 +2212,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0):DrawChar(SWE.Char.ULCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1):DrawChar(SWE.Char.VLine(line)):CursorMoveRight(1):DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2):DrawChar(SWE.Char.LLCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
         "type": "json"
       }
     ],
@@ -2034,7 +2255,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0):DrawChar(SWE.Char.ULCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1):DrawChar(SWE.Char.VLine(line)):CursorMoveRight(1):DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2):DrawChar(SWE.Char.LLCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
         "type": "json"
       }
     ],
@@ -2077,7 +2298,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0):DrawChar(SWE.Char.ULCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1):DrawChar(SWE.Char.VLine(line)):CursorMoveRight(1):DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2):DrawChar(SWE.Char.LLCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
         "type": "json"
       }
     ],
@@ -2120,7 +2341,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0):DrawChar(SWE.Char.ULCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1):DrawChar(SWE.Char.VLine(line)):CursorMoveRight(1):DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2):DrawChar(SWE.Char.LLCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
         "type": "json"
       }
     ],
@@ -3251,6 +3472,56 @@
     "groupTitle": "SWE_FontRender"
   },
   {
+    "type": "list: split string width",
+    "url": "SWE.FontRender.SplitStringWidth(self,content,width)",
+    "title": "SWE.FontRender.SplitStringWidth",
+    "group": "SWE_FontRender",
+    "name": "SplitStringWidth",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.FontRender",
+            "optional": false,
+            "field": "self",
+            "description": "<p>fontrender object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "content",
+            "description": "<p>string content</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "width",
+            "description": "<p>width</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "list",
+            "optional": false,
+            "field": "result",
+            "description": "<p>string list result</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_fontrender.js",
+    "groupTitle": "SWE_FontRender"
+  },
+  {
     "type": "get symbol advance value",
     "url": "SWE.FontRender.SymbolAdvance(self,symbol)",
     "title": "SWE.FontRender.SymbolAdvance",
@@ -3445,42 +3716,6 @@
   },
   {
     "type": "get color string",
-    "url": "SWE.Key.Lower(key1)",
-    "title": "SWE.Key.Lower",
-    "group": "SWE_Key",
-    "name": "Lower",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "key1",
-            "description": "<p>key enum</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "number",
-            "optional": false,
-            "field": "key2",
-            "description": "<p>key enum</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_key.js",
-    "groupTitle": "SWE_Key"
-  },
-  {
-    "type": "get color string",
     "url": "SWE.Key.ToString(key)",
     "title": "SWE.Key.ToChar",
     "group": "SWE_Key",
@@ -3517,42 +3752,6 @@
   },
   {
     "type": "get color string",
-    "url": "SWE.Key.ToKey(name)",
-    "title": "SWE.Key.ToKey",
-    "group": "SWE_Key",
-    "name": "ToKey",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "name",
-            "description": "<p>key name</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "number",
-            "optional": false,
-            "field": "key",
-            "description": "<p>key enum</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_key.js",
-    "groupTitle": "SWE_Key"
-  },
-  {
-    "type": "get color string",
     "url": "SWE.Key.ToString(key)",
     "title": "SWE.Key.ToString",
     "group": "SWE_Key",
@@ -3579,42 +3778,6 @@
             "optional": false,
             "field": "name",
             "description": "<p>key name</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_key.js",
-    "groupTitle": "SWE_Key"
-  },
-  {
-    "type": "get color string",
-    "url": "SWE.Key.Upper(key1)",
-    "title": "SWE.Key.Upper",
-    "group": "SWE_Key",
-    "name": "Upper",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "key1",
-            "description": "<p>key enum</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "number",
-            "optional": false,
-            "field": "key2",
-            "description": "<p>key enum</p>"
           }
         ]
       }
@@ -4660,28 +4823,28 @@
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "LineAscii",
+            "field": "Ascii",
             "description": "<p>line ascii code</p>"
           },
           {
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "LineThin",
+            "field": "Thin",
             "description": "<p>line thin utf16</p>"
           },
           {
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "LineBold",
+            "field": "Bold",
             "description": "<p>line bold utf16</p>"
           },
           {
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "LineDouble",
+            "field": "Double",
             "description": "<p>line double utf16</p>"
           }
         ]
@@ -4690,13 +4853,64 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0)\narea:DrawChar(SWE.Char.ULCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorMoveRight(1)\narea:DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2)\narea:DrawChar(SWE.Char.LLCorner(line))\narea:DrawChar(SWE.Char.HLine(line))\narea:DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- draw box\narea:CursorPosition(0, 0):DrawChar(SWE.Char.ULCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1):DrawChar(SWE.Char.VLine(line)):CursorMoveRight(1):DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2):DrawChar(SWE.Char.LLCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
         "type": "json"
       }
     ],
     "version": "0.0.0",
     "filename": "./api/apidoc_terminal.js",
     "groupTitle": "SWE_Line"
+  },
+  {
+    "type": "MouseButton enums",
+    "url": "SWE.MouseButton.<EnumConstant>",
+    "title": "SWE.MouseButton.<EnumConstant>",
+    "group": "SWE_MouseButton",
+    "name": "_EnumConstant_",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "Left",
+            "description": "<p>mouse button left</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "Right",
+            "description": "<p>mouse button right</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "Middle",
+            "description": "<p>mouse button middle</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "X1",
+            "description": "<p>mouse button x1</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "X2",
+            "description": "<p>mouse button x2</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_MouseButton"
   },
   {
     "type": "netstream close connect",
@@ -5833,6 +6047,27 @@
             "group": "Parameter",
             "type": "number",
             "optional": false,
+            "field": "RenderSolid",
+            "description": "<p>SDL ttf render constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "RenderBlended",
+            "description": "<p>SDL ttf render constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "RenderShaded",
+            "description": "<p>SDL ttf render constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
             "field": "StyleNormal",
             "description": "<p>SDL ttf style constant</p>"
           },
@@ -6644,6 +6879,2627 @@
     "version": "0.0.0",
     "filename": "./api/apidoc_rect.js",
     "groupTitle": "SWE_Size"
+  },
+  {
+    "type": "terminal func: get charset info",
+    "url": "SWE.Terminal.CharsetInfo(self)",
+    "title": "SWE.Terminal.CharsetInfo",
+    "group": "SWE_Terminal",
+    "name": "CharsetInfo",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "table",
+            "optional": false,
+            "field": "result",
+            "description": "<p>table info</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "term:CursorPosition(2,3)\nlocal t = term:CharsetInfo()\nSWE.Dump(t)\n...\n-- console output\n[`unicode'] = string(`0x002d')\n[`blended'] = integer(0)\n[`style'] = integer(2)\n[`bgcolor'] = string(`MidnightBlue')\n[`hinting'] = integer(0)\n[`fgcolor'] = string(`RosyBrown')",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal constructor",
+    "url": "SWE.Terminal(frs,cols,rows,parent)",
+    "title": "SWE.Terminal",
+    "group": "SWE_Terminal",
+    "name": "Constructor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.FontRender",
+            "optional": false,
+            "field": "frs",
+            "description": "<p>fontrender object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "cols",
+            "description": "<p>terminal size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "rows",
+            "description": "<p>terminal size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "parent",
+            "description": "<p>parent object, (default display scene)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>terminal object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local term = SWE.Terminal(frs,20,10)",
+        "type": "json"
+      },
+      {
+        "title": "ext table fields (read only)",
+        "content": "| posx      | number  | window position\n| posy      | number  | window position\n| width     | number  | window size\n| height    | number  | window size\n| cols      | number  | terminal size\n| rows      | number  | terminal size\n| visible   | boolean | window is visible (defalut false)\n| modality  | boolean | window is modality (defalut false)\n| keyhangle | boolean | window is global key handle (defalut false)",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: cursor bottom left area position",
+    "url": "SWE.Terminal.CursorBottomLeft(self)",
+    "title": "SWE.Terminal.CursorBottomLeft",
+    "group": "SWE_Terminal",
+    "name": "CursorBottomLeft",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: cursor bottom right area position",
+    "url": "SWE.Terminal.CursorBottomRight(self)",
+    "title": "SWE.Terminal.CursorBottomRight",
+    "group": "SWE_Terminal",
+    "name": "CursorBottomRight",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: cursor move down position",
+    "url": "SWE.Terminal.CursorMoveDown(self,count)",
+    "title": "SWE.Terminal.CursorMoveDown",
+    "group": "SWE_Terminal",
+    "name": "CursorMoveDown",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "count",
+            "description": "<p>step count (default: 1)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: cursor move left position",
+    "url": "SWE.Terminal.CursorMoveLeft(self,count)",
+    "title": "SWE.Terminal.CursorMoveLeft",
+    "group": "SWE_Terminal",
+    "name": "CursorMoveLeft",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "count",
+            "description": "<p>step count (default: 1)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: cursor move right position",
+    "url": "SWE.Terminal.CursorMoveRight(self,count)",
+    "title": "SWE.Terminal.CursorMoveRight",
+    "group": "SWE_Terminal",
+    "name": "CursorMoveRight",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "count",
+            "description": "<p>step count (default: 1)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: cursor move up position",
+    "url": "SWE.Terminal.CursorMoveUp(self,count)",
+    "title": "SWE.Terminal.CursorMoveUp",
+    "group": "SWE_Terminal",
+    "name": "CursorMoveUp",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "count",
+            "description": "<p>step count (default: 1)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: set/get cursor position",
+    "url": "SWE.Terminal.CursorPosition(self,curx,cury)(self)",
+    "title": "SWE.Terminal.CursorPosition",
+    "group": "SWE_Terminal",
+    "name": "CursorPosition",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "curx",
+            "description": "<p>set cursor position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "cury",
+            "description": "<p>set cursor position</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "list",
+            "optional": false,
+            "field": "coord",
+            "description": "<p>current cursor position (posx, posy)</p>"
+          },
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local area = SWE.Terminal(frs, cols, rows)\nlocal line = SWE.Line.Thin\n...\n-- set cursor position, dump area (terminal object)\nSWE.Dump(area:CursorPosition(0, 0))\n-- get cursor position, dump cursor position\nSWE.Debug(area:CursorPosition())\n\n-- draw box and set cursor position\narea:CursorPosition(0, 0):DrawChar(SWE.Char.ULCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.URCorner(line))\narea:CursorPosition(0, 1):DrawChar(SWE.Char.VLine(line)):CursorMoveRight(1):DrawChar(SWE.Char.VLine(line))\narea:CursorPosition(0, 2):DrawChar(SWE.Char.LLCorner(line)):DrawChar(SWE.Char.HLine(line)):DrawChar(SWE.Char.LRCorner(line))\narea:SetFlush()",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: cursor top left area position",
+    "url": "SWE.Terminal.CursorTopLeft(self)",
+    "title": "SWE.Terminal.CursorTopLeft",
+    "group": "SWE_Terminal",
+    "name": "CursorTopLeft",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: cursor top right area position",
+    "url": "SWE.Terminal.CursorTopRight(self)",
+    "title": "SWE.Terminal.CursorTopRight",
+    "group": "SWE_Terminal",
+    "name": "CursorTopRight",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: draw chars list",
+    "url": "SWE.Terminal.DrawChar(self,char,char,char)",
+    "title": "SWE.Terminal.DrawChar",
+    "group": "SWE_Terminal",
+    "name": "DrawChar",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "char",
+            "description": "<p>unicode char (utf16)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: draw hline chars",
+    "url": "SWE.Terminal.DrawHLine(self,length,char,fgcol,bgcol)",
+    "title": "SWE.Terminal.DrawHLine",
+    "group": "SWE_Terminal",
+    "name": "DrawHLine",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "length",
+            "description": "<p>line length</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "char",
+            "description": "<p>line symbol</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "fgcol",
+            "description": "<p>SWE.Color (foreground color)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "bgcol",
+            "description": "<p>SWE.Color (background color)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: draw rectangle",
+    "url": "SWE.Terminal.DrawRect(self,width,height,line)",
+    "title": "SWE.Terminal.DrawRect",
+    "group": "SWE_Terminal",
+    "name": "DrawRect",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "width",
+            "description": "<p>rect width</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "height",
+            "description": "<p>rect height</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "line",
+            "description": "<p>SWE.Line type</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: draw text list",
+    "url": "SWE.Terminal.DrawText(self,text,text,text)",
+    "title": "SWE.Terminal.DrawText",
+    "group": "SWE_Terminal",
+    "name": "DrawText",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "text",
+            "description": "<p>utf8 string</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: draw vline chars",
+    "url": "SWE.Terminal.DrawVLine(self,length,char,fgcol,bgcol)",
+    "title": "SWE.Terminal.DrawVLine",
+    "group": "SWE_Terminal",
+    "name": "DrawVLine",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "length",
+            "description": "<p>line length</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "char",
+            "description": "<p>line symbol</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "fgcol",
+            "description": "<p>SWE.Color (foreground color)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "bgcol",
+            "description": "<p>SWE.Color (background color)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: fill bg color",
+    "url": "SWE.Terminal.FillBGColor(self,color,cols,rows)",
+    "title": "SWE.Terminal.FillBGColor",
+    "group": "SWE_Terminal",
+    "name": "FillBGColor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "color",
+            "description": "<p>SWE.Color</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "cols",
+            "description": "<p>terminal size area (default: 1)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "rows",
+            "description": "<p>terminal size area (default: 1)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: fill charset area",
+    "url": "SWE.Terminal.FillCharset(self,symbol,cols,rows)",
+    "title": "SWE.Terminal.FillCharset",
+    "group": "SWE_Terminal",
+    "name": "FillCharset",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "symbol",
+            "description": "<p>symbol charset</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "cols",
+            "description": "<p>terminal size area (default: 1)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "rows",
+            "description": "<p>terminal size area (default: 1)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: fill fg/bg colors",
+    "url": "SWE.Terminal.FillColors(self,fgcolor,bgcolor,cols,rows)",
+    "title": "SWE.Terminal.FillColors",
+    "group": "SWE_Terminal",
+    "name": "FillColors",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "fgcolor",
+            "description": "<p>SWE.Color</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "bgcolor",
+            "description": "<p>SWE.Color</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "cols",
+            "description": "<p>terminal size area (default: 1)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "rows",
+            "description": "<p>terminal size area (default: 1)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: fill fg color",
+    "url": "SWE.Terminal.FillFGColor(self,color,cols,rows)",
+    "title": "SWE.Terminal.FillFGColor",
+    "group": "SWE_Terminal",
+    "name": "FillFGColor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "color",
+            "description": "<p>SWE.Color</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "cols",
+            "description": "<p>terminal size area (default: 1)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "rows",
+            "description": "<p>terminal size area (default: 1)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: fill charset property area",
+    "url": "SWE.Terminal.FillProperty(self,blend,style,hinting,cols,rows)",
+    "title": "SWE.Terminal.FillProperty",
+    "group": "SWE_Terminal",
+    "name": "FillProperty",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "blend",
+            "description": "<p>SDL TTF render type: SWE.Property.[RenderSolid,RenderBlended]</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "style",
+            "description": "<p>SDL TTF style type: SWE.Property.[StyleNormal,StyleBold,StyleItalic,StyleUnderLine,StyleStrikeThrough]</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "hinting",
+            "description": "<p>SDL TTF hinting type: SWE.Property.[HintingNormal,HintingLight,HintingMono,HintingNone]</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "cols",
+            "description": "<p>terminal size area (default: 1)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "rows",
+            "description": "<p>terminal size area (default: 1)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    local frs = SWE.FontRender(\"dejavusans.ttf\", 14)\n    local area = SWE.Terminal(frs, cols, rows)\n\n    area.RenderWindow = function()\n\tarea:CursorMoveTopLeft():FillFGColor(SWE.Color.Silver, area.cols, area.rows)\n\tarea:CursorMoveTopLeft():area:FillProperty(SWE.Property.RenderBlended, SWE.Property.StyleNormal, SWE.Property.HintingNormal, area.cols, 1)\n\tarea:CursorMoveFirst():DrawText(\"Simple Text Style: Normal\"):CursorMoveDown()\n\tarea:CursorMoveFirst():FillProperty(SWE.Property.RenderBlended, SWE.Property.StyleBold, SWE.Property.HintingNormal, area.cols, 1)\n\tarea:CursorMoveFirst():DrawText(\"Simple Text Style: Bold\"):CursorMoveDown()\n\tarea:CursorMoveFirst():FillProperty(SWE.Property.RenderBlended, SWE.Property.StyleItalic, SWE.Property.HintingNormal, area.cols, 1)\n\tarea:CursorMoveFirst():DrawText(\"Simple Text Style: Italic\"):CursorMoveDown()\n\treturn true\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: reset default bg color to transparent",
+    "url": "SWE.Terminal.ResetBGColor(self)",
+    "title": "SWE.Terminal.ResetBGColor",
+    "group": "SWE_Terminal",
+    "name": "ResetBGColor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: reset fg/bg colors",
+    "url": "SWE.Terminal.ResetColors(self)",
+    "title": "SWE.Terminal.ResetColors",
+    "group": "SWE_Terminal",
+    "name": "ResetColors",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: reset default fg color to transparent",
+    "url": "SWE.Terminal.ResetFGColor(self)",
+    "title": "SWE.Terminal.ResetFGColor",
+    "group": "SWE_Terminal",
+    "name": "ResetFGColor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: reset padding",
+    "url": "SWE.Terminal.ResetPadding(self)",
+    "title": "SWE.Terminal.ResetPadding",
+    "group": "SWE_Terminal",
+    "name": "ResetPadding",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: reset wrap mode",
+    "url": "SWE.Terminal.ResetWrap(self)",
+    "title": "SWE.Terminal.ResetWrap",
+    "group": "SWE_Terminal",
+    "name": "ResetWrap",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: set bg color default",
+    "url": "SWE.Terminal.SetBGColor(self,color)",
+    "title": "SWE.Terminal.SetBGColor",
+    "group": "SWE_Terminal",
+    "name": "SetBGColor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "color",
+            "description": "<p>SWE.Color</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: set fg/bg colors default",
+    "url": "SWE.Terminal.SetColors(self,fgcolor,bgcolor)",
+    "title": "SWE.Terminal.SetColors",
+    "group": "SWE_Terminal",
+    "name": "SetColors",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "fgcolor",
+            "description": "<p>SWE.Color</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "bgcolor",
+            "description": "<p>SWE.Color</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: set fg color default",
+    "url": "SWE.Terminal.SetFGColor(self,color)",
+    "title": "SWE.Terminal.SetFGColor",
+    "group": "SWE_Terminal",
+    "name": "SetFGColor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "color",
+            "description": "<p>SWE.Color</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: set flush",
+    "url": "SWE.Terminal.SetFlush(self)",
+    "title": "SWE.Terminal.SetFlush",
+    "group": "SWE_Terminal",
+    "name": "SetFlush",
+    "description": "<p>commit all changes to display</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: set padding space",
+    "url": "SWE.Terminal.SetPadding(self,left,right,top,bottom)",
+    "title": "SWE.Terminal.SetPadding",
+    "group": "SWE_Terminal",
+    "name": "SetPadding",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "left",
+            "description": "<p>left padding</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "right",
+            "description": "<p>right padding</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "top",
+            "description": "<p>top padding</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "bottom",
+            "description": "<p>bottom padding</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal set size",
+    "url": "SWE.Terminal.SetTermSize(self,cols,rows)",
+    "title": "SWE.Terminal.SetSize",
+    "group": "SWE_Terminal",
+    "name": "SetSize",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "cols",
+            "description": "<p>terminal size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "rows",
+            "description": "<p>terminal size</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: set wrap mode",
+    "url": "SWE.Terminal.SetWrap(self)",
+    "title": "SWE.Terminal.SetWrap",
+    "group": "SWE_Terminal",
+    "name": "SetWrap",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "convert terminal to json string",
+    "url": "SWE.Terminal.ToJson(self)",
+    "title": "SWE.Terminal.ToJson",
+    "group": "SWE_Terminal",
+    "name": "ToJson",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>json string</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal event: win size changed",
+    "url": "SWE.Terminal.DisplayResizeEvent(width,height)",
+    "title": "SWE.Terminal.DisplayResizeEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "DisplayResizeEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "width",
+            "description": "<p>window size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "height",
+            "description": "<p>window size</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.DisplayResizeEvent = function(w,h)\n\tprint(\"new win size\",w,h)\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: key event",
+    "url": "SWE.Terminal.KeyPressEvent(keycode,keymod,scancode)",
+    "title": "SWE.Terminal.KeyPressEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "KeyPressEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "keycode",
+            "description": "<p>SWE.Key constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "keymod",
+            "description": "<p>key mod SDL_Keymod</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "scancode",
+            "description": "<p>key scancode</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success if processing</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.KeyPressEvent = function(k,m,s)\n\tif k == SWE.Key.ESCAPE then\n\t    win:SetVisible(false)\n\t    print(\"hide terminal\")\n\tend\n\treturn true\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: key event",
+    "url": "SWE.Terminal.KeyReleaseEvent(keycode,keymod,scancode)",
+    "title": "SWE.Terminal.KeyReleaseEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "KeyReleaseEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "keycode",
+            "description": "<p>SWE.Key constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "keymod",
+            "description": "<p>key mod SDL_Keymod</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "scancode",
+            "description": "<p>key scancode</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success if processing</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.KeyReleaseEvent = function(k,m,s)\n\tif k == SWE.Key.ESCAPE then\n\t    win:SetVisible(false)\n\t    print(\"hide terminal\")\n\tend\n\treturn true\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: mouse click",
+    "url": "SWE.Terminal.MouseClickEvent(press_x,press_y,press_btns,release_x,release_y,release_btns)",
+    "title": "SWE.Terminal.MouseClickEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "MouseClickEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "press_x",
+            "description": "<p>mouse press position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "press_y",
+            "description": "<p>mouse press position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "press_btns",
+            "description": "<p>SWE.Button constant (press state)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "release_x",
+            "description": "<p>mouse release position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "release_y",
+            "description": "<p>mouse release position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "release_btns",
+            "description": "<p>SWE.Button constant (release state)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success if processing</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.MouseClickEvent = function(px,py,pbtn,rx,ry,rbtn)\n\tprint(px,py,rx,ry)\n\treturn true\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: gain focus of leave",
+    "url": "SWE.Terminal.MouseFocusEvent(focus)",
+    "title": "SWE.Terminal.MouseFocusEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "MouseFocusEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "boolean",
+            "optional": false,
+            "field": "focus",
+            "description": "<p>terminal if focused/leaved</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success if processing</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.MouseFocusEvent = function(f)\n\tprint(\"focus:\",f)\n\treturn true\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: mouse motion",
+    "url": "SWE.Terminal.MouseMotionEvent(posx,posy,buttons)",
+    "title": "SWE.Terminal.MouseMotionEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "MouseMotionEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posx",
+            "description": "<p>mouse position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posy",
+            "description": "<p>mouse position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "buttons",
+            "description": "<p>SWE.Button constant</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success if processing</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.MouseMotionEvent = function(x,y,btn)\n\tprint(x,y,btn)\n\treturn true\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: mouse press",
+    "url": "SWE.Terminal.MousePressEvent(posx,posy,buttons)",
+    "title": "SWE.Terminal.MousePressEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "MousePressEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posx",
+            "description": "<p>mouse position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posy",
+            "description": "<p>mouse position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "buttons",
+            "description": "<p>SWE.Button constant</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success if processing</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.MousePressEvent = function(x,y,btn)\n\tprint(x,y,btn)\n\treturn true\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: mouse release",
+    "url": "SWE.Terminal.MouseReleaseEvent(posx,posy,buttons)",
+    "title": "SWE.Terminal.MouseReleaseEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "MouseReleaseEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posx",
+            "description": "<p>mouse position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posy",
+            "description": "<p>mouse position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "buttons",
+            "description": "<p>SWE.Button constant</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success if processing</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.MouseReleaseEvent = function(x,y,btn)\n\tprint(x,y,btn)\n\treturn true\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: scroll event",
+    "url": "SWE.Terminal.ScrollDownEvent(posx,posy)",
+    "title": "SWE.Terminal.ScrollDownEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "ScrollDownEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posx",
+            "description": "<p>mouse position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posy",
+            "description": "<p>mouse position</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success if processing</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.ScrollDownEvent = function(x,y)\n\tprint(x,y)\n\treturn true\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: scroll event",
+    "url": "SWE.Terminal.ScrollUpEvent(posx,posy)",
+    "title": "SWE.Terminal.ScrollUpEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "ScrollUpEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posx",
+            "description": "<p>mouse position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posy",
+            "description": "<p>mouse position</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success if processing</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.ScrollUpEvent = function(x,y)\n\tprint(x,y)\n\treturn true\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: system tick",
+    "url": "SWE.Terminal.SystemTickEvent(tick)",
+    "title": "SWE.Terminal.SystemTickEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "SystemTickEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "tick",
+            "description": "<p>constantly increasing counter (SWE.MainLoop cycle), in milliseconds, from the starting</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.SystemTickEvent = function(tick)\n\tprint(\"tick:\",tick)\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: system user event",
+    "url": "SWE.Terminal.SystemUserEvent(code,lightuserdata)",
+    "title": "SWE.Terminal.SystemUserEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "SystemUserEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "code",
+            "description": "<p>user code (0x00FFFFFF max value), see SWE.pushEvent</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "table",
+            "optional": false,
+            "field": "object",
+            "description": "<p>any Lua object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success if processing</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.SystemUserEvent = function(code,data)\n\tprint(\"code:\",code,type(data))\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: invalid texture",
+    "url": "SWE.Terminal.TextureInvalidEvent()",
+    "title": "SWE.Terminal.TextureInvalidEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "TextureInvalidEvent",
+    "description": "<p>after resizing the display or rotate (for mobile os), all textures (if used) must be reinitialized, because the internal SDL render is changed</p>",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.tx1 = SWE.Texture.Text(frs, text, SWE.Color.Red)\n    ...\n    win.TextureInvalidEvent = function()\n\twin.tx1 = SWE.Texture.Text(frs, text, SWE.Color.Red)\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: destroy object",
+    "url": "SWE.Terminal.WindowCloseEvent()",
+    "title": "SWE.Terminal.WindowCloseEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "WindowCloseEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.WindowCloseEvent = function()\n\tprint(\"win closed\")\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: single event constructor",
+    "url": "SWE.Terminal.WindowCreateEvent()",
+    "title": "SWE.Terminal.WindowCreateEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "WindowCreateEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.WindowCreateEvent = function()\n\tprint(\"win created\")\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "render terminal code",
+    "url": "SWE.Terminal.RenderWindow()",
+    "title": "SWE.Terminal.RenderWindow",
+    "group": "SWE_Terminal_Virtual",
+    "name": "RenderWindow",
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>always true</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.RenderWindow = function()\n\t-- terminal render code\n\treturn true\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Virtual"
+  },
+  {
+    "type": "point in terminal area",
+    "url": "SWE.Terminal.PointInArea(self,ptx,pty)(self,point)",
+    "title": "SWE.Terminal.PointInArea",
+    "group": "SWE_Terminal_Window",
+    "name": "PointInArea",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "ptx",
+            "description": "<p>point coord</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "pty",
+            "description": "<p>point coord</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point",
+            "description": "<p>point object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Window"
+  },
+  {
+    "type": "terminal render texture",
+    "url": "SWE.Terminal.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty,dstw,dsth)(self,texture,src_rt,dst_rt)",
+    "title": "SWE.Terminal.RenderTexture",
+    "group": "SWE_Terminal_Window",
+    "name": "RenderTexture",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Texture",
+            "optional": false,
+            "field": "texture",
+            "description": "<p>texture source object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "srcx",
+            "description": "<p>src position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "srcy",
+            "description": "<p>src position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "srcw",
+            "description": "<p>src size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "srch",
+            "description": "<p>src size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "dstx",
+            "description": "<p>dst position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "dsty",
+            "description": "<p>dst position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "dstw",
+            "description": "<p>dst size (default srcw)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "dsth",
+            "description": "<p>dst size (default srch)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "src_rt",
+            "description": "<p>src rect object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "dst_rt",
+            "description": "<p>dst rect object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Window"
+  },
+  {
+    "type": "terminal set global key handle mode",
+    "url": "SWE.Terminal.SetKeyHandle(self,handle)",
+    "title": "SWE.Terminal.SetKeyHandle",
+    "group": "SWE_Terminal_Window",
+    "name": "SetKeyHandle",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "boolean",
+            "optional": false,
+            "field": "handle",
+            "description": "<p>flag key handle</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Window"
+  },
+  {
+    "type": "terminal set modality mode",
+    "url": "SWE.Terminal.SetModality(self,modality)",
+    "title": "SWE.Terminal.SetModality",
+    "group": "SWE_Terminal_Window",
+    "name": "SetModality",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "boolean",
+            "optional": false,
+            "field": "modality",
+            "description": "<p>flag modality</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Window"
+  },
+  {
+    "type": "terminal set position",
+    "url": "SWE.Terminal.SetPosition(self,posx,posy)",
+    "title": "SWE.Terminal.SetPosition",
+    "group": "SWE_Terminal_Window",
+    "name": "SetPosition",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posx",
+            "description": "<p>window position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "posy",
+            "description": "<p>window position</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Window"
+  },
+  {
+    "type": "terminal set result code",
+    "url": "SWE.Terminal.SetResult(self,code)",
+    "title": "SWE.Terminal.SetResult",
+    "group": "SWE_Terminal_Window",
+    "name": "SetResult",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "code",
+            "description": "<p>set result code, see SWE.MainLoop</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Window"
+  },
+  {
+    "type": "terminal set visible mode",
+    "url": "SWE.Terminal.SetVisible(self,visible)",
+    "title": "SWE.Terminal.SetVisible",
+    "group": "SWE_Terminal_Window",
+    "name": "SetVisible",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "boolean",
+            "optional": false,
+            "field": "visible",
+            "description": "<p>flag visible</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Window"
   },
   {
     "type": "texture constructor",
@@ -7478,6 +10334,551 @@
     "groupTitle": "SWE_Texture_Text"
   },
   {
+    "type": "unicodestring clear",
+    "url": "SWE.UnicodeString.Clear(self)",
+    "title": "SWE.UnicodeString.Clear",
+    "group": "SWE_UnicodeString",
+    "name": "Clear",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "self",
+            "description": "<p>unicodestring raw data</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_unicodestring.js",
+    "groupTitle": "SWE_UnicodeString"
+  },
+  {
+    "type": "unicodestring constructor",
+    "url": "SWE.UnicodeString(),(inputstr),(length,value)",
+    "title": "SWE.UnicodeString",
+    "group": "SWE_UnicodeString",
+    "name": "Constructor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "inputstr",
+            "description": "<p>string data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "length",
+            "description": "<p>length data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>default value</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "result",
+            "description": "<p>unicodestring data</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "ext table fields (read only)",
+        "content": "| size    | number  | unicodestring length",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_unicodestring.js",
+    "groupTitle": "SWE_UnicodeString"
+  },
+  {
+    "type": "erase element",
+    "url": "SWE.UnicodeString.Erase(self,pos,count)",
+    "title": "SWE.UnicodeString.Erase",
+    "group": "SWE_UnicodeString",
+    "name": "Erase",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "self",
+            "description": "<p>unicodestring raw data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "pos",
+            "description": "<p>position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "count",
+            "description": "<p>count erase</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "result",
+            "description": "<p>bynarybuf raw data</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_unicodestring.js",
+    "groupTitle": "SWE_UnicodeString"
+  },
+  {
+    "type": "get char value",
+    "url": "SWE.UnicodeString.GetChar(self,offset)",
+    "title": "SWE.UnicodeString.GetChar",
+    "group": "SWE_UnicodeString",
+    "name": "GetChar",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "self",
+            "description": "<p>unicodestring raw data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset data</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>byte value</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_unicodestring.js",
+    "groupTitle": "SWE_UnicodeString"
+  },
+  {
+    "type": "insert byte values",
+    "url": "SWE.UnicodeString.Insert(self,offset,inputbuf,offset,length)(offset,count,value)",
+    "title": "SWE.UnicodeString.Insert",
+    "group": "SWE_UnicodeString",
+    "name": "Insert",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "self",
+            "description": "<p>unicodestring raw data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "inputbuf",
+            "description": "<p>unicodestring input data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "length",
+            "description": "<p>length data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "count",
+            "description": "<p>value counts</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>byte value</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_unicodestring.js",
+    "groupTitle": "SWE_UnicodeString"
+  },
+  {
+    "type": "push back byte value",
+    "url": "SWE.UnicodeString.PushBack(self,offset,value",
+    "title": "... value) SWE.UnicodeString.PushBack",
+    "group": "SWE_UnicodeString",
+    "name": "PushBack",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "self",
+            "description": "<p>unicodestring raw data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>byte value (list)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_unicodestring.js",
+    "groupTitle": "SWE_UnicodeString"
+  },
+  {
+    "type": "resize buf",
+    "url": "SWE.UnicodeString.Resize(self,size,value)",
+    "title": "SWE.UnicodeString.Resize",
+    "group": "SWE_UnicodeString",
+    "name": "Resize",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "self",
+            "description": "<p>unicodestring raw data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "size",
+            "description": "<p>new size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>default value</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "result",
+            "description": "<p>bynarybuf raw data</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_unicodestring.js",
+    "groupTitle": "SWE_UnicodeString"
+  },
+  {
+    "type": "set char value",
+    "url": "SWE.UnicodeString.SetChar(self,offset,value",
+    "title": "... value) SWE.UnicodeString.SetChar",
+    "group": "SWE_UnicodeString",
+    "name": "SetChar",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "self",
+            "description": "<p>unicodestring raw data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>byte value (list)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_unicodestring.js",
+    "groupTitle": "SWE_UnicodeString"
+  },
+  {
+    "type": "convert unicodestring to string",
+    "url": "SWE.UnicodeString.ToString(inputbuf)",
+    "title": "SWE.UnicodeString.ToString",
+    "group": "SWE_UnicodeString",
+    "name": "ToString",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "inputbuf",
+            "description": "<p>unicodestring raw data</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>string data</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_unicodestring.js",
+    "groupTitle": "SWE_UnicodeString"
+  },
+  {
+    "type": "videocam constructor",
+    "url": "SWE.VideoCam(params)",
+    "title": "SWE.VideoCam",
+    "group": "SWE_VideoCam",
+    "name": "Constructor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "table",
+            "optional": false,
+            "field": "params",
+            "description": "<p>ffmpeg init params</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.VideoCam",
+            "optional": false,
+            "field": "result",
+            "description": "<p>videocam object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    local win = SWE.DisplayInit(\"VideoCam Example\", 640, 480, fullscreen)\n\n    -- init videocam object\n    local params = { format = \"v4l2\", device = \"/dev/video0\", debug = true, video_standard = \"pal\", video_size = \"640x480\" }\n    local cam = SWE.VideoCam(params)\n\n    function win.RenderWindow()\n\tlocal frame = cam:GetFrame()\n\tif frame ~= nil then\n    \t    win:RenderTexture(frame, 0, 0, frame.width, frame.height, 0, 0, win.width, win.height)\n\telse\n\t    -- no signal\n    \t    win:RenderClear(SWE.Color.Blue)\n\tend\n\treturn true\n    end\n\n    function win.SystemTickEvent()\n\t-- repeat redraw scene\n\tSWE.DisplayDirty()\n\treturn true\n    end\n\n    function win.KeyPressEvent(key,mod,scancode)\n\tif SWE.Key.ESCAPE == key then\n    \t    -- close scene, see SWE.MainLoop\n    \t    win:SetVisible(false)\n    \t    return true\n\tend\n\treturn false\n    end\n\n    SWE.MainLoop(win)",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_videocam.js",
+    "groupTitle": "SWE_VideoCam"
+  },
+  {
+    "type": "capture frame",
+    "url": "SWE.VideoCam.GetFrame(self)",
+    "title": "SWE.VideoCam.GetFrame",
+    "group": "SWE_VideoCam",
+    "name": "GetFrame",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.VideoCam",
+            "optional": false,
+            "field": "self",
+            "description": "<p>videocam object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Texture",
+            "optional": false,
+            "field": "result",
+            "description": "<p>capture texture frame</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_videocam.js",
+    "groupTitle": "SWE_VideoCam"
+  },
+  {
+    "type": "convert videocam to json string",
+    "url": "SWE.VideoCam.ToJson(self)",
+    "title": "SWE.VideoCam.ToJson",
+    "group": "SWE_VideoCam",
+    "name": "ToJson",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.VideoCam",
+            "optional": false,
+            "field": "self",
+            "description": "<p>videocam object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>json string</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_videocam.js",
+    "groupTitle": "SWE_VideoCam"
+  },
+  {
     "type": "window constructor",
     "url": "SWE.Window(posx,posy,width,height,parent)",
     "title": "SWE.Window",
@@ -8207,7 +11608,7 @@
     "groupTitle": "SWE_Window"
   },
   {
-    "type": "window set position",
+    "type": "window set size",
     "url": "SWE.Window.SetSize(self,width,height)",
     "title": "SWE.Window.SetSize",
     "group": "SWE_Window",
@@ -8413,7 +11814,7 @@
   },
   {
     "type": "window event: key event",
-    "url": "SWE.Window.KeyPressEvent(keycode)",
+    "url": "SWE.Window.KeyPressEvent(keycode,keymod,scancode)",
     "title": "SWE.Window.KeyPressEvent",
     "group": "SWE_Window_Events",
     "name": "KeyPressEvent",
@@ -8426,6 +11827,20 @@
             "optional": false,
             "field": "keycode",
             "description": "<p>SWE.Key constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "keymod",
+            "description": "<p>key mod SDL_Keymod</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "scancode",
+            "description": "<p>key scancode</p>"
           }
         ]
       }
@@ -8446,7 +11861,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "    win.KeyPressEvent = function(k)\n\tif k == SWE.Key.ESCAPE then\n\t    win:SetVisible(false)\n\t    print(\"hide window\")\n\tend\n\treturn true\n    end",
+        "content": "    win.KeyPressEvent = function(k,m,s)\n\tif k == SWE.Key.ESCAPE then\n\t    win:SetVisible(false)\n\t    print(\"hide window\")\n\tend\n\treturn true\n    end",
         "type": "json"
       }
     ],
@@ -8525,7 +11940,7 @@
             "type": "number",
             "optional": false,
             "field": "press_btns",
-            "description": "<p>SDL mouse press buttons</p>"
+            "description": "<p>SWE.Button constant (press state)</p>"
           },
           {
             "group": "Parameter",
@@ -8546,7 +11961,7 @@
             "type": "number",
             "optional": false,
             "field": "release_btns",
-            "description": "<p>SDL mouse release buttons</p>"
+            "description": "<p>SWE.Button constant (release state)</p>"
           }
         ]
       }
@@ -8646,7 +12061,7 @@
             "type": "number",
             "optional": false,
             "field": "buttons",
-            "description": "<p>SDL mouse buttons</p>"
+            "description": "<p>SWE.Button constant</p>"
           }
         ]
       }
@@ -8703,7 +12118,7 @@
             "type": "number",
             "optional": false,
             "field": "buttons",
-            "description": "<p>SDL mouse buttons</p>"
+            "description": "<p>SWE.Button constant</p>"
           }
         ]
       }
@@ -8760,7 +12175,7 @@
             "type": "number",
             "optional": false,
             "field": "buttons",
-            "description": "<p>SDL mouse buttons</p>"
+            "description": "<p>SWE.Button constant</p>"
           }
         ]
       }
