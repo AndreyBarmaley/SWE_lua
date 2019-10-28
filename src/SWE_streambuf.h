@@ -20,76 +20,24 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "SWE_keys.h"
+#ifndef _SWE_LUA_STREAMBUF_
+#define _SWE_LUA_STREAMBUF_
 
-int SWE_key_index(lua_State* L)
+#include "engine.h"
+
+struct lua_State;
+
+int SWE_streambuf_create(lua_State*);
+int SWE_streambuf_destroy(lua_State*);
+
+class SWE_StreamBuf : public StreamBufRW
 {
-    // params: table, string name
-    LuaState ll(L);
+public:
+    SWE_StreamBuf() {}
+    SWE_StreamBuf(const BinaryBuf & buf) : StreamBufRW(buf) {}
 
-    std::string upper = String::toUpper(ll.getTopString());
-    return ll.getFieldTableIndex(upper, 1).isTopNil() ? 0 : 1;
-}
-
-int SWE_key_tochar(lua_State* L)
-{
-    // params: int key
-    LuaState ll(L);
-    
-    if(! ll.isTopInteger())
-    {
-        ERROR("integer not found");
-        return 0;
-    }
-
-    int sym = ll.toIntegerIndex(1);
-    int mod = ll.toIntegerIndex(2);
-    int ch = KeySym(sym, mod).keychar();
-
-    if(0 < ch)
-    {
-	ll.pushString(std::string(1, ch));
-	return 1;
-    }
-
-    return 0;
-}
-
-int SWE_key_tostring(lua_State* L)
-{
-    // params: int key
-    LuaState ll(L);
-    
-    if(! ll.isTopInteger())
-    {
-        ERROR("integer not found");
-        return 0;
-    }
-
-    std::string res = Key::toName(ll.getTopInteger());
-    ll.pushString(res);
-
-    return 1;
-}
-
-const struct luaL_Reg SWE_keys_functions[] = {
-    { "ToChar", SWE_key_tochar },	// [int char], int key
-    { "ToString", SWE_key_tostring },	// [string name], int key
-    { NULL, NULL }
+    static SWE_StreamBuf* get(LuaState &, int tableIndex, const char* funcName);
+    static void registers(LuaState &);
 };
 
-void SWE_Key::registers(LuaState & ll)
-{
-    // SWE.Key
-    ll.pushTable("SWE.Key");
-    ll.setFunctionsTableIndex(SWE_keys_functions, -1);
-
-    // SWE.Key: insert values
-    auto keys = Key::allKeys();
-    for(auto it = keys.begin(); it != keys.end(); ++it)
-        ll.pushInteger((*it).key).setFieldTableIndex((*it).name, -2);
-
-    // SWE.Key: set metatable: __index
-    ll.pushTable(0, 1).pushFunction(SWE_key_index).setFieldTableIndex("__index", -2);
-    ll.setMetaTableIndex(-2).stackPop();
-}
+#endif

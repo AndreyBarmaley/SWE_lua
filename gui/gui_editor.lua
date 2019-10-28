@@ -85,11 +85,29 @@ local function TermStyleColor(term, str, posx, length, skip, params)
     end
 end
 
+local function UnicodeStringCharsOnly(ustr, char)
+    for pos = 0, ustr.size - 1 do
+	if char ~= ustr:GetChar(pos) then
+	    return false
+	end
+    end
+    return true
+end
+
 local function DrawLineColored(term, ustr, skip, vals)
+    --
     term:CursorMoveFirst()
     if 0 < ustr.size and skip < ustr.size then
 	term:DrawText(ustr:SubString(skip))
     end
+
+    -- mark space string
+    if UnicodeStringCharsOnly(ustr, 0x20) then
+	term:CursorMoveFirst()
+	term:FillBGColor(term.colors.spacemarker, ustr.size)
+	return true
+    end
+
     -- FIXME add UnicodeString find template
     local str = ustr:ToString()
 
@@ -100,7 +118,7 @@ local function DrawLineColored(term, ustr, skip, vals)
 	    local bs = 1
 	    while bs ~= nil do
 		-- FIXME add UnicodeString find template
-		local fs,ls,ss = string.find(str, t.pattern, bs)
+		local fs, ls, ss = string.find(str, t.pattern, bs)
 		if ls ~= nil then
 		    if t.tokens == nil or #t.tokens == 0 or TableFindValue(t.tokens, ss) then
 			TermStyleColor(term, ss, fs - 1, ls - fs + 1, skip, t)
@@ -112,6 +130,8 @@ local function DrawLineColored(term, ustr, skip, vals)
 	    end
 	end
     end
+
+    return true
 end
 
 local function AreaHighLightCoords(term, termcol, termrow, pattern)
@@ -182,13 +202,11 @@ local function AreaScrollUp(area, skip)
 	    area.skiprows = 0
 	end
 	SWE.DisplayDirty()
-	return true
     elseif 1 < area.cursory then
 	area.cursory = 1
 	SWE.DisplayDirty()
-	return true
     end
-    return false
+    return true
 end
 
 local function AreaScrollDown(area, skip)
@@ -198,13 +216,14 @@ local function AreaScrollDown(area, skip)
 	    area.skiprows = #area.content - area.rows + 2
 	end
 	SWE.DisplayDirty()
-	return true
+    elseif area.rows - 2 > #area.content then
+	area.cursory = #area.content
+	SWE.DisplayDirty()
     elseif area.cursory < area.rows - 2 then
 	area.cursory = area.rows - 2
 	SWE.DisplayDirty()
-	return true
     end
-    return false
+    return true
 end
 
 local function AreaScrollLeft(area, skip)
@@ -214,14 +233,12 @@ local function AreaScrollLeft(area, skip)
 	    area.skipcols = 0
 	end
 	SWE.DisplayDirty()
-	return true
     elseif 1 < area.cursorx then
 	area.cursorx = 1
 	area.virtualx = area.cursorx + area.skipcols
 	SWE.DisplayDirty()
-	return true
     end
-    return false
+    return true
 end
 
 local function AreaScrollRight(area, skip)
@@ -231,14 +248,12 @@ local function AreaScrollRight(area, skip)
 	    area.skipcols = area.maxlen - area.cols + 1
 	end
 	SWE.DisplayDirty()
-	return true
     elseif area.cursorx < area.cols - 2 then
 	area.cursorx = area.cols - 2
 	area.virtualx = area.cursorx + area.skipcols
 	SWE.DisplayDirty()
-	return true
     end
-    return false
+    return true
 end
 
 local function AreaLineHome(area)
@@ -295,9 +310,14 @@ end
 local function AreaKeyReturn(area)
     local textrow = area.cursory + area.skiprows
     local textcol = area.cursorx + area.skipcols
-    local ustr2 = area.content[textrow]:SubString(textcol - 1)
-    area.content[textrow]:Resize(textcol - 1)
-    table.insert(area.content, textrow + 1, ustr2)
+
+    if 1 < textcol and textcol - 1 < area.content[textrow].size then
+	local ustr2 = area.content[textrow]:SubString(textcol - 1)
+	area.content[textrow]:Resize(textcol - 1)
+	table.insert(area.content, textrow + 1, ustr2)
+    else
+	table.insert(area.content, textrow + 1, SWE.UnicodeString(""))
+    end
     area.status.modify = true
     area.cursorx = 1
     area.virtualx = area.cursorx + area.skipcols
@@ -448,6 +468,16 @@ function AreaSetVisibleChar(area, key, mod)
     return true
 end
 
+local function AreaKeyTab(area)
+    local tabs = area.settings.tabs
+    if tabs == nil then
+	tabs = 4
+    end
+    for i = 1,tabs do
+	AreaSetVisibleChar(area, 0x20)
+    end
+end
+
 function LabelActionCreate(str, frs, tpx, tpy, parent)
     local term = SWE.Terminal(frs, string.len(str) + 2, 1, parent)
     term.label = str
@@ -476,9 +506,10 @@ function LabelActionCreate(str, frs, tpx, tpy, parent)
     return term
 end
 
-function EditorInit(win, filename)
+function EditorInit(win, frs2, filename)
 
     local settings = nil
+    frs = frs2
 
     -- load local config
     local sharedir = SWE.SystemShareDirectories()
@@ -499,19 +530,6 @@ function EditorInit(win, filename)
 	settings = SWE.JsonParse(SWE.BinaryBuf.ReadFromFile("editor.json"):ToString())
     end
 
-    -- init frs
-    if frs.fixedWidth == nil then
-	-- mobile os first start: calculate font size
-        if not settings.global and SWE.SystemMobileOs() ~= nil then
-            local dw,dh,df = SWE.DisplaySize()
-            local fsz = ToInt(dw / 320 * 12)
-	    settings.font.size = fsz
-            SWE.Debug("set font size", fsz)
-        end
-	-- load font
-        frs = SWE.FontRender(settings.font.file, settings.font.size, settings.font.blended)
-    end
-
     local termcols = ToInt(win.width / frs.fixedWidth)
     local termrows = ToInt(win.height / frs.lineHeight)
     local area = SWE.Terminal(frs, termcols, termrows)
@@ -524,11 +542,12 @@ function EditorInit(win, filename)
     area.skipcols = 0
     area.skiprows = 0
     area.maxlen = 0
+    area.insmode = true
     area.status = { modify = false }
     area.highlight = { valid = false }
     area.content = {}
     area.colors = { back = SWE.Color.MidnightBlue, text = SWE.Color.Silver, highlight = SWE.Color.MediumBlue, syntaxerror = SWE.Color.FireBrick,
-	cursormarker = SWE.Color.LawnGreen, scrollmarker = SWE.Color.LawnGreen }
+	cursormarker = SWE.Color.LawnGreen, scrollmarker = SWE.Color.LawnGreen, spacemarker = SWE.Color.RoyalBlue }
 
     area.close = LabelActionCreate("CLOSE", frs, area.cols - 8, area.rows - 1, area)
 
@@ -548,11 +567,12 @@ function EditorInit(win, filename)
     end
 
     area.LoadFile = function(area, filename)
-	local dirname, basename = SWE.SystemDirnameBasename(filename)
 	area.content = {}
-	area.filename = basename
 	local fd = io.open(filename, "r")
 	if fd ~= nil then
+	    local dirname, basename = SWE.SystemDirnameBasename(filename)
+	    area.basename = basename
+	    area.filename = filename
 	    for c in fd:lines() do
 		local str = string.gsub(c, "\t", string.rep(" ", 8))
 		table.insert(area.content, SWE.UnicodeString(str))
@@ -563,6 +583,12 @@ function EditorInit(win, filename)
 	    return true
 	end
 	return false
+    end
+
+    area.NewFile = function(area)
+	area:LoadFile("template.lua")
+	area.basename = "newfile"
+	area.filename = ""
     end
 
     -- window event: scroll up
@@ -638,6 +664,7 @@ function EditorInit(win, filename)
 	elseif SWE.Key.DOWN == key then		return AreaKeyDown(area)
 	elseif SWE.Key.LEFT == key then		return AreaKeyLeft(area)
 	elseif SWE.Key.RIGHT == key then	return AreaKeyRight(area)
+	elseif SWE.Key.TAB == key then		return AreaKeyTab(area)
 	end
 
 	if 0x20 <= key and key < 0xFEFF then
@@ -707,7 +734,8 @@ function EditorInit(win, filename)
 	end
 
 	-- render header
-	area:CursorPosition(1, 0):DrawChar(SWE.Char.RTee(SWE.Line.Thin)):DrawText(area.filename):DrawChar(SWE.Char.LTee(SWE.Line.Thin))
+	area:CursorPosition(2, 0):FillFGColor(SWE.Color.SkyBlue, string.len(area.basename))
+	area:CursorPosition(1, 0):DrawChar(SWE.Char.RTee(SWE.Line.Thin)):DrawText(area.basename):DrawChar(SWE.Char.LTee(SWE.Line.Thin))
 	area:CursorMoveRight(2):DrawChar(SWE.Char.RTee(SWE.Line.Thin)):DrawText(tostring(area.skipcols + area.cursorx - 1)):DrawChar(SWE.Char.LTee(SWE.Line.Thin))
 	area:CursorMoveRight(1):DrawChar(SWE.Char.RTee(SWE.Line.Thin)):DrawText(tostring(area.skiprows + area.cursory) .. ":" .. tostring(#area.content)):DrawChar(SWE.Char.LTee(SWE.Line.Thin))
 	area:CursorPosition(area.cols - 5, 0):DrawChar(SWE.Char.RTee(SWE.Line.Thin))
@@ -718,7 +746,7 @@ function EditorInit(win, filename)
 	end
 	area:DrawChar(SWE.Char.LTee(SWE.Line.Thin))
 	-- render footer
-	-- area:CursorPosition(area.cols - 1, area.rows - 1):CursorMoveLeft(7):DrawChar(SWE.Char.RTee(SWE.Line.Thin)):DrawText("CLOSE"):DrawChar(SWE.Char.LTee(SWE.Line.Thin))
+	-- 
 	-- render cursor marker
 	area:CursorPosition(0, area.cursory):FillFGColor(area.colors.cursormarker):CursorMoveLeft():DrawChar(SWE.Char.VLine(SWE.Line.Bold))
 	-- render cursor
@@ -742,7 +770,12 @@ function EditorInit(win, filename)
     end
 
     if filename ~= nil then
-	area:LoadFile(filename)
+	local t = SWE.SystemFileStat(filename)
+	if t.type ~= "file" or not area:LoadFile(filename) then
+	    area:NewFile()
+	end
+    else
+	area:NewFile()
     end
 
     SWE.DisplayKeyboard(true)

@@ -24,6 +24,8 @@
 #include "SWE_binarybuf.h"
 #include "SWE_audio.h"
 
+#ifndef DISABLE_AUDIO
+
 int SWE_mixer_volume(lua_State* L)
 {
     // params: int volume (255 max)
@@ -213,10 +215,15 @@ const struct luaL_Reg SWE_audio_functions[] = {
     { NULL, NULL }
 };
 
+#endif
+
 void SWE_Audio::registers(LuaState & ll)
 {
+#ifndef DISABLE_AUDIO
     ll.pushTable("SWE.Audio");
     // set functions
     ll.setFunctionsTableIndex(SWE_audio_functions, -1);
     ll.stackPop();
+#endif
 }
+

@@ -1401,8 +1401,8 @@ define({ "api": [
   },
   {
     "type": "push back byte value",
-    "url": "SWE.BinaryBuf.PushBack(self,offset,value",
-    "title": "... value) SWE.BinaryBuf.PushBack",
+    "url": "SWE.BinaryBuf.PushBack(self,offset,value...value)",
+    "title": "SWE.BinaryBuf.PushBack",
     "group": "SWE_BinaryBuf",
     "name": "PushBack",
     "parameter": {
@@ -1620,8 +1620,8 @@ define({ "api": [
   },
   {
     "type": "set byte value",
-    "url": "SWE.BinaryBuf.SetByte(self,offset,value",
-    "title": "... value) SWE.BinaryBuf.SetByte",
+    "url": "SWE.BinaryBuf.SetByte(self,offset,value...value)",
+    "title": "SWE.BinaryBuf.SetByte",
     "group": "SWE_BinaryBuf",
     "name": "SetByte",
     "parameter": {
@@ -4913,987 +4913,6 @@ define({ "api": [
     "groupTitle": "SWE_MouseButton"
   },
   {
-    "type": "netstream close connect",
-    "url": "SWE.NetStream.Close(self)",
-    "title": "SWE.NetStream.Close",
-    "group": "SWE_NetStream",
-    "name": "Close",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream connect",
-    "url": "SWE.NetStream.Connect(self,server,port)",
-    "title": "SWE.NetStream.Connect",
-    "group": "SWE_NetStream",
-    "name": "Connect",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "server",
-            "description": "<p>network connect</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "port",
-            "description": "<p>network port</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "boolean",
-            "optional": false,
-            "field": "result",
-            "description": "<p>true if success</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream constructor",
-    "url": "SWE.NetStream(),(server,port)",
-    "title": "SWE.NetStream",
-    "group": "SWE_NetStream",
-    "name": "Constructor",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "server",
-            "description": "<p>network connect</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "port",
-            "description": "<p>network port</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "result",
-            "description": "<p>netstream object</p>"
-          }
-        ]
-      }
-    },
-    "examples": [
-      {
-        "title": "usage",
-        "content": "local net = SWE.NetStream()\nlocal res = net:Connect(\"127.0.0.1\", 22)\nif res then\n    local info = net:RecvString(0x0A)\n    net:SendString(\"quit\\r\\n\")\n    print(info)\nelse\n    print(\"connect false\")\nend\n\n.... may be output\n.... SSH-2.0-OpenSSH_5.3",
-        "type": "json"
-      },
-      {
-        "title": "ext table fields (read only)",
-        "content": "| address | string  |\n| port    | number  |",
-        "type": "json"
-      }
-    ],
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream data ready",
-    "url": "SWE.NetStream.DataReady(self)",
-    "title": "SWE.NetStream.DataReady",
-    "group": "SWE_NetStream",
-    "name": "DataReady",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "boolean",
-            "optional": false,
-            "field": "result",
-            "description": "<p>true if data ready</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream listen port",
-    "url": "SWE.NetStream.Listen(self,port)",
-    "title": "SWE.NetStream.Listen",
-    "group": "SWE_NetStream",
-    "name": "Listen",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "port",
-            "description": "<p>network port</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "boolean",
-            "optional": false,
-            "field": "result",
-            "description": "<p>true if success</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream recv 16 bit value",
-    "url": "SWE.NetStream.RecvBE16(self)",
-    "title": "SWE.NetStream.RecvBE16",
-    "group": "SWE_NetStream",
-    "name": "RecvBE16",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "number",
-            "optional": false,
-            "field": "result",
-            "description": "<p>16 bit value (big endian)</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream recv 32 bit value",
-    "url": "SWE.NetStream.RecvBE32(self)",
-    "title": "SWE.NetStream.RecvBE32",
-    "group": "SWE_NetStream",
-    "name": "RecvBE32",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "number",
-            "optional": false,
-            "field": "result",
-            "description": "<p>32 bit value (big endian)</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream recv 64 bit value",
-    "url": "SWE.NetStream.RecvBE64(self)",
-    "title": "SWE.NetStream.RecvBE64",
-    "group": "SWE_NetStream",
-    "name": "RecvBE64",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "number",
-            "optional": false,
-            "field": "result",
-            "description": "<p>64 bit value (big endian)</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream recv 8 bit value",
-    "url": "SWE.NetStream.RecvByte(self)",
-    "title": "SWE.NetStream.RecvByte",
-    "group": "SWE_NetStream",
-    "name": "RecvByte",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "owner",
-            "description": "<p>netstream object</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "number",
-            "optional": false,
-            "field": "result",
-            "description": "<p>8 bit value</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream recv bytes",
-    "url": "SWE.NetStream.RecvBytes(self,length)",
-    "title": "SWE.NetStream.RecvBytes",
-    "group": "SWE_NetStream",
-    "name": "RecvBytes",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "length",
-            "description": "<p>length data</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "SWE.BinaryBuf",
-            "optional": false,
-            "field": "result",
-            "description": "<p>binarybuf object</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream recv 16 bit value",
-    "url": "SWE.NetStream.RecvLE16(self)",
-    "title": "SWE.NetStream.RecvLE16",
-    "group": "SWE_NetStream",
-    "name": "RecvLE16",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "number",
-            "optional": false,
-            "field": "result",
-            "description": "<p>16 bit value (little endian)</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream recv 32 bit value",
-    "url": "SWE.NetStream.RecvLE32(self)",
-    "title": "SWE.NetStream.RecvLE32",
-    "group": "SWE_NetStream",
-    "name": "RecvLE32",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "number",
-            "optional": false,
-            "field": "result",
-            "description": "<p>32 bit value (little endian)</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream recv 64 bit value",
-    "url": "SWE.NetStream.RecvLE64(self)",
-    "title": "SWE.NetStream.RecvLE64",
-    "group": "SWE_NetStream",
-    "name": "RecvLE64",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "number",
-            "optional": false,
-            "field": "result",
-            "description": "<p>64 bit value (little endian)</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream recv string",
-    "url": "SWE.NetStream.RecvString(self,endl)",
-    "title": "SWE.NetStream.RecvString",
-    "group": "SWE_NetStream",
-    "name": "RecvString",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "owner",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "endl",
-            "description": "<p>eol byte (0 default)</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "string",
-            "optional": false,
-            "field": "result",
-            "description": "<p>string result</p>"
-          }
-        ]
-      }
-    },
-    "examples": [
-      {
-        "title": "usage",
-        "content": "    -- echo service\n    local net = SWE.NetStream()\n    local res = net:Listen(2121)\n    if res then\n\tlocal client = net:WaitAccept()\n\tif client ~= nil then\n    \t    client:SendString(\"echo service\\r\\n\")\n    \t    local echo = client:RecvString(0x0A)\n    \t    client:SendString(echo)\n\tend\n    end",
-        "type": "json"
-      }
-    ],
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream send 16 bit value",
-    "url": "SWE.NetStream.SendBE16(self,value)",
-    "title": "SWE.NetStream.SendBE16",
-    "group": "SWE_NetStream",
-    "name": "SendBE16",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "value",
-            "description": "<p>16 bit value send (big endian)</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream send 32 bit value",
-    "url": "SWE.NetStream.SendBE32(self,value)",
-    "title": "SWE.NetStream.SendBE32",
-    "group": "SWE_NetStream",
-    "name": "SendBE32",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "value",
-            "description": "<p>32 bit value send (big endian)</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream send 64 bit value",
-    "url": "SWE.NetStream.SendBE64(self,value)",
-    "title": "SWE.NetStream.SendBE64",
-    "group": "SWE_NetStream",
-    "name": "SendBE64",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "value",
-            "description": "<p>64 bit value send (big endian)</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream send 8 bit value",
-    "url": "SWE.NetStream.SendByte(self,value)",
-    "title": "SWE.NetStream.SendByte",
-    "group": "SWE_NetStream",
-    "name": "SendByte",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "value",
-            "description": "<p>8 bit value send</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream send bytes",
-    "url": "SWE.NetStream.SendBytes(self,inputbuf)",
-    "title": "SWE.NetStream.SendBytes",
-    "group": "SWE_NetStream",
-    "name": "SendBytes",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "SWE.BinaryBuf",
-            "optional": false,
-            "field": "inputbuf",
-            "description": "<p>binarybuf object</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream send 16 bit value",
-    "url": "SWE.NetStream.SendLE16(self,value)",
-    "title": "SWE.NetStream.SendLE16",
-    "group": "SWE_NetStream",
-    "name": "SendLE16",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "value",
-            "description": "<p>16 bit value send (little endian)</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream send 32 bit value",
-    "url": "SWE.NetStream.SendLE32(self,value)",
-    "title": "SWE.NetStream.SendLE32",
-    "group": "SWE_NetStream",
-    "name": "SendLE32",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "value",
-            "description": "<p>32 bit value send (little endian)</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream send 64 bit value",
-    "url": "SWE.NetStream.SendLE64(self,value)",
-    "title": "SWE.NetStream.SendLE64",
-    "group": "SWE_NetStream",
-    "name": "SendLE64",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "value",
-            "description": "<p>64 bit value send (little endian)</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream send string",
-    "url": "SWE.NetStream.SendString(self,string)",
-    "title": "SWE.NetStream.SendString",
-    "group": "SWE_NetStream",
-    "name": "SendString",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "string",
-            "description": "<p>string data</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream rady timeout",
-    "url": "SWE.NetStream.SetReadyTimeout(self,timeout)",
-    "title": "SWE.NetStream.SetReadyTimeout",
-    "group": "SWE_NetStream",
-    "name": "SetReadyTimeout",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "timeout",
-            "description": "<p>ready timeout (100 ms default)</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "convert netstream to json string",
-    "url": "SWE.NetStream.ToJson(self)",
-    "title": "SWE.NetStream.ToJson",
-    "group": "SWE_NetStream",
-    "name": "ToJson",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "string",
-            "optional": false,
-            "field": "result",
-            "description": "<p>json string</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream wait accept",
-    "url": "SWE.NetStream.WaitAccept(self)",
-    "title": "SWE.NetStream.WaitAccept",
-    "group": "SWE_NetStream",
-    "name": "WaitAccept",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "string",
-            "optional": false,
-            "field": "result",
-            "description": "<p>netstream object</p>"
-          }
-        ]
-      }
-    },
-    "examples": [
-      {
-        "title": "usage",
-        "content": "local net = SWE.NetStream()\nlocal res = net:Listen(22222)\nif res then\n    local client = net:WaitAccept()\n    if client ~= nil then\n        client:SendString(\"hello world!\\r\\n\")\n    end\nelse\n    print(\"listen false\")\nend",
-        "type": "json"
-      }
-    ],
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
-    "type": "netstream send string",
-    "url": "SWE.NetStream.WaitString(self,string)",
-    "title": "SWE.NetStream.WaitString",
-    "group": "SWE_NetStream",
-    "name": "WaitString",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.NetStream",
-            "optional": false,
-            "field": "self",
-            "description": "<p>netstream object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "string",
-            "description": "<p>wait this string</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "boolean",
-            "optional": false,
-            "field": "result",
-            "description": "<p>true if success, or false timeout</p>"
-          }
-        ]
-      }
-    },
-    "examples": [
-      {
-        "title": "usage",
-        "content": "    local net = SWE.NetStream()\n    -- connect to www.com\n    local res = net:Connect(\"69.172.201.208\", 80)\n    if res then\n\tlocal request = \"GET / HTTP/1.1\\r\\nAccept: *\" .. \"/\" .. \"*\\r\\n\\r\\n\"\n\tnet:SendString(request)\n\tif net:WaitString(\"<html xmlns=\\\"http://www.w3.org/1999/xhtml\\\">\\r\\n\") then\n    \t    local html = net:RecvString()\n    \t    print(html)\n\tend\n    else\n\tprint(\"error: res false\")\n    end",
-        "type": "json"
-      }
-    ],
-    "version": "0.0.0",
-    "filename": "./api/apidoc_netstream.js",
-    "groupTitle": "SWE_NetStream"
-  },
-  {
     "type": "point constructor",
     "url": "SWE.Point(posx,posy)",
     "title": "SWE.Point",
@@ -6879,6 +5898,1784 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "./api/apidoc_rect.js",
     "groupTitle": "SWE_Size"
+  },
+  {
+    "type": "streamfile close stream",
+    "url": "SWE.StreamFile.Close(self)",
+    "title": "SWE.StreamFile.Close",
+    "group": "SWE_StreamFile",
+    "name": "Close",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile constructor",
+    "url": "SWE.StreamFile(),(name,mode)",
+    "title": "SWE.StreamFile",
+    "group": "SWE_StreamFile",
+    "name": "Constructor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "name",
+            "description": "<p>filename</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "mode",
+            "description": "<p>open mode</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "result",
+            "description": "<p>streamfile object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    local file = SWE.StreamFile(\"/tmp/test.dump\",\"rb\")\n    if file then\n        local id1 = file:ReadBE16()\n        local id2 = file:ReadBE16()\n        local id3 = file:ReadBE16()\n\tfile:Seek(12, SWE.RW.SeekSet)\n        local id4 = file:ReadBE32()\n        print(id1,id2,id3,id4)\n    end",
+        "type": "json"
+      },
+      {
+        "title": "ext table fields (read only)",
+        "content": "| filename | string  |\n| openmode | string  |\n| size     | number  |\n| valid    | boolean |",
+        "type": "json"
+      },
+      {
+        "title": "open modes",
+        "content": "r  Open a file for reading. The file must exist.\nw  Create an empty file for writing.\n   If a file with the same name already exists its content is erased and the file is treated as a new empty file.\na  Append to a file.\n   Writing operations append data at the end of the file.\n   The file is created if it does not exist.\nr+ Open a file for update both reading and writing.\n   The file must exist.\nw+ Create an empty file for both reading and writing.\n   If a file with the same name already exists its content is erased and the file is treated as a new empty file.\na+ Open a file for reading and appending.\n   All writing operations are performed at the end of the file, protecting the previous content to be overwritten.\n   You can reposition (fseek, rewind) the internal pointer to anywhere in the file for reading, but writing operations will move it back to the end of file.\n   The file is created if it does not exist.\n\nIn order to open a file as a binary file, a \"b\" character has to be included in the mode string.\nThis additional \"b\" character can either be appended at the end of the string\n(thus making the following compound modes: \"rb\", \"wb\", \"ab\", \"r+b\", \"w+b\", \"a+b\") or be inserted between the letter and\nthe \"+\" sign for the mixed modes (\"rb+\", \"wb+\", \"ab+\").\nAdditional characters may follow the sequence, although they should have no effect.\nFor example, \"t\" is sometimes appended to make explicit the file is a text file.",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile open stream",
+    "url": "SWE.StreamFile.Open(self,name,mode)",
+    "title": "SWE.StreamFile.Open",
+    "group": "SWE_StreamFile",
+    "name": "Open",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "name",
+            "description": "<p>filename</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "mode",
+            "description": "<p>open mode</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "open modes",
+        "content": "r  Open a file for reading. The file must exist.\nw  Create an empty file for writing.\n   If a file with the same name already exists its content is erased and the file is treated as a new empty file.\na  Append to a file.\n   Writing operations append data at the end of the file.\n   The file is created if it does not exist.\nr+ Open a file for update both reading and writing.\n   The file must exist.\nw+ Create an empty file for both reading and writing.\n   If a file with the same name already exists its content is erased and the file is treated as a new empty file.\na+ Open a file for reading and appending.\n   All writing operations are performed at the end of the file, protecting the previous content to be overwritten.\n   You can reposition (fseek, rewind) the internal pointer to anywhere in the file for reading, but writing operations will move it back to the end of file.\n   The file is created if it does not exist.\n\nIn order to open a file as a binary file, a \"b\" character has to be included in the mode string.\nThis additional \"b\" character can either be appended at the end of the string\n(thus making the following compound modes: \"rb\", \"wb\", \"ab\", \"r+b\", \"w+b\", \"a+b\") or be inserted between the letter and\nthe \"+\" sign for the mixed modes (\"rb+\", \"wb+\", \"ab+\").\nAdditional characters may follow the sequence, although they should have no effect.\nFor example, \"t\" is sometimes appended to make explicit the file is a text file.",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile read 16 bit value",
+    "url": "SWE.StreamFile.ReadBE16(self)",
+    "title": "SWE.StreamFile.ReadBE16",
+    "group": "SWE_StreamFile",
+    "name": "ReadBE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>16 bit value (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile read 32 bit value",
+    "url": "SWE.StreamFile.ReadBE32(self)",
+    "title": "SWE.StreamFile.ReadBE32",
+    "group": "SWE_StreamFile",
+    "name": "ReadBE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>32 bit value (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile read 64 bit value",
+    "url": "SWE.StreamFile.ReadBE64(self)",
+    "title": "SWE.StreamFile.ReadBE64",
+    "group": "SWE_StreamFile",
+    "name": "ReadBE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>64 bit value (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile read 8 bit value",
+    "url": "SWE.StreamFile.ReadByte(self)",
+    "title": "SWE.StreamFile.ReadByte",
+    "group": "SWE_StreamFile",
+    "name": "ReadByte",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>streamfile object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>8 bit value</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile read bytes",
+    "url": "SWE.StreamFile.ReadBytes(self,length)",
+    "title": "SWE.StreamFile.ReadBytes",
+    "group": "SWE_StreamFile",
+    "name": "ReadBytes",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "length",
+            "description": "<p>length data</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "result",
+            "description": "<p>binarybuf object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile read 16 bit value",
+    "url": "SWE.StreamFile.ReadLE16(self)",
+    "title": "SWE.StreamFile.ReadLE16",
+    "group": "SWE_StreamFile",
+    "name": "ReadLE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>16 bit value (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile read 32 bit value",
+    "url": "SWE.StreamFile.ReadLE32(self)",
+    "title": "SWE.StreamFile.ReadLE32",
+    "group": "SWE_StreamFile",
+    "name": "ReadLE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>32 bit value (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile read 64 bit value",
+    "url": "SWE.StreamFile.ReadLE64(self)",
+    "title": "SWE.StreamFile.ReadLE64",
+    "group": "SWE_StreamFile",
+    "name": "ReadLE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>64 bit value (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile seek pos",
+    "url": "SWE.StreamFile.Seek(self,offset,whence)",
+    "title": "SWE.StreamFile.Seek",
+    "group": "SWE_StreamFile",
+    "name": "Seek",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>seek position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "whence",
+            "description": "<p>SWE.RW {Seek.Set, SeekCur, SeekEnd}</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile tell pos",
+    "url": "SWE.StreamFile.Tell(self)",
+    "title": "SWE.StreamFile.Tell",
+    "group": "SWE_StreamFile",
+    "name": "Tell",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>tell position</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "convert streamfile to json string",
+    "url": "SWE.StreamFile.ToJson(self)",
+    "title": "SWE.StreamFile.ToJson",
+    "group": "SWE_StreamFile",
+    "name": "ToJson",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>json string</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile write 16 bit value",
+    "url": "SWE.StreamFile.WriteBE16(self,value)",
+    "title": "SWE.StreamFile.WriteBE16",
+    "group": "SWE_StreamFile",
+    "name": "WriteBE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>16 bit value write (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile write 32 bit value",
+    "url": "SWE.StreamFile.WriteBE32(self,value)",
+    "title": "SWE.StreamFile.WriteBE32",
+    "group": "SWE_StreamFile",
+    "name": "WriteBE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>32 bit value write (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile write 64 bit value",
+    "url": "SWE.StreamFile.WriteBE64(self,value)",
+    "title": "SWE.StreamFile.WriteBE64",
+    "group": "SWE_StreamFile",
+    "name": "WriteBE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>64 bit value write (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile write 8 bit value",
+    "url": "SWE.StreamFile.WriteByte(self,value)",
+    "title": "SWE.StreamFile.WriteByte",
+    "group": "SWE_StreamFile",
+    "name": "WriteByte",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>8 bit value write</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile write bytes",
+    "url": "SWE.StreamFile.WriteBytes(self,inputbuf)",
+    "title": "SWE.StreamFile.WriteBytes",
+    "group": "SWE_StreamFile",
+    "name": "WriteBytes",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "inputbuf",
+            "description": "<p>binarybuf object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile write 16 bit value",
+    "url": "SWE.StreamFile.WriteLE16(self,value)",
+    "title": "SWE.StreamFile.WriteLE16",
+    "group": "SWE_StreamFile",
+    "name": "WriteLE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>16 bit value write (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile write 32 bit value",
+    "url": "SWE.StreamFile.WriteLE32(self,value)",
+    "title": "SWE.StreamFile.WriteLE32",
+    "group": "SWE_StreamFile",
+    "name": "WriteLE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>32 bit value write (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamfile write 64 bit value",
+    "url": "SWE.StreamFile.WriteLE64(self,value)",
+    "title": "SWE.StreamFile.WriteLE64",
+    "group": "SWE_StreamFile",
+    "name": "WriteLE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamFile",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamfile object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>64 bit value write (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamfile.js",
+    "groupTitle": "SWE_StreamFile"
+  },
+  {
+    "type": "streamnet close connect",
+    "url": "SWE.StreamNet.Close(self)",
+    "title": "SWE.StreamNet.Close",
+    "group": "SWE_StreamNet",
+    "name": "Close",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet connect",
+    "url": "SWE.StreamNet.Connect(self,server,port)",
+    "title": "SWE.StreamNet.Connect",
+    "group": "SWE_StreamNet",
+    "name": "Connect",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "server",
+            "description": "<p>network connect</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "port",
+            "description": "<p>network port</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet constructor",
+    "url": "SWE.StreamNet(),(server,port)",
+    "title": "SWE.StreamNet",
+    "group": "SWE_StreamNet",
+    "name": "Constructor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "server",
+            "description": "<p>network connect</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "port",
+            "description": "<p>network port</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "result",
+            "description": "<p>streamnet object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local net = SWE.StreamNet()\nlocal res = net:Connect(\"127.0.0.1\", 22)\nif res then\n    local info = net:RecvString(0x0A)\n    net:SendString(\"quit\\r\\n\")\n    print(info)\nelse\n    print(\"connect false\")\nend\n\n.... may be output\n.... SSH-2.0-OpenSSH_5.3",
+        "type": "json"
+      },
+      {
+        "title": "ext table fields (read only)",
+        "content": "| address | string  |\n| port    | number  |",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet data ready",
+    "url": "SWE.StreamNet.DataReady(self)",
+    "title": "SWE.StreamNet.DataReady",
+    "group": "SWE_StreamNet",
+    "name": "DataReady",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if data ready</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet listen port",
+    "url": "SWE.StreamNet.Listen(self,port)",
+    "title": "SWE.StreamNet.Listen",
+    "group": "SWE_StreamNet",
+    "name": "Listen",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "port",
+            "description": "<p>network port</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet recv 16 bit value",
+    "url": "SWE.StreamNet.RecvBE16(self)",
+    "title": "SWE.StreamNet.RecvBE16",
+    "group": "SWE_StreamNet",
+    "name": "RecvBE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>16 bit value (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet recv 32 bit value",
+    "url": "SWE.StreamNet.RecvBE32(self)",
+    "title": "SWE.StreamNet.RecvBE32",
+    "group": "SWE_StreamNet",
+    "name": "RecvBE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>32 bit value (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet recv 64 bit value",
+    "url": "SWE.StreamNet.RecvBE64(self)",
+    "title": "SWE.StreamNet.RecvBE64",
+    "group": "SWE_StreamNet",
+    "name": "RecvBE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>64 bit value (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet recv 8 bit value",
+    "url": "SWE.StreamNet.RecvByte(self)",
+    "title": "SWE.StreamNet.RecvByte",
+    "group": "SWE_StreamNet",
+    "name": "RecvByte",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>streamnet object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>8 bit value</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet recv bytes",
+    "url": "SWE.StreamNet.RecvBytes(self,length)",
+    "title": "SWE.StreamNet.RecvBytes",
+    "group": "SWE_StreamNet",
+    "name": "RecvBytes",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "length",
+            "description": "<p>length data</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "result",
+            "description": "<p>binarybuf object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet recv 16 bit value",
+    "url": "SWE.StreamNet.RecvLE16(self)",
+    "title": "SWE.StreamNet.RecvLE16",
+    "group": "SWE_StreamNet",
+    "name": "RecvLE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>16 bit value (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet recv 32 bit value",
+    "url": "SWE.StreamNet.RecvLE32(self)",
+    "title": "SWE.StreamNet.RecvLE32",
+    "group": "SWE_StreamNet",
+    "name": "RecvLE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>32 bit value (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet recv 64 bit value",
+    "url": "SWE.StreamNet.RecvLE64(self)",
+    "title": "SWE.StreamNet.RecvLE64",
+    "group": "SWE_StreamNet",
+    "name": "RecvLE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>64 bit value (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet recv string",
+    "url": "SWE.StreamNet.RecvString(self,endl)",
+    "title": "SWE.StreamNet.RecvString",
+    "group": "SWE_StreamNet",
+    "name": "RecvString",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "endl",
+            "description": "<p>eol byte (0 default)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>string result</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    -- echo service\n    local net = SWE.StreamNet()\n    local res = net:Listen(2121)\n    if res then\n\tlocal client = net:WaitAccept()\n\tif client ~= nil then\n    \t    client:SendString(\"echo service\\r\\n\")\n    \t    local echo = client:RecvString(0x0A)\n    \t    client:SendString(echo)\n\tend\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet send 16 bit value",
+    "url": "SWE.StreamNet.SendBE16(self,value)",
+    "title": "SWE.StreamNet.SendBE16",
+    "group": "SWE_StreamNet",
+    "name": "SendBE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>16 bit value send (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet send 32 bit value",
+    "url": "SWE.StreamNet.SendBE32(self,value)",
+    "title": "SWE.StreamNet.SendBE32",
+    "group": "SWE_StreamNet",
+    "name": "SendBE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>32 bit value send (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet send 64 bit value",
+    "url": "SWE.StreamNet.SendBE64(self,value)",
+    "title": "SWE.StreamNet.SendBE64",
+    "group": "SWE_StreamNet",
+    "name": "SendBE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>64 bit value send (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet send 8 bit value",
+    "url": "SWE.StreamNet.SendByte(self,value)",
+    "title": "SWE.StreamNet.SendByte",
+    "group": "SWE_StreamNet",
+    "name": "SendByte",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>8 bit value send</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet send bytes",
+    "url": "SWE.StreamNet.SendBytes(self,inputbuf)",
+    "title": "SWE.StreamNet.SendBytes",
+    "group": "SWE_StreamNet",
+    "name": "SendBytes",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "inputbuf",
+            "description": "<p>binarybuf object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet send 16 bit value",
+    "url": "SWE.StreamNet.SendLE16(self,value)",
+    "title": "SWE.StreamNet.SendLE16",
+    "group": "SWE_StreamNet",
+    "name": "SendLE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>16 bit value send (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet send 32 bit value",
+    "url": "SWE.StreamNet.SendLE32(self,value)",
+    "title": "SWE.StreamNet.SendLE32",
+    "group": "SWE_StreamNet",
+    "name": "SendLE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>32 bit value send (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet send 64 bit value",
+    "url": "SWE.StreamNet.SendLE64(self,value)",
+    "title": "SWE.StreamNet.SendLE64",
+    "group": "SWE_StreamNet",
+    "name": "SendLE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>64 bit value send (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet send string",
+    "url": "SWE.StreamNet.SendString(self,string)",
+    "title": "SWE.StreamNet.SendString",
+    "group": "SWE_StreamNet",
+    "name": "SendString",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "string",
+            "description": "<p>string data</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet rady timeout",
+    "url": "SWE.StreamNet.SetReadyTimeout(self,timeout)",
+    "title": "SWE.StreamNet.SetReadyTimeout",
+    "group": "SWE_StreamNet",
+    "name": "SetReadyTimeout",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "timeout",
+            "description": "<p>ready timeout (100 ms default)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "convert streamnet to json string",
+    "url": "SWE.StreamNet.ToJson(self)",
+    "title": "SWE.StreamNet.ToJson",
+    "group": "SWE_StreamNet",
+    "name": "ToJson",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>json string</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet wait accept",
+    "url": "SWE.StreamNet.WaitAccept(self)",
+    "title": "SWE.StreamNet.WaitAccept",
+    "group": "SWE_StreamNet",
+    "name": "WaitAccept",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>streamnet object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local net = SWE.StreamNet()\nlocal res = net:Listen(22222)\nif res then\n    local client = net:WaitAccept()\n    if client ~= nil then\n        client:SendString(\"hello world!\\r\\n\")\n    end\nelse\n    print(\"listen false\")\nend",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "streamnet send string",
+    "url": "SWE.StreamNet.WaitString(self,string)",
+    "title": "SWE.StreamNet.WaitString",
+    "group": "SWE_StreamNet",
+    "name": "WaitString",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamNet",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streamnet object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "string",
+            "description": "<p>wait this string</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success, or false timeout</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    local net = SWE.StreamNet()\n    -- connect to www.com\n    local res = net:Connect(\"69.172.201.208\", 80)\n    if res then\n\tlocal request = \"GET / HTTP/1.1\\r\\nAccept: *\" .. \"/\" .. \"*\\r\\n\\r\\n\"\n\tnet:SendString(request)\n\tif net:WaitString(\"<html xmlns=\\\"http://www.w3.org/1999/xhtml\\\">\\r\\n\") then\n    \t    local html = net:RecvString()\n    \t    print(html)\n\tend\n    else\n\tprint(\"error: res false\")\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
   },
   {
     "type": "terminal func: get charset info",
@@ -10334,6 +11131,329 @@ define({ "api": [
     "groupTitle": "SWE_Texture_Text"
   },
   {
+    "type": "translation: bind domain",
+    "url": "SWE.Translation.BindDomain(domain,filename)(domain,binarybuf)",
+    "title": "SWE.Translation.BindDomain",
+    "group": "SWE_Translation",
+    "name": "BindDomain",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "domain",
+            "description": "<p>translation domain</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "filename",
+            "description": "<p>filename, mo format</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "binarybuf",
+            "description": "<p>binarybuf, mo format</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if bind domain</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    local res = SWE.Translation.BindDomain(\"test1\", \"ru.mo\")\n    if res then\n\tSWE.Translation.SetDomain(\"test1\")\n\tSWE.Translation.SetStripContext('|')\n\tprint(SWE.Translation.GetText(\"Color|Red\"))\n\tprint(SWE.Translation.GetText(\"Color|Green\"))\n\tprint(SWE.Translation.GetText(\"Color|Blue\"))\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_translation.js",
+    "groupTitle": "SWE_Translation"
+  },
+  {
+    "type": "translation: same as dgettext",
+    "url": "SWE.Translation.DGetText(domain,text)",
+    "title": "SWE.Translation.DGetText",
+    "group": "SWE_Translation",
+    "name": "DGetText",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "domain",
+            "description": "<p>translation domain</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "text",
+            "description": "<p>translation string</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>result string</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_translation.js",
+    "groupTitle": "SWE_Translation"
+  },
+  {
+    "type": "translation: same as dngettext",
+    "url": "SWE.Translation.DNGetText(domain,text,plural,number)",
+    "title": "SWE.Translation.DNGetText",
+    "group": "SWE_Translation",
+    "name": "DNGetText",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "domain",
+            "description": "<p>translation domain</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "text",
+            "description": "<p>translation string</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "plural",
+            "description": "<p>translation plural form</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "integer",
+            "optional": false,
+            "field": "number",
+            "description": "<p>translation plural number</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>result string</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_translation.js",
+    "groupTitle": "SWE_Translation"
+  },
+  {
+    "type": "translation: same as gettext",
+    "url": "SWE.Translation.GetText(text)",
+    "title": "SWE.Translation.GetText",
+    "group": "SWE_Translation",
+    "name": "GetText",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "text",
+            "description": "<p>translation string</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>result string</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    local res = SWE.Translation.BindDomain(\"test1\", \"ru.mo\")\n    if res then\n\tSWE.Translation.SetDomain(\"test1\")\n\tSWE.Translation.SetStripContext('|')\n\tprint(SWE.Translation.GetText(\"Color|Red\"))\n\tprint(SWE.Translation.GetText(\"Color|Green\"))\n\tprint(SWE.Translation.GetText(\"Color|Blue\"))\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_translation.js",
+    "groupTitle": "SWE_Translation"
+  },
+  {
+    "type": "translation: same as ngettext",
+    "url": "SWE.Translation.NGetText(text,plural,number)",
+    "title": "SWE.Translation.NGetText",
+    "group": "SWE_Translation",
+    "name": "NGetText",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "text",
+            "description": "<p>translation string</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "plural",
+            "description": "<p>translation plural form</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "integer",
+            "optional": false,
+            "field": "number",
+            "description": "<p>translation plural number</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>result string</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_translation.js",
+    "groupTitle": "SWE_Translation"
+  },
+  {
+    "type": "translation: set domain",
+    "url": "SWE.Translation.SetDomain(domain)",
+    "title": "SWE.Translation.SetDomain",
+    "group": "SWE_Translation",
+    "name": "SetDomain",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "domain",
+            "description": "<p>translation domain</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if set domain</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    local res = SWE.Translation.BindDomain(\"test1\", \"ru.mo\")\n    if res then\n\tSWE.Translation.SetDomain(\"test1\")\n\tSWE.Translation.SetStripContext('|')\n\tprint(SWE.Translation.GetText(\"Color|Red\"))\n\tprint(SWE.Translation.GetText(\"Color|Green\"))\n\tprint(SWE.Translation.GetText(\"Color|Blue\"))\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_translation.js",
+    "groupTitle": "SWE_Translation"
+  },
+  {
+    "type": "translation: set strip context",
+    "url": "SWE.Translation.SetStripContext(context)",
+    "title": "SWE.Translation.SetStripContext",
+    "group": "SWE_Translation",
+    "name": "SetStripContext",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "integer",
+            "optional": false,
+            "field": "context",
+            "description": "<p>translation strip context symbol</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    local res = SWE.Translation.BindDomain(\"test1\", \"ru.mo\")\n    if res then\n\tSWE.Translation.SetDomain(\"test1\")\n\tSWE.Translation.SetStripContext('|')\n\tprint(SWE.Translation.GetText(\"Color|Red\"))\n\tprint(SWE.Translation.GetText(\"Color|Green\"))\n\tprint(SWE.Translation.GetText(\"Color|Blue\"))\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_translation.js",
+    "groupTitle": "SWE_Translation"
+  },
+  {
     "type": "unicodestring clear",
     "url": "SWE.UnicodeString.Clear(self)",
     "title": "SWE.UnicodeString.Clear",
@@ -10579,8 +11699,8 @@ define({ "api": [
   },
   {
     "type": "push back byte value",
-    "url": "SWE.UnicodeString.PushBack(self,offset,value",
-    "title": "... value) SWE.UnicodeString.PushBack",
+    "url": "SWE.UnicodeString.PushBack(self,offset,value...value)",
+    "title": "SWE.UnicodeString.PushBack",
     "group": "SWE_UnicodeString",
     "name": "PushBack",
     "parameter": {
@@ -10679,8 +11799,8 @@ define({ "api": [
   },
   {
     "type": "set char value",
-    "url": "SWE.UnicodeString.SetChar(self,offset,value",
-    "title": "... value) SWE.UnicodeString.SetChar",
+    "url": "SWE.UnicodeString.SetChar(self,offset,value...value)",
+    "title": "SWE.UnicodeString.SetChar",
     "group": "SWE_UnicodeString",
     "name": "SetChar",
     "parameter": {

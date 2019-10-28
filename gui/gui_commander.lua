@@ -1,5 +1,6 @@
 require 'gui_list'
 require 'gui_tools'
+require 'gui_editor'
 require 'gui_button'
 
 local frs = {}
@@ -224,10 +225,10 @@ function CommanderInit(win, frs2, cwd2)
     cmd.btnzo:SetPosition(4, cmd.win.height - cmd.btnzo.height - 4)
 
     cmd.btnfn = TextButtonCreate(0, 0, "FN", frs, cmd.win)
-    cmd.btnfn:SetPosition(cmd.btnzo.posx + cmd.btnzo.width + 4, cmd.win.height - cmd.btnfn.height - 4)
+    cmd.btnfn:SetPosition(cmd.btnzo.posx + cmd.btnzo.width + frs.fixedWidth, cmd.win.height - cmd.btnfn.height - 4)
 
     cmd.btned = TextButtonCreate(0, 0, "ED", frs, cmd.win)
-    cmd.btned:SetPosition(cmd.btnfn.posx + cmd.btnfn.width + 4, cmd.win.height - cmd.btned.height - 4)
+    cmd.btned:SetPosition(cmd.btnfn.posx + cmd.btnfn.width + frs.fixedWidth, cmd.win.height - cmd.btned.height - 4)
 
     cmd.btnzi = TextButtonCreate(0, 0, "Z+", frs, cmd.win)
     cmd.btnzi:SetPosition(cmd.win.width - cmd.btnzi.width - 4, cmd.win.height - cmd.btnzi.height - 4)
@@ -255,6 +256,24 @@ function CommanderInit(win, frs2, cwd2)
 	cmd.btnzo = nil
 	cmd.btnx = nil
 	cmd.win = nil
+    end
+
+    cmd.btnfn.MouseClickEvent = function(px,py,pb,rx,ry,rb)
+	local editor = EditorInit(cmd.win)
+	SWE.MainLoop(editor)
+    end
+
+    cmd.btned.MouseClickEvent = function(px,py,pb,rx,ry,rb)
+        local selitem = cmd.list:GetItemSelected()
+        if selitem ~= nil then
+            local current =  selitem.label
+            if not selitem.isdir then
+                local filename = SWE.SystemConcatePath(cmd.list.cwd, selitem.label)
+		local editor = EditorInit(cmd.win, frs, filename)
+		SWE.MainLoop(editor)
+	    end
+	end
+	return true
     end
 
     cmd.scroll.MouseClickEvent = function(px,py,pb,rx,ry,rb)

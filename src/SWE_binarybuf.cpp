@@ -46,6 +46,32 @@ SWE_BinaryBuf* SWE_BinaryBuf::get(LuaState & ll, int tableIndex, const char* fun
 }
 
 ///////////////////////////////////////////////////////////
+int SWE_binarybuf_pushback(lua_State* L)
+{
+    // params: table unicodestring, int byte, int byte .. int byte
+    LuaState ll(L);
+    SWE_BinaryBuf* buf = SWE_BinaryBuf::get(ll, 1, __FUNCTION__);
+
+    if(buf)
+    {
+        int params = ll.stackSize();
+
+        for(int ii = 2; ii <= params; ++ii)
+        {
+            int byte = ll.toIntegerIndex(ii);
+            buf->push_back(byte);
+        }
+
+        ll.pushInteger(buf->size()).setFieldTableIndex("size", 1);
+        ll.pushBoolean(true);
+
+        return 1;
+    }
+    
+    ERROR("userdata empty");
+    return 0;
+}
+
 int SWE_binarybuf_zlib_compress(lua_State* L)
 {
     // params: table binarybuf
@@ -366,26 +392,29 @@ int SWE_binarybuf_to_cstring(lua_State* L)
 
 int SWE_binarybuf_setbyte(lua_State* L)
 {
-    // params: table binarybuf, int offset, int byte
+    // params: table binarybuf, int offset, int byte, int byte ... int byte
     LuaState ll(L);
+    int params = ll.stackSize();
     SWE_BinaryBuf* buf = SWE_BinaryBuf::get(ll, 1, __FUNCTION__);
 
     if(buf)
     {
 	int offset = ll.toIntegerIndex(2);
-	int byte = ll.toIntegerIndex(3);
 
-	if(0 <= offset && offset < buf->size())
+	if(0 <= offset && offset <= buf->size())
 	{
-	    buf->operator[](offset) = byte;
-	    ll.pushBoolean(true);
-	}
-	else
-	if(offset == buf->size())
-	{
-	    buf->push_back(byte);
-	    ll.pushInteger(buf->size()).setFieldTableIndex("size", 1);
-	    ll.pushBoolean(true);
+    	    for(int ii = 3; ii <= params; ++ii)
+    	    {
+    		int byte = ll.toIntegerIndex(ii);
+		if(offset < buf->size())
+		    buf->operator[](offset) = byte;
+		else
+		    buf->push_back(byte);
+		offset += 1;
+    	    }
+
+    	    ll.pushInteger(buf->size()).setFieldTableIndex("size", 1);
+    	    ll.pushBoolean(true);
 	}
 	else
 	{
@@ -434,20 +463,22 @@ int SWE_binarybuf_getbytes(lua_State* L)
 
     if(buf)
     {
-	int offset = ll.toIntegerIndex(2);
-	int size = ll.toIntegerIndex(3);
+	int pos = ll.toIntegerIndex(2);
+	int len = ll.toIntegerIndex(3);
 
-	if(0 <= offset && 
-	    offset + size < buf->size() + 1)
-	{
+        if(0 <= pos && pos < buf->size())
+        {
+            if(len <= 0 || pos + len > buf->size())
+                len = buf->size() - pos;
+
 	    ll.stackClear();
     	    ll.pushTable();
 	    SWE_binarybuf_create(L);
 
 	    SWE_BinaryBuf* res = SWE_BinaryBuf::get(ll, -1, __FUNCTION__);
-	    res->assign(buf->data() + offset, buf->data() + offset + size);
+	    res->assign(buf->data() + pos, buf->data() + pos + len);
 
-	    ll.pushString("size").pushInteger(buf->size()).setTableIndex(-3);
+	    ll.pushString("size").pushInteger(res->size()).setTableIndex(-3);
 	}
 	else
 	{
@@ -457,6 +488,82 @@ int SWE_binarybuf_getbytes(lua_State* L)
 
 	return 1;
     }
+
+    ERROR("userdata empty");
+    return 0;
+}
+
+int SWE_binarybuf_insert(lua_State* L)
+{
+    // params: table binarybuf, int offset, (binarybuf, subpos, sublen), (int count, int byte)
+    LuaState ll(L);
+
+    SWE_BinaryBuf* buf1 = SWE_BinaryBuf::get(ll, 1, __FUNCTION__);
+         
+    if(buf1)
+    {
+        int pos = ll.toIntegerIndex(2);
+
+	if(0 > pos || pos > buf1->size())
+        {
+            ERROR("out of range");
+            ll.pushBoolean(false);
+	}
+	else
+        // params: int count, int byte
+        if(ll.isIntegerIndex(3))
+        {
+            int count = ll.toIntegerIndex(3);
+            int ch = ll.toIntegerIndex(4);
+
+            buf1->insert(buf1->begin() + pos, count, ch);
+            ll.pushInteger(buf1->size()).setFieldTableIndex("size", 1);
+            ll.pushBoolean(true);
+        }
+        else
+	// params: table binarybuf, int subpos, int sublen
+        if(ll.isTableIndex(3))
+        {
+            SWE_BinaryBuf* buf2 = SWE_BinaryBuf::get(ll, 3, __FUNCTION__);
+            if(buf2)
+            {
+                int params = ll.stackSize();
+                if(3 < params)
+                {
+                    int subpos = ll.toIntegerIndex(4);
+                    int sublen = ll.toIntegerIndex(5);
+
+                    if(0 <= subpos && subpos < buf2->size())
+                    {
+                        if(sublen <= 0 || subpos + sublen > buf2->size())
+                            sublen = buf2->size() - subpos;
+
+                        buf1->insert(buf1->begin() + pos, buf2->begin() + subpos, buf2->begin() + subpos + sublen);
+                        ll.pushInteger(buf1->size()).setFieldTableIndex("size", 1);
+                        ll.pushBoolean(true);
+                    }
+                    else
+                    {
+                        ERROR("out of range");
+                        ll.pushBoolean(false);
+                    }
+                }
+                else
+                {
+                    buf1->insert(buf1->begin() + pos, buf2->begin(), buf2->end());
+                    ll.pushInteger(buf1->size()).setFieldTableIndex("size", 1);
+                    ll.pushBoolean(true);
+                }
+            }
+            else
+            {
+                ERROR("table not found" << ": " << "swe.binarybuf");
+                ll.pushBoolean(false);
+            }
+        }
+            
+        return 1;
+    }       
 
     ERROR("userdata empty");
     return 0;
@@ -555,21 +662,101 @@ int SWE_binarybuf_clear(lua_State* L)
     return 0;
 }
 
+int SWE_binarybuf_erase(lua_State* L)
+{
+    // params: table binarybuf, int size, int val
+    LuaState ll(L);
+    int params = ll.stackSize();
+    SWE_BinaryBuf* buf = SWE_BinaryBuf::get(ll, 1, __FUNCTION__);
+
+    if(buf)
+    {
+        int pos = ll.toIntegerIndex(2);
+        int count = 3 > params ? 1 : ll.toIntegerIndex(3);
+
+        if(0 <= pos && pos < buf->size() && 0 < count && pos + count <= buf->size())
+        {
+            if(1 == count)
+                buf->erase(buf->begin() + pos);
+            else
+                buf->erase(buf->begin() + pos, buf->begin() + pos + count);
+
+            ll.pushString("size").pushInteger(buf->size()).setTableIndex(1);
+            ll.pushBoolean(true);
+        }
+        else
+        {
+            ERROR("out of range" << ", " << pos << ", " << buf->size());
+            ll.pushBoolean(false);
+        }
+    }
+    else
+    {
+        ERROR("userdata empty");
+        ll.pushBoolean(false);
+    }
+
+    return 1;
+}
+
+int SWE_binarybuf_resize(lua_State* L)
+{
+    // params: table binarybuf, int size, int val
+    LuaState ll(L);
+    SWE_BinaryBuf* buf = SWE_BinaryBuf::get(ll, 1, __FUNCTION__);
+
+    if(buf)
+    {
+        int size = ll.toIntegerIndex(2);
+
+        if(0 < size)
+        {
+            int val = ll.toIntegerIndex(3);
+            buf->resize(size, val);
+            ll.pushString("size").pushInteger(buf->size()).setTableIndex(1);
+            ll.pushBoolean(true);
+        }
+        else
+	if(0 == size)
+        {
+            buf->clear();
+            ll.pushString("size").pushInteger(buf->size()).setTableIndex(1);
+            ll.pushBoolean(true);
+        }
+        else
+        {
+            ERROR("out of range");
+            ll.pushBoolean(false);
+        }
+    }
+    else
+    {
+        ERROR("userdata empty");
+        ll.pushBoolean(false);
+    }
+
+    return 1;
+}
+
 const struct luaL_Reg SWE_binarybuf_functions[] = {
+    { "PushBack", SWE_binarybuf_pushback },             // [bool], table binarybuf, int byte, int byte ... int byte
     { "ZlibCompress", SWE_binarybuf_zlib_compress },	// [table binarybuf], table binarybuf
     { "ZlibDecompress", SWE_binarybuf_zlib_decompress },// [table binarybuf], table binarybuf
     { "Base64Decode", SWE_binarybuf_base64_decode },	// [table binarybuf], table binarybuf | string base64
     { "Base64Encode", SWE_binarybuf_base64_encode },	// [string base64], table binarybuf
+    { "GetCRC32b", SWE_binarybuf_getcrc32b },		// [int crc], table binarybuf
     { "ReadFromFile", SWE_binarybuf_readfile },		// [bool], table binarybuf, string filename, number
     { "SaveToFile", SWE_binarybuf_savefile },		// [bool], table binarybuf, string filename, number
     { "ToString", SWE_binarybuf_to_cstring },		// [string], table binarybuf
     { "ToJson", SWE_binarybuf_to_json },		// [string], table binarybuf
-    { "SetByte", SWE_binarybuf_setbyte },		// [bool], table binarybuf, int offset, int byte
+    { "SetByte", SWE_binarybuf_setbyte },		// [bool], table binarybuf, int offset, int byte, int byte ... int byte
     { "GetByte", SWE_binarybuf_getbyte },		// [int byte], table binarybuf, int offset
     { "SetBytes", SWE_binarybuf_setbytes },		// [bool], table binarybuf, int offset, table binarybuf, int offset, int size
     { "GetBytes", SWE_binarybuf_getbytes },		// [table binarybuf], table binarybuf, int offset, int size
-    { "GetCRC32b", SWE_binarybuf_getcrc32b },		// [int crc], table binarybuf
+    { "Insert", SWE_binarybuf_insert },                 // [bool], table binarybuf, int offset, (binarybuf, subpos, sublen), (int count, int byte)
     { "Clear", SWE_binarybuf_clear },			// [void], table binarybuf
+    { "Resize", SWE_binarybuf_resize },                 // [bool], table binarybuf, int size, int val
+    { "Erase", SWE_binarybuf_erase },                   // [bool], table binarybuf, int pos, int count
     { NULL, NULL }
 };
 

@@ -29,12 +29,18 @@ SWE_VideoCam::SWE_VideoCam(const JsonObject & params) : context(NULL)
 #ifdef WITH_VIDEOCAM_FFMPEG
     context = new FFmpegContext();
 #endif
-    if(context) context->init(params);
+    if(context && ! context->init(params))
+    {
+	context->quit();
+	delete context;
+	context = NULL;
+    }
 }
 
 SWE_VideoCam::~SWE_VideoCam()
 {
     if(context) context->quit();
+    delete context;
 }
 
 bool SWE_VideoCam::contextCapture(void)
@@ -103,7 +109,7 @@ int SWE_videocam_get_frame(lua_State* L)
 	}
 	else
 	{
-	    ERROR("error context");
+	    // ERROR("error context");
 	}
     }
     else

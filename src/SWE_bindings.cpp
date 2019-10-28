@@ -38,9 +38,13 @@
 #include "SWE_videocam.h"
 #include "SWE_terminal.h"
 #include "SWE_binarybuf.h"
-#include "SWE_netstream.h"
+#include "SWE_streamnet.h"
+#include "SWE_streambuf.h"
 #include "SWE_randomhit.h"
+#include "SWE_streamfile.h"
 #include "SWE_fontrender.h"
+#include "SWE_translation.h"
+#include "SWE_unicodestring.h"
 
 #define SWE_LUA_VERSION 20190928
 #define SWE_LUA_LICENSE "GPL3"
@@ -749,6 +753,7 @@ int SWE_display_keyboard(lua_State* L)
     LuaState ll(L);
     bool show = ll.toBooleanIndex(1);
 
+#ifndef OLDENGINE
     if(show)
     {
 	SDL_StartTextInput();
@@ -757,6 +762,7 @@ int SWE_display_keyboard(lua_State* L)
     {
 	SDL_StopTextInput();
     }
+#endif
 
     return 0;
 }
@@ -847,8 +853,12 @@ extern "C" {
     SWE_Texture::registers(ll);
     // SWE.BinaryBuf
     SWE_BinaryBuf::registers(ll);
-    // SWE.NetStream
-    SWE_NetStream::registers(ll);
+    // SWE.StreamNet
+    SWE_StreamNet::registers(ll);
+    // SWE.StreamBuf
+    SWE_StreamBuf::registers(ll);
+    // SWE.StreamFile
+    SWE_StreamFile::registers(ll);
     // SWE.RandomHit
     SWE_RandomHit::registers(ll);
     // SWE.Point
@@ -863,6 +873,10 @@ extern "C" {
     SWE_Terminal::registers(ll);
     // SWE.VideoCam
     SWE_VideoCam::registers(ll);
+    // SWE.Translation
+    SWE_Translation::registers(ll);
+    // SWE.UnicodeString
+    SWE_UnicodeString::registers(ll);
 
     bool res = Engine::init();
     if(! res) ERROR("engine init failed");

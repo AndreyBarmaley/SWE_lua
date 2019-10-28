@@ -46,6 +46,7 @@ protected:
     bool	mousePressEvent(const ButtonEvent &) override;
     bool	mouseReleaseEvent(const ButtonEvent &) override;
     bool	mouseMotionEvent(const Point &, u32 buttons) override;
+    void	mouseTrackingEvent(const Point &, u32 buttons) override;
     bool	mouseClickEvent(const ButtonsEvent &) override;
     void        mouseFocusEvent(void) override;
     void        mouseLeaveEvent(void) override;

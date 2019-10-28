@@ -359,14 +359,19 @@ bool FFmpegContext::init(const JsonObject & params)
 
 void FFmpegContext::quit(void)
 {
+#if LIBAVFORMAT_VERSION_MAJOR > 56
+    if(ctxCodec)
+    {
+	avcodec_free_context(&ctxCodec);
+	ctxCodec = NULL;
+    }
+#endif
 #ifdef FFMPEG_OLD_API
     if(ctxCodec) avcodec_close(ctxCodec);
     if(ctxFormat) av_close_input_file(ctxFormat);
 #else
     if(ctxCodec) avcodec_close(ctxCodec);
     if(ctxFormat) avformat_close_input(& ctxFormat);
-    //if(ctxFormat) av_close_input_file(& ctxFormat);
-    //if(ctxCodec) avcodec_free_context(& ctxCodec);
 #endif
     ctxCodec = NULL;
     ctxFormat = NULL;
@@ -459,6 +464,8 @@ bool FFmpegContext::capture(void)
 #endif
 
     AVPacket packet;
+    av_init_packet(& packet);
+
     int frameFinished = 0;
 
     while(av_read_frame(ctxFormat, &packet) >= 0)
@@ -485,6 +492,8 @@ bool FFmpegContext::capture(void)
 			    24, pFrameRGB->linesize[0], Rmask, Gmask, Bmask, Amask);
 #endif
 
+		av_frame_unref(pFrame);
+		av_frame_unref(pFrameRGB);
 		if(sf) frameTexture = Display::createTexture(Surface(sf));
                 break;
             }

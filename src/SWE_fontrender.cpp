@@ -100,8 +100,8 @@ int SWE_fontrender_symbol_advance(lua_State* L)
 	int symbol = ll.toIntegerIndex(2);
         int width = frs->symbolAdvance(symbol);
 
-	// userdata, width
-	ll.stackPop().pushInteger(width);
+	// width
+	ll.pushInteger(width);
 	return 1;
     }
 
@@ -109,9 +109,33 @@ int SWE_fontrender_symbol_advance(lua_State* L)
     return 0;
 }
 
+int SWE_fontrender_split_stringwidth(lua_State* L)
+{
+    // params: swe_fontrender, int width
+
+    LuaState ll(L);
+    SWE_FontRender* frs = SWE_FontRender::get(ll, 1, __FUNCTION__);
+
+    if(frs)
+    {
+	std::string str = ll.toStringIndex(2);
+	int width = ll.toIntegerIndex(3);
+
+	StringList list = frs->splitStringWidth(str, width);
+	for(auto it = list.begin(); it != list.end(); ++it)
+	    ll.pushString(*it);
+
+	return list.size();
+    }
+
+    ERROR("userdata empty");
+    return 0;
+}
+
 const struct luaL_Reg SWE_fontrender_functions[] = {
-    { "ToJson", SWE_fontrender_to_json },		// [string], swe_fontrender
-    { "SymbolAdvance", SWE_fontrender_symbol_advance }, // [int], swe_fontrender, symbol integer
+    { "ToJson", SWE_fontrender_to_json },		      // [string], swe_fontrender
+    { "SymbolAdvance", SWE_fontrender_symbol_advance },       // [int], swe_fontrender, symbol integer
+    { "SplitStringWidth", SWE_fontrender_split_stringwidth }, // [list string], swe_fontrender, string, int width
     { NULL, NULL }
 };
 

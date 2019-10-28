@@ -156,6 +156,23 @@ bool SWE_Window::mouseMotionEvent(const Point & pos, u32 buttons)
     return false;
 }
 
+void SWE_Window::mouseTrackingEvent(const Point & pos, u32 buttons)
+{
+    if(SWE_Scene::window_push(ll, this))
+    {
+	if(ll.getFieldTableIndex("MouseTrackingEvent", -1).isTopFunction())
+	{
+	    ll.pushInteger(pos.x).pushInteger(pos.y).pushInteger(buttons);
+	    ll.callFunction(3, 0);
+	}
+	else
+	{
+	    ll.stackPop();
+	}
+    }
+    ll.stackPop();
+}
+
 bool SWE_Window::mouseClickEvent(const ButtonsEvent & be)
 {
     if(SWE_Scene::window_push(ll, this))
@@ -572,7 +589,6 @@ int SWE_window_set_result(lua_State* L)
     if(win)
     {
 	bool result = ll.toIntegerIndex(2);
-
 	win->setResultCode(result);
 
 	// userdata, bool, swe_window...
@@ -595,12 +611,9 @@ int SWE_window_set_visible(lua_State* L)
 
     if(win)
     {
-	bool visible = ll.toBooleanIndex(2);
-
-	win->setVisible(visible);
-
-	// userdata, bool, swe_window...
-	ll.pushBoolean(visible).setFieldTableIndex("visible", 1);
+	bool flag = ll.toBooleanIndex(2);
+	win->setVisible(flag);
+	ll.pushBoolean(flag).setFieldTableIndex("visible", 1);
     }
     else
     {
@@ -619,10 +632,9 @@ int SWE_window_set_modality(lua_State* L)
 
     if(win)
     {
-	bool modality = ll.toBooleanIndex(2);
-	win->setState(FlagModality, modality);
-
-	ll.pushBoolean(modality).setFieldTableIndex("modality", 1);
+	bool flag = ll.toBooleanIndex(2);
+	win->setState(FlagModality, flag);
+	ll.pushBoolean(flag).setFieldTableIndex("modality", 1);
     }
     else
     {
@@ -631,6 +643,7 @@ int SWE_window_set_modality(lua_State* L)
 
     return 0;
 }
+
 int SWE_window_set_keyhandle(lua_State* L)
 {
     // params: swe_window, bool
@@ -640,10 +653,29 @@ int SWE_window_set_keyhandle(lua_State* L)
 
     if(win)
     {
-	bool keyhandle = ll.toBooleanIndex(2);
-	win->setState(FlagKeyHandle, keyhandle);
+	bool flag = ll.toBooleanIndex(2);
+	win->setState(FlagKeyHandle, flag);
+	ll.pushBoolean(flag).setFieldTableIndex("keyhandle", 1);
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
 
-	ll.pushBoolean(keyhandle).setFieldTableIndex("keyhandle", 1);
+    return 0;
+}
+
+int SWE_window_set_mousetrack(lua_State* L)
+{
+    // params: swe_window, bool
+
+    LuaState ll(L);
+    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+
+    if(win)
+    {
+	bool flag = ll.toBooleanIndex(2);
+	win->setState(FlagMouseTracking, flag);
     }
     else
     {
@@ -849,6 +881,7 @@ int SWE_window_render_texture(lua_State* L)
     {
 	Rect src, dst;
         int params = ll.stackSize();
+	bool fixedsize = true;
 
 	if(ll.isTableIndex(3))
 	{
@@ -857,13 +890,15 @@ int SWE_window_render_texture(lua_State* L)
 	    if(ll.isTableIndex(4))
 	    {
 		dst = SWE_Rect::get(ll, 4, __FUNCTION__);
+    		fixedsize = 5 > params ? true : ll.toBooleanIndex(5);
 	    }
 	    else
 	    {
     		dst.x = ll.toIntegerIndex(4);
     		dst.y = ll.toIntegerIndex(5);
     		dst.w = 6 > params ? src.w : ll.toIntegerIndex(6);
-    		dst.h = 6 > params ? src.h : ll.toIntegerIndex(7);
+    		dst.h = 7 > params ? src.h : ll.toIntegerIndex(7);
+    		fixedsize = 8 > params ? true : ll.toBooleanIndex(8);
 	    }
 	}
 	else
@@ -875,10 +910,11 @@ int SWE_window_render_texture(lua_State* L)
     	    dst.x = ll.toIntegerIndex(7);
     	    dst.y = ll.toIntegerIndex(8);
     	    dst.w = 9 > params ? src.w : ll.toIntegerIndex(9);
-    	    dst.h = 9 > params ? src.h : ll.toIntegerIndex(10);
+    	    dst.h = 10 > params ? src.h : ll.toIntegerIndex(10);
+    	    fixedsize = 11 > params ? true : ll.toBooleanIndex(11);
 	}
 
-	win->renderTexture(*ptr, src, dst);
+	win->renderTexture(*ptr, src, dst, fixedsize);
     }
     else
     {
@@ -1275,6 +1311,7 @@ const struct luaL_Reg SWE_window_functions[] = {
     { "SetResult",      SWE_window_set_result },       // [void], table window, int code
     { "SetModality",    SWE_window_set_modality },     // [void], table window, int code
     { "SetKeyHandle",   SWE_window_set_keyhandle },    // [void], table window, int code
+    { "SetMouseTracking", SWE_window_set_mousetrack }, // [void], table window, int code
     { "SetPosition",    SWE_window_set_position },     // [void], table window. point pos
     { "SetSize",        SWE_window_set_size },         // [void], table window. size win
     { "SetToolTip",	SWE_window_set_tooltip },      // [void], table window, string, fontrender, color, color, color
@@ -1421,6 +1458,7 @@ const struct luaL_Reg SWE_polygon_functions[] = {
     { "SetResult",      SWE_window_set_result },       // [void], table window, int code
     { "SetModality",    SWE_window_set_modality },     // [void], table window, int code
     { "SetKeyHandle",   SWE_window_set_keyhandle },    // [void], table window, int code
+    { "SetMouseTracking", SWE_window_set_mousetrack }, // [void], table window, int code
     { "SetPosition",    SWE_window_set_position },     // [void], table window. point pos
     { "SetSize",        SWE_window_set_size },         // [void], table window. size win
     { "SetToolTip",	SWE_window_set_tooltip },      // [void], table window, string, fontrender, color, color, color
@@ -1743,6 +1781,15 @@ void SWE_Window::registers(LuaState & ll)
     // set metatable: __call
     ll.pushTable(0, 1).pushFunction(SWE_window_create).setFieldTableIndex("__call", -2);
     ll.setMetaTableIndex(-2).stackPop();
+
+    // SWE.Button constants
+    ll.pushTable("SWE.MouseButton");
+    ll.pushInteger(SDL_BUTTON(SDL_BUTTON_LEFT)).setFieldTableIndex("Left", -2);
+    ll.pushInteger(SDL_BUTTON(SDL_BUTTON_MIDDLE)).setFieldTableIndex("Middle", -2);
+    ll.pushInteger(SDL_BUTTON(SDL_BUTTON_RIGHT)).setFieldTableIndex("Right", -2);
+    ll.pushInteger(SDL_BUTTON(SDL_BUTTON_X1)).setFieldTableIndex("X1", -2);
+    ll.pushInteger(SDL_BUTTON(SDL_BUTTON_X2)).setFieldTableIndex("X2", -2);
+    ll.stackPop();
 }
 
 void SWE_Polygon::registers(LuaState & ll)

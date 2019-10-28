@@ -26,6 +26,7 @@
 #include "SWE_tools.h"
 #include "SWE_texture.h"
 #include "SWE_fontrender.h"
+#include "SWE_unicodestring.h"
 #include "SWE_window.h"
 #include "SWE_terminal.h"
 
@@ -1503,8 +1504,28 @@ int SWE_terminal_draw_text(lua_State* L)
 
 	for(int ii = 2; ii <= params; ++ii)
 	{
-	    std::string text = ll.toStringIndex(ii);
-	    if(text.size()) *term << text;
+	    if(ll.isStringIndex(ii) || ll.isNumberIndex(ii) ||  ll.isBooleanIndex(ii))
+	    {
+		std::string text = ll.toStringIndex(ii);
+		if(text.size()) *term << text;
+	    }
+	    else
+	    if(ll.isTableIndex(ii))
+	    {
+		SWE_UnicodeString* ustr = SWE_UnicodeString::get(ll, ii, __FUNCTION__);
+		if(ustr)
+		{
+		    if(ustr->size()) *term << *ustr;
+		}
+		else
+		{
+		    ERROR("table not found" << ": " << "swe.unicodestring");
+		}
+	    }
+	    else
+	    {
+		ERROR("unknown type: " << ll.getTypeName(ll.getTypeIndex(ii)));
+	    }
 	}
 
 	ll.pushValueIndex(1);
@@ -1632,8 +1653,8 @@ const struct luaL_Reg SWE_terminal_functions[] = {
     { "SetWrap",	SWE_terminal_set_wrap },	// [swe_terminal], table terminal
     { "SetPadding",	SWE_terminal_set_padding },	// [swe_terminal], table terminal, int left, int right, int top, int bottom
     { "SetFlush",	SWE_terminal_set_flush },	// [void], table terminal
-    { "DrawHLine",	SWE_terminal_draw_hline },	// [swe_terminal], table terminal, int length, int line, fgcolor, bgcolor
-    { "DrawVLine",	SWE_terminal_draw_vline },	// [swe_terminal], table terminal, int length, int line, fgcolor, bgcolor
+    { "DrawHLine",	SWE_terminal_draw_hline },	// [swe_terminal], table terminal, int length, int char, fgcolor, bgcolor
+    { "DrawVLine",	SWE_terminal_draw_vline },	// [swe_terminal], table terminal, int length, int char, fgcolor, bgcolor
     { "DrawRect",	SWE_terminal_draw_rect },	// [swe_terminal], table terminal, width, height, int line
     { "DrawText",	SWE_terminal_draw_text },	// [swe_terminal], table terminal, text, ..., text
     { "DrawChar",	SWE_terminal_draw_char },	// [swe_terminal], table terminal, char, ..., char
