@@ -751,9 +751,9 @@ int SWE_display_keyboard(lua_State* L)
 {
     // params: bool
     LuaState ll(L);
-    bool show = ll.toBooleanIndex(1);
 
 #ifndef OLDENGINE
+    bool show = ll.toBooleanIndex(1);
     if(show)
     {
 	SDL_StartTextInput();
@@ -778,7 +778,7 @@ const struct luaL_Reg SWE_functions[] = {
     { "CursorLoad", SWE_cursor_load },	// [void], table swe_texture, int offsetx, int offsety
     { "CursorInfo", SWE_cursor_info },	// [table cursor], void
     { "JsonParse", SWE_json_parse },	// [table], string json
-    { "ToJson", SWE_table_json },	// [string], table
+    { "TableToJson", SWE_table_json },	// [string], table
     { "PushEvent", SWE_push_event },	// [void], int code, pointer data, table window
     { "SetDebug", SWE_set_debug }, 	// [void], bool
     { "DisplayWindow", SWE_display_window }, 			// [table swe_window], void
