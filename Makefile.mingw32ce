@@ -13,6 +13,6 @@ CXX	:= arm-mingw32ce-g++
 WINDRES	:= arm-mingw32ce-windres
 STRIP	:= arm-mingw32ce-strip
 EXT	:= _wince.exe
-CFLAGS	:= $(CFLAGS) -DOLDENGINE -static
+CFLAGS	:= $(CFLAGS) -DOLDENGINE -DWINCE -static
 LIBS	:= -Wl,-Bstatic $(LIBS) -lmmtimer
 LDFLAGS	:= -static $(LDFLAGS) -Wl,--gc-sections

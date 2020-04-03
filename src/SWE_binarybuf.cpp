@@ -231,7 +231,7 @@ int SWE_binarybuf_base64_decode(lua_State* L)
 
 int SWE_binarybuf_readfile1(lua_State* L)
 {
-    // params: table binarybuf, string
+    // params: table binarybuf, string, int
     LuaState ll(L);
     std::string filename = ll.toStringIndex(2);
 

@@ -46,7 +46,7 @@
 #include "SWE_translation.h"
 #include "SWE_unicodestring.h"
 
-#define SWE_LUA_VERSION 20190928
+#define SWE_LUA_VERSION 20200320
 #define SWE_LUA_LICENSE "GPL3"
 
 int SWE_window_create(lua_State*);
@@ -273,7 +273,7 @@ int SWE_debug(lua_State* L)
 	sep = true;
     }
 
-    DEBUG(os.str());
+    VERBOSE(os.str());
     return 0;
 }
 

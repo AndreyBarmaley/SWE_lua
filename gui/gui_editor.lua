@@ -202,11 +202,13 @@ local function AreaScrollUp(area, skip)
 	    area.skiprows = 0
 	end
 	SWE.DisplayDirty()
+	return true
     elseif 1 < area.cursory then
 	area.cursory = 1
 	SWE.DisplayDirty()
+	return true
     end
-    return true
+    return false
 end
 
 local function AreaScrollDown(area, skip)
@@ -216,14 +218,17 @@ local function AreaScrollDown(area, skip)
 	    area.skiprows = #area.content - area.rows + 2
 	end
 	SWE.DisplayDirty()
+	return true
     elseif area.rows - 2 > #area.content then
 	area.cursory = #area.content
 	SWE.DisplayDirty()
+	return true
     elseif area.cursory < area.rows - 2 then
 	area.cursory = area.rows - 2
 	SWE.DisplayDirty()
+	return true
     end
-    return true
+    return false
 end
 
 local function AreaScrollLeft(area, skip)
@@ -233,12 +238,14 @@ local function AreaScrollLeft(area, skip)
 	    area.skipcols = 0
 	end
 	SWE.DisplayDirty()
+	return true
     elseif 1 < area.cursorx then
 	area.cursorx = 1
 	area.virtualx = area.cursorx + area.skipcols
 	SWE.DisplayDirty()
+	return true
     end
-    return true
+    return false
 end
 
 local function AreaScrollRight(area, skip)
@@ -248,12 +255,14 @@ local function AreaScrollRight(area, skip)
 	    area.skipcols = area.maxlen - area.cols + 1
 	end
 	SWE.DisplayDirty()
+	return true
     elseif area.cursorx < area.cols - 2 then
 	area.cursorx = area.cols - 2
 	area.virtualx = area.cursorx + area.skipcols
 	SWE.DisplayDirty()
+	return true
     end
-    return true
+    return false
 end
 
 local function AreaLineHome(area)

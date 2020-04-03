@@ -144,9 +144,14 @@ int main(int argc, char** argv)
 
 	if(cwd.size())
 	{
-	    DEBUG("SWE.getcwd: " << cwd);
-	    ll.pushString(cwd);
-	    ll.setFieldTableIndex("getcwd", -2);
+	    // set SWE.getcwd
+	    if(ll.pushTable("SWE").isTopTable())
+	    {
+		DEBUG("SWE.getcwd: " << cwd);
+		ll.pushString(cwd);
+		ll.setFieldTableIndex("getcwd", -2);
+	    }
+    	    ll.stackPop();
 	}
 
         ll.doFile(runfile);
