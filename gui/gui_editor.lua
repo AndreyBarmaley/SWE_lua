@@ -2,6 +2,7 @@
 
 SWE.LuaRegisterDirectory("gui")
 require 'gui_tools'
+require 'gui_button'
 
 local frs = {}
 
@@ -792,7 +793,7 @@ function EditorInit(win, frs2, filename)
 
     if filename ~= nil then
 	local t = SWE.SystemFileStat(filename)
-	if t.type ~= "file" or not area:LoadFile(filename) then
+	if not t or t.type ~= "file" or not area:LoadFile(filename) then
 	    area:NewFile()
 	end
     else
