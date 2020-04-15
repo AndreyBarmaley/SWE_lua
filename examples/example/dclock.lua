@@ -11,13 +11,16 @@ end
 win.frs54 = SWE.FontRender("terminus.ttf", 54, false)
 win.frs24 = SWE.FontRender("terminus.ttf", 24, false)
 win.last = 0
-win.time = nil
-win.date = nil
+win.date = SWE.Texture.Text(win.frs24, os.date("%Y/%m/%d, %A", os.time()), SWE.Color.Yellow)
+win.time = SWE.Texture.Text(win.frs54, os.date("%H:%M:%S",os.time()), SWE.Color.Yellow)
 
 function win.SystemTickEvent(tick)
     if win.last == 0 or tick >= win.last + 1000 then
-	win.time = SWE.Texture.Text(win.frs54, os.date("%H:%M:%S",os.time()), SWE.Color.Yellow)
-	win.date = SWE.Texture.Text(win.frs24, os.date("%Y/%m/%d, %A",os.time()), SWE.Color.Yellow)
+	local time = os.date("%H:%M:%S",os.time())
+	win.time = SWE.Texture.Text(win.frs54, time, SWE.Color.Yellow)
+	if time == "00:00:00" then
+	    win.date = SWE.Texture.Text(win.frs24, os.date("%Y/%m/%d, %A",os.time()), SWE.Color.Yellow)
+	end
 	win.last = tick
 	win.half = 1
 	SWE.DisplayDirty()
