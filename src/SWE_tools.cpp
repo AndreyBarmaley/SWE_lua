@@ -44,6 +44,37 @@ std::string SWE_Tools::convertEncoding(LuaState & ll, const std::string & str)
     return res;
 }
 
+std::string SWE_Tools::toRunningPath(LuaState & ll, const std::string & file)
+{
+#ifdef ANDROID
+    // check assets
+    StreamFile sf(file, "rb");
+    if(sf.isValid())
+    {
+	sf.close();
+	return file;
+    }
+#endif
+    if(! ll.pushTable("SWE").isTopTable())
+    {
+        ERROR("table not found" << ": " << "swe");
+	ll.stackPop();
+	return file;
+    }
+
+    if(! ll.getFieldTableIndex("runfile", -1, false).isTopString())
+    {
+	ll.stackPop(2);
+	return file;
+    }
+
+    std::string runfile = ll.getTopString();
+    std::string res = Systems::concatePath(Systems::dirname(runfile), file);
+
+    ll.stackPop(2);
+    return res;
+}
+
 std::string SWE_Tools::toCurrentPath(LuaState & ll, const std::string & file)
 {
 #ifdef ANDROID

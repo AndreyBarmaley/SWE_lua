@@ -28,9 +28,14 @@ extern "C" {
     int luaopen_SWE(lua_State* L);
 }
 
-bool findStorage(const std::string & str)
+bool findUserStorageFolder(const std::string & str)
 {
-    return 0 == str.compare(0, 8, "/storage");
+    if(0 == str.compare(0, 8, "/storage"))
+    {
+	if(! Systems::isDirectory(str)) Systems::makeDirectory(str);
+	if(Systems::isDirectory(str)) return true;
+    }
+    return false;
 }
 
 int main(int argc, char** argv)
@@ -38,9 +43,7 @@ int main(int argc, char** argv)
     Systems::setLocale(LC_ALL, "");
     Systems::setLocale(LC_NUMERIC, "C"); // decimal point
 
-#ifndef ANDROID
     try
-#endif
     {
 	const char* app = "SWE_lua";
 	std::string cwd = Systems::dirname(argv[0]);
@@ -70,33 +73,26 @@ int main(int argc, char** argv)
 	Systems::assetsInit();
 
 	// sync assets
-	for(auto it = dirs.rbegin(); it != dirs.rend(); ++it)
+	auto it = std::find_if(dirs.rbegin(), dirs.rend(), findUserStorageFolder);
+	if(it != dirs.rend())
 	{
-	    if(0 == ((*it).compare(0, 8, "/storage")))
+	    const StringList & assets = Systems::assetsList();
+	    for(auto as = assets.begin(); as != assets.end(); ++as)
 	    {
-		const std::string & swedir = *it;
-		if(! Systems::isDirectory(swedir)) Systems::makeDirectory(swedir);
-		if(! Systems::isDirectory(swedir)) continue;
+		if((*as).size() < 5 || (*as).substr((*as).size() - 4, 4) != ".lua") continue;
 
-		const StringList & assets = Systems::assetsList();
-		for(auto as = assets.begin(); as != assets.end(); ++as)
+		std::string body;
+		if(Systems::readFile2String(*as, body))
 		{
-		    if((*as).substr((*as).size() - 4, 4) != ".lua") continue;
+		    std::string dstfile = Systems::concatePath(*it, *as);
+		    std::string dstdir = Systems::dirname(dstfile);
 
-		    std::string body;
-		    if(Systems::readFile2String(*as, body))
-		    {
-			std::string dstfile = Systems::concatePath(*it, *as);
-			std::string dstdir = Systems::dirname(dstfile);
+		    if(! Systems::isDirectory(dstdir)) Systems::makeDirectory(dstdir);
+		    if(*as == start) runfile = dstfile;
 
-			if(! Systems::isDirectory(dstdir)) Systems::makeDirectory(dstdir);
-			if(*as == start) runfile = dstfile;
-
-			Systems::saveString2File(body, dstfile);
-			DEBUG("sync: " << *as << " => " << dstfile);
-		    }
+		    Systems::saveString2File(body, dstfile);
+		    DEBUG("sync: " << *as << " => " << dstfile);
 		}
-		break;
 	    }
 	}
 #else
@@ -130,27 +126,28 @@ int main(int argc, char** argv)
 	    return EXIT_FAILURE;
 	}
 
-#if defined ANDROID
+#ifdef ANDROID
 	cwd = Systems::dirname(runfile);
 	if(cwd.size()) chdir(cwd.c_str());
 #endif
 
         LuaState ll = LuaState::newState();
 
-	if(cwd.size())
-	    ll.registerDirectory(cwd);
+	// register directories
+	ll.registerDirectory(cwd);
+	ll.registerDirectory(Systems::dirname(runfile));
 
         luaopen_SWE(ll.L());
 
-	if(cwd.size())
+	// set SWE.getcwd
+	if(ll.pushTable("SWE").isTopTable())
 	{
-	    // set SWE.getcwd
-	    if(ll.pushTable("SWE").isTopTable())
-	    {
-		DEBUG("SWE.getcwd: " << cwd);
-		ll.pushString(cwd);
-		ll.setFieldTableIndex("getcwd", -2);
-	    }
+	    DEBUG("set SWE.getcwd: " << cwd);
+	    ll.pushString(cwd).setFieldTableIndex("getcwd", -2);
+
+	    DEBUG("set SWE.runfile: " << runfile);
+	    ll.pushString(runfile).setFieldTableIndex("runfile", -2);
+
     	    ll.stackPop();
 	}
 
@@ -161,11 +158,9 @@ int main(int argc, char** argv)
 
         LuaState::closeState(ll);
     }
-#ifndef ANDROID
     catch(Engine::exception &)
     {
     }
-#endif
 
     return EXIT_SUCCESS;
 }

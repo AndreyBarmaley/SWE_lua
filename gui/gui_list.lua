@@ -52,15 +52,15 @@ local function ListSetItemSelected(list, val)
 	    list.selIndex = val
 	end
 	if 0 < list.selIndex then
-	    SWE.PushEvent(SWE.Action.ListItemSelected, list.items[list.selIndex], list)
+	    SWE.PushEvent(SWE.Action.ItemSelected, list.items[list.selIndex], list)
 	else
-	    SWE.PushEvent(SWE.Action.ListItemSelected, nil, list)
+	    SWE.PushEvent(SWE.Action.ItemSelected, nil, list)
 	end
     elseif type(val) == "table" then
 	for k,v in pairs(list.items) do
 	    if v.label == val.label then
 		-- send: item only selected
-	        SWE.PushEvent(SWE.Action.ListItemSelected, v, list)
+	        SWE.PushEvent(SWE.Action.ItemSelected, v, list)
 		list.selIndex = k
 		break
 	    end
@@ -81,7 +81,7 @@ local function ListSetItemSelected(list, val)
 	for k,v in pairs(list.items) do
 	    if v.label == val then
 		-- send: item only selected
-	        SWE.PushEvent(SWE.Action.ListItemSelected, v, list)
+	        SWE.PushEvent(SWE.Action.ItemSelected, v, list)
 		list.selIndex = k
 		break
 	    end
@@ -125,13 +125,13 @@ function ListCreateItem(list, x, y, w, h, renderItemFunc)
 
     item.SystemUserEvent = function(a,b)
 	-- list events
-	if a == SWE.Action.ListClearSelected then
+	if a == SWE.Action.ResetSelected then
 	    item.iscur = false
 	    return true
-	elseif a == SWE.Action.ListItemSelected then
+	elseif a == SWE.Action.ItemSelected then
 	    item.iscur = true
 	    -- send: list dirty
-	    SWE.PushEvent(SWE.Action.ListDirty, nil, list)
+	    SWE.PushEvent(SWE.Action.ObjectDirty, nil, list)
 	    return true
 	end
 	return false
@@ -335,16 +335,16 @@ function ListCreate(x, y, w, h, parent)
     -- SystemUserEvent
     list.SystemUserEvent = function(a,b)
 	-- list items
-	if a == SWE.Action.ListItemSelected then
+	if a == SWE.Action.ItemSelected then
 	    for i = 1, #list.items do
-		SWE.PushEvent(SWE.Action.ListClearSelected, nil, list.items[i])
+		SWE.PushEvent(SWE.Action.ResetSelected, nil, list.items[i])
 	    end
 	    if b ~= nil then
-		SWE.PushEvent(SWE.Action.ListItemSelected, nil, b)
+		SWE.PushEvent(SWE.Action.ItemSelected, nil, b)
 	    end
 	    return true
 	-- list dirty
-	elseif a == SWE.Action.ListDirty then
+	elseif a == SWE.Action.ObjectDirty then
     	    SWE.DisplayDirty()
 	    return true
 	elseif a == SWE.Action.FontChanged then

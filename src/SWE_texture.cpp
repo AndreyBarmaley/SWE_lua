@@ -378,8 +378,8 @@ int SWE_texture_to_json(lua_State* L)
         std::string _class = ll.getFieldTableIndex("class", 1).getTopString();
         ll.stackPop(4);
 
-        std::string str = StringFormat("{\"type\":\"swe.texture\",\"width\":%1,\"height\":%2,\"alpha\":%3,\"class\":%4}").
-            arg(width).arg(height).arg(alpha).arg(_class);
+        std::string str = StringFormat("{\"type\":\"%1\",\"width\":%2,\"height\":%3,\"alpha\":%4,\"class\":%5}").
+            arg("swe.texture").arg(width).arg(height).arg(alpha).arg(_class);
 
         ll.pushString(str);
         return 1;
@@ -442,7 +442,7 @@ int SWE_texture_create_rect(lua_State* L)
     ll.pushString("width").pushInteger((*ptr)->width()).setTableIndex(-3);
     ll.pushString("height").pushInteger((*ptr)->height()).setTableIndex(-3);
     ll.pushString("alpha").pushInteger((*ptr)->alphaMod()).setTableIndex(-3);
-    std::string _class = StringFormat("{\"type\":\"rect\",\"color\":%1,\"fill\":%2,\"thickness\":%3}").arg(colorRect.getARGB()).arg(colorFill.getARGB()).arg(thickness);
+    std::string _class = StringFormat("{\"type\":\"%1\",\"color\":%2,\"fill\":%3,\"thickness\":%4}").arg("rect").arg(colorRect.getARGB()).arg(colorFill.getARGB()).arg(thickness);
     ll.pushString("class").pushString(_class).setTableIndex(-3);
 
     // set functions
@@ -493,7 +493,7 @@ int SWE_texture_create_text(lua_State* L)
     ll.pushString("height").pushInteger((*ptr)->height()).setTableIndex(-3);
     ll.pushString("alpha").pushInteger((*ptr)->alphaMod()).setTableIndex(-3);
 
-    std::string _class = StringFormat("{\"type\":\"text\",\"color\":%1,\"back\":%2,\"text\":\"%3\",\"frs\":%4}").arg(colorText.getARGB()).arg(colorBack.getARGB()).arg(text).arg(frsJson);
+    std::string _class = StringFormat("{\"type\":\"%1\",\"color\":%2,\"back\":%3,\"text\":\"%4\",\"frs\":%5}").arg("text").arg(colorText.getARGB()).arg(colorBack.getARGB()).arg(text).arg(frsJson);
     ll.pushString("class").pushString(_class).setTableIndex(-3);
 
     // set functions
@@ -536,6 +536,12 @@ int SWE_texture_create_image(lua_State* L)
 	if(Systems::isFile(filename2)) std::swap(filename, filename2);
     }
 
+    if(! Systems::isFile(filename))
+    {
+	std::string filename2 = SWE_Tools::toRunningPath(ll, filename);
+	if(Systems::isFile(filename2)) std::swap(filename, filename2);
+    }
+
     // SWE_Texture: string (file image)
     if(Systems::isFile(filename))
     {
@@ -572,8 +578,8 @@ int SWE_texture_create_image(lua_State* L)
 	else
 	    *ptr = new SWE_Texture();
     
-	std::string _class = croprt.isEmpty() ? StringFormat("{\"type\":\"image\",\"file\":\"%1\"}").arg(filename) :
-			StringFormat("{\"type\":\"image\",\"file\":\"%1\",\"crop\":[%2,%3,%4,%5]}").arg(filename).arg(croprt.x).arg(croprt.y).arg(croprt.w).arg(croprt.h);
+	std::string _class = croprt.isEmpty() ? StringFormat("{\"type\":\"%1\",\"file\":\"%2\"}").arg("image").arg(filename) :
+			StringFormat("{\"type\":\"%1\",\"file\":\"%2\",\"crop\":[%3,%4,%5,%6]}").arg("image").arg(filename).arg(croprt.x).arg(croprt.y).arg(croprt.w).arg(croprt.h);
 	ll.pushString("class").pushString(_class).setTableIndex(-3);
     }
     else

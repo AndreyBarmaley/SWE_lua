@@ -241,6 +241,12 @@ int SWE_binarybuf_readfile1(lua_State* L)
 	if(Systems::isFile(filename2)) std::swap(filename, filename2);
     }
 
+    if(! Systems::isFile(filename))
+    {
+	std::string filename2 = SWE_Tools::toRunningPath(ll, filename);
+	if(Systems::isFile(filename2)) std::swap(filename, filename2);
+    }
+
     if(Systems::isFile(filename))
     {
 	DEBUG(filename);
@@ -280,6 +286,12 @@ int SWE_binarybuf_readfile2(lua_State* L)
     if(! Systems::isFile(filename))
     {
 	std::string filename2 = SWE_Tools::toCurrentPath(ll, filename);
+	if(Systems::isFile(filename2)) std::swap(filename, filename2);
+    }
+
+    if(! Systems::isFile(filename))
+    {
+	std::string filename2 = SWE_Tools::toRunningPath(ll, filename);
 	if(Systems::isFile(filename2)) std::swap(filename, filename2);
     }
 
@@ -511,7 +523,7 @@ int SWE_binarybuf_insert(lua_State* L)
 	}
 	else
         // params: int count, int byte
-        if(ll.isIntegerIndex(3))
+        if(ll.isNumberIndex(3))
         {
             int count = ll.toIntegerIndex(3);
             int ch = ll.toIntegerIndex(4);
@@ -637,6 +649,23 @@ int SWE_binarybuf_to_json(lua_State* L)
     {
 	std::string json = StringFormat("[%1]").arg(buf->toHexString(",", true));
 	ll.pushString(json);
+	return 1;
+    }
+
+    ERROR("userdata empty");
+    return 0;
+}
+
+int SWE_binarybuf_tostring(lua_State* L)
+{
+    // params: table binarybuf
+    LuaState ll(L);
+    SWE_BinaryBuf* buf = SWE_BinaryBuf::get(ll, 1, __FUNCTION__);
+
+    if(buf)
+    {
+	std::string str = StringFormat("%1[%2]").arg("swe.binarybuf").arg(buf->toHexString(",", true));
+	ll.pushString(str);
 	return 1;
     }
 
@@ -779,15 +808,16 @@ int SWE_binarybuf_create(lua_State* L)
 
     ll.pushTable();
 
-    //ll.pushTable(0, 1);
-    //ll.pushFunction(SWE_binarybuf_tostring).setFieldTableIndex("__tostring", -2);
-    //ll.setMetaTableIndex(-1);
+    // set: tostring
+    ll.pushTable(0, 1);
+    ll.pushFunction(SWE_binarybuf_tostring).setFieldTableIndex("__tostring", -2);
+    ll.setMetaTableIndex(-2);
 
     // userdata
     ll.pushString("userdata");
     auto ptr = static_cast<SWE_BinaryBuf**>(ll.pushUserData(sizeof(SWE_BinaryBuf*)));
 
-    // set metatable: __gc
+    // set metatable: __gc to userdata
     ll.pushTable(0, 1);
     ll.pushFunction(SWE_binarybuf_destroy).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2).setTableIndex(-3);

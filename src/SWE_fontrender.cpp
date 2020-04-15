@@ -64,7 +64,7 @@ int SWE_fontrender_to_json(lua_State* L)
 	{
 	    ll.stackPop(1);
 
-    	    std::string str = StringFormat("{\"type\":\"swe.fontrender\",\"font\":\"%1\"}").arg(font);
+    	    std::string str = StringFormat("{\"type\":\"%1\",\"font\":\"%2\"}").arg("swe.fontrender").arg(font);
     	    ll.pushString(str);
 	}
 	else
@@ -76,9 +76,43 @@ int SWE_fontrender_to_json(lua_State* L)
 
 	    ll.stackPop(5);
 
-    	    std::string str = StringFormat("{\"type\":\"swe.fontrender\",\"font\":\"%1\",\"size\":%2,\"blended\":%3,\"style\":%4,\"hinting\":%5}").
-		arg(font).arg(size).arg(blended).arg(style).arg(hinting);
+    	    std::string str = StringFormat("{\"type\":\"%1\",\"font\":\"%2\",\"size\":%3,\"blended\":%4,\"style\":%5,\"hinting\":%6}").
+		arg("swe.fontrender").arg(font).arg(size).arg(blended).arg(style).arg(hinting);
     	    ll.pushString(str);
+	}
+	
+        return 1;
+    }
+
+    ERROR("userdata empty");
+    return 0;
+}
+
+int SWE_fontrender_tostring(lua_State* L)
+{
+    // params: swe_fontrender
+
+    LuaState ll(L);
+    SWE_FontRender* frs = SWE_FontRender::get(ll, 1, __FUNCTION__);
+
+    if(frs)
+    {
+	std::string font = ll.getFieldTableIndex("font", 1).getTopString();
+	if(font == "system")
+	{
+	    // remove field
+	    ll.stackPop(1);
+    	    ll.pushString(StringFormat("%1[%2]").arg("swe.fontrender").arg(font));
+	}
+	else
+	{
+	    int size = ll.getFieldTableIndex("size", 1).getTopInteger();
+	    std::string blended = ll.getFieldTableIndex("blended", 1).getTopString();
+	    int style = ll.getFieldTableIndex("style", 1).getTopInteger();
+	    int hinting = ll.getFieldTableIndex("hinting", 1).getTopInteger();
+
+	    ll.stackPop(5);
+    	    ll.pushString(StringFormat("%1[%2,%3,%4,%5,%6]").arg("swe.fontrender").arg(font).arg(size).arg(blended).arg(style).arg(hinting));
 	}
 	
         return 1;
@@ -154,19 +188,31 @@ int SWE_fontrender_create_ttf(lua_State* L)
 
     ll.pushTable();
 
-    // userdata
+    // set: tostring
+    ll.pushTable(0, 1);
+    ll.pushFunction(SWE_fontrender_tostring).setFieldTableIndex("__tostring", -2);
+    ll.setMetaTableIndex(-2);
+
+    // set userdata
     ll.pushString("userdata");
     auto ptr = static_cast<SWE_FontRender**>(ll.pushUserData(sizeof(SWE_FontRender*)));
 
-    // set metatable: __gc
+    // set metatable: __gc to userdata
     ll.pushTable(0, 1);
     ll.pushFunction(SWE_fontrender_destroy).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2).setTableIndex(-3);
 
     std::string font = ll.toStringIndex(2);
+
     if(! Systems::isFile(font))
     {
 	std::string font2 = SWE_Tools::toCurrentPath(ll, font);
+	if(Systems::isFile(font2)) std::swap(font, font2);
+    }
+
+    if(! Systems::isFile(font))
+    {
+	std::string font2 = SWE_Tools::toRunningPath(ll, font);
 	if(Systems::isFile(font2)) std::swap(font, font2);
     }
 
@@ -244,19 +290,31 @@ int SWE_fontrender_create_psf(lua_State* L)
 
     ll.pushTable();
 
-    // userdata
+    // set: tostring
+    ll.pushTable(0, 1);
+    ll.pushFunction(SWE_fontrender_tostring).setFieldTableIndex("__tostring", -2);
+    ll.setMetaTableIndex(-2);
+
+    // set userdata
     ll.pushString("userdata");
     auto ptr = static_cast<SWE_FontRender**>(ll.pushUserData(sizeof(SWE_FontRender*)));
 
-    // set metatable: __gc
+    // set metatable: __gc to userdata
     ll.pushTable(0, 1);
     ll.pushFunction(SWE_fontrender_destroy).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2).setTableIndex(-3);
 
     std::string font = ll.toStringIndex(2);
+
     if(! Systems::isFile(font))
     {
 	std::string font2 = SWE_Tools::toCurrentPath(ll, font);
+	if(Systems::isFile(font2)) std::swap(font, font2);
+    }
+
+    if(! Systems::isFile(font))
+    {
+	std::string font2 = SWE_Tools::toRunningPath(ll, font);
 	if(Systems::isFile(font2)) std::swap(font, font2);
     }
 
@@ -314,11 +372,16 @@ int SWE_fontrender_create_sys(lua_State* L)
 
     ll.pushTable();
 
-    // userdata
+    // set: tostring
+    ll.pushTable(0, 1);
+    ll.pushFunction(SWE_fontrender_tostring).setFieldTableIndex("__tostring", -2);
+    ll.setMetaTableIndex(-2);
+
+    // set userdata
     ll.pushString("userdata");
     auto ptr = static_cast<SWE_FontRender**>(ll.pushUserData(sizeof(SWE_FontRender*)));
 
-    // set metatable: __gc
+    // set metatable: __gc to userdata
     ll.pushTable(0, 1);
     ll.pushFunction(SWE_fontrender_destroy).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2).setTableIndex(-3);

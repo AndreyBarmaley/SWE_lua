@@ -23,6 +23,8 @@
 #include <sstream>
 #include <algorithm>
 
+#include "display_scene.h"
+
 #include "SWE_rect.h"
 #include "SWE_tools.h"
 #include "SWE_texture.h"
@@ -32,39 +34,13 @@
 int SWE_polygon_create(lua_State*);
 int SWE_polygon_destroy(lua_State*);
 
-SWE_Window::SWE_Window(lua_State* L, Window* parent)
-    : Window(parent), ll(L)
-{
-    resetState(FlagModality);
-}
-
-SWE_Window::SWE_Window(lua_State* L, const Point & pos, const Size & winsz, Window* parent)
-    : Window(pos, winsz, parent), ll(L)
-{
-    resetState(FlagModality);
-    setVisible(true);
-}
-
-void SWE_Window::toolTipInit(const std::string & str)
-{
-    toolTipInit(str, FontRenderSystem(), Color::Black, Color::Wheat, Color::MidnightBlue);
-}
-
-void SWE_Window::toolTipInit(const std::string & str, const FontRender & frs, const Color & fncolor, const Color & bgcolor, const Color & rtcolor)
-{
-    Texture text = Display::renderText(frs, str, fncolor);
-    tooltip = Display::renderRect(rtcolor, bgcolor, text.size() + Size(6, 6));
-
-    Display::renderTexture(text, text.rect(), tooltip, Rect(Point(3, 3), text.size()));
-}
-
-void SWE_Window::renderWindow(void)
+void SWE_window_render(LuaState & ll, const Window & win)
 {
     bool extrender = false;
 
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("RenderWindow", -1).isTopFunction())
+	if(ll.getFieldTableIndex("RenderWindow", -1, false).isTopFunction())
 	{
 	    extrender = ll.callFunction(0, 1).getTopBoolean();
 	    ll.stackPop();
@@ -73,31 +49,32 @@ void SWE_Window::renderWindow(void)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 
     if(! extrender && Engine::debugMode())
     {
-	renderClear(Color::LightGreen);
-	for(int yy = 0; yy < height(); yy += 16)
+	win.renderClear(Color::LightGreen);
+	for(int yy = 0; yy < win.height(); yy += 16)
 	{
-	    for(int xx = 0; xx < width(); xx += 32)
+	    for(int xx = 0; xx < win.width(); xx += 32)
 	    {
-		renderColor(Color::Gray, Rect(0 == (yy % 32) ? xx + 16 : xx, yy, 16, 16));
+		win.renderColor(Color::Gray, Rect(0 == (yy % 32) ? xx + 16 : xx, yy, 16, 16));
 	    }
 	}
-	renderRect(Color::RoyalBlue, rect());
+	win.renderRect(Color::RoyalBlue, win.rect());
     }
 }
 
-bool SWE_Window::mousePressEvent(const ButtonEvent & be)
+bool SWE_mouse_press_event(LuaState & ll, const Window & win, const ButtonEvent & be)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("MousePressEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("MousePressEvent", -1, false).isTopFunction())
 	{
 	    ll.pushInteger(be.position().x).pushInteger(be.position().y).pushInteger(be.button());
-	    int res = ll.callFunction(3, 1).getTopBoolean();
+	    bool res = ll.callFunction(3, 1).getTopBoolean();
 	    // remove boolean, table
 	    ll.stackPop(2);
 	    return res;
@@ -106,20 +83,21 @@ bool SWE_Window::mousePressEvent(const ButtonEvent & be)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 
     return false;
 }
 
-bool SWE_Window::mouseReleaseEvent(const ButtonEvent & be)
+bool SWE_mouse_release_event(LuaState & ll, const Window & win, const ButtonEvent & be)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("MouseReleaseEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("MouseReleaseEvent", -1, false).isTopFunction())
 	{
 	    ll.pushInteger(be.position().x).pushInteger(be.position().y).pushInteger(be.button());
-	    int res = ll.callFunction(3, 1).getTopBoolean();
+	    bool res = ll.callFunction(3, 1).getTopBoolean();
 	    // remove boolean, table
 	    ll.stackPop(2);
 	    return res;
@@ -128,20 +106,21 @@ bool SWE_Window::mouseReleaseEvent(const ButtonEvent & be)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 
     return false;
 }
 
-bool SWE_Window::mouseMotionEvent(const Point & pos, u32 buttons)
+bool SWE_mouse_motion_event(LuaState & ll, const Window & win, const Point & pos, u32 buttons)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("MouseMotionEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("MouseMotionEvent", -1, false).isTopFunction())
 	{
 	    ll.pushInteger(pos.x).pushInteger(pos.y).pushInteger(buttons);
-	    int res = ll.callFunction(3, 1).getTopBoolean();
+	    bool res = ll.callFunction(3, 1).getTopBoolean();
 	    // remove boolean, table
 	    ll.stackPop(2);
 	    return res;
@@ -150,17 +129,18 @@ bool SWE_Window::mouseMotionEvent(const Point & pos, u32 buttons)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 
     return false;
 }
 
-void SWE_Window::mouseTrackingEvent(const Point & pos, u32 buttons)
+void SWE_mouse_tracking_event(LuaState & ll, const Window & win, const Point & pos, u32 buttons)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("MouseTrackingEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("MouseTrackingEvent", -1, false).isTopFunction())
 	{
 	    ll.pushInteger(pos.x).pushInteger(pos.y).pushInteger(buttons);
 	    ll.callFunction(3, 0);
@@ -169,38 +149,40 @@ void SWE_Window::mouseTrackingEvent(const Point & pos, u32 buttons)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 }
 
-bool SWE_Window::mouseClickEvent(const ButtonsEvent & be)
+bool SWE_mouse_click_event(LuaState & ll, const Window & win, const ButtonsEvent & be)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("MouseClickEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("MouseClickEvent", -1, false).isTopFunction())
 	{
 	    ll.pushInteger(be.press().position().x).pushInteger(be.press().position().y).pushInteger(be.press().button());
 	    ll.pushInteger(be.release().position().x).pushInteger(be.release().position().y).pushInteger(be.release().button());
-	    int res = ll.callFunction(6, 1).getTopBoolean();
+	    bool res = ll.callFunction(6, 1).getTopBoolean();
 	    // remove boolean, table
-	    ll.stackPop();
+	    ll.stackPop(2);
 	    return res;
 	}
 	else
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 
     return false;
 }
 
-void SWE_Window::mouseFocusEvent(void)
+void SWE_mouse_focus_event(LuaState & ll, const Window & win)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("MouseFocusEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("MouseFocusEvent", -1, false).isTopFunction())
 	{
 	    ll.pushBoolean(true).callFunction(1, 0);
 	}
@@ -208,15 +190,16 @@ void SWE_Window::mouseFocusEvent(void)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 }
 
-void SWE_Window::mouseLeaveEvent(void)
+void SWE_mouse_leave_event(LuaState & ll, const Window & win)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("MouseFocusEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("MouseFocusEvent", -1, false).isTopFunction())
 	{
 	    ll.pushBoolean(false).callFunction(1, 0);
 	}
@@ -224,15 +207,16 @@ void SWE_Window::mouseLeaveEvent(void)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 }
 
-void SWE_Window::windowCloseEvent(void)
+void SWE_window_create_event(LuaState & ll, const Window & win)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("WindowCloseEvent", -1, false).isTopFunction())
+	if(ll.getFieldTableIndex("WindowCreateEvent", -1, false).isTopFunction())
 	{
 	    ll.callFunction(0, 0);
 	}
@@ -240,15 +224,16 @@ void SWE_Window::windowCloseEvent(void)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 }
 
-void SWE_Window::windowCreateEvent(void)
+void SWE_texture_invalid_event(LuaState & ll, const Window & win)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("WindowCreateEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("TextureInvalidEvent", -1, false).isTopFunction())
 	{
 	    ll.callFunction(0, 0);
 	}
@@ -256,31 +241,16 @@ void SWE_Window::windowCreateEvent(void)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 }
 
-void SWE_Window::textureInvalidEvent(void)
+void SWE_display_resize_event(LuaState & ll, const Window & win, const Size & winsz, bool fromsdl)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("TextureInvalidEvent", -1).isTopFunction())
-	{
-	    ll.callFunction(0, 0);
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-}
-
-void SWE_Window::displayResizeEvent(const Size & winsz, bool fromsdl)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("DisplayResizeEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("DisplayResizeEvent", -1, false).isTopFunction())
 	{
 	    ll.pushInteger(winsz.w).pushInteger(winsz.h).pushBoolean(fromsdl).callFunction(3, 0);
 	}
@@ -288,18 +258,19 @@ void SWE_Window::displayResizeEvent(const Size & winsz, bool fromsdl)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 }
 
-bool SWE_Window::keyPressEvent(const KeySym & key)
+bool SWE_key_press_event(LuaState & ll, const Window & win, const KeySym & key)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("KeyPressEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("KeyPressEvent", -1, false).isTopFunction())
 	{
 	    ll.pushInteger(key.keycode()).pushInteger(key.keymod()).pushInteger(key.scancode());
-	    int res = ll.callFunction(3, 1).getTopBoolean();
+	    bool res = ll.callFunction(3, 1).getTopBoolean();
 	    // remove boolean, table
 	    ll.stackPop(2);
 	    return res;
@@ -308,20 +279,21 @@ bool SWE_Window::keyPressEvent(const KeySym & key)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 
     return false;
 }
 
-bool SWE_Window::keyReleaseEvent(const KeySym & key)
+bool SWE_key_release_event(LuaState & ll, const Window & win, const KeySym & key)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("KeyReleaseEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("KeyReleaseEvent", -1, false).isTopFunction())
 	{
 	    ll.pushInteger(key.keycode()).pushInteger(key.keymod()).pushInteger(key.scancode());
-	    int res = ll.callFunction(3, 1).getTopBoolean();
+	    bool res = ll.callFunction(3, 1).getTopBoolean();
 	    // remove boolean, table
 	    ll.stackPop(2);
 	    return res;
@@ -330,20 +302,21 @@ bool SWE_Window::keyReleaseEvent(const KeySym & key)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 
     return false;
 }
 
-bool SWE_Window::scrollUpEvent(const Point & pos)
+bool SWE_scroll_up_event(LuaState & ll, const Window & win, const Point & pos)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("ScrollUpEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("ScrollUpEvent", -1, false).isTopFunction())
 	{
 	    ll.pushInteger(pos.x).pushInteger(pos.y);
-	    int res = ll.callFunction(2, 1).getTopBoolean();
+	    bool res = ll.callFunction(2, 1).getTopBoolean();
 	    // remove boolean, table
 	    ll.stackPop(2);
 	    return res;
@@ -352,20 +325,21 @@ bool SWE_Window::scrollUpEvent(const Point & pos)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 
     return false;
 }
 
-bool SWE_Window::scrollDownEvent(const Point & pos)
+bool SWE_scroll_down_event(LuaState & ll, const Window & win, const Point & pos)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("ScrollDownEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("ScrollDownEvent", -1, false).isTopFunction())
 	{
 	    ll.pushInteger(pos.x).pushInteger(pos.y);
-	    int res = ll.callFunction(2, 1).getTopBoolean();
+	    bool res = ll.callFunction(2, 1).getTopBoolean();
 	    // remove boolean, table
 	    ll.stackPop(2);
 	    return res;
@@ -374,37 +348,18 @@ bool SWE_Window::scrollDownEvent(const Point & pos)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 
     return false;
 }
 
-/*
-void SWE_Window::signalReceive(int code, const SignalMember* data)
+bool SWE_system_user_event(LuaState & ll, const Window & win, int code, void* data)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("SystemSignalEvent", -1).isTopFunction())
-	{
-	    ll.pushInteger(code).pushLightUserData(const_cast<SignalMember*>(data));
-	    ll.callFunction(2, 0);
-	    ll.stackPop();
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-}
-*/
-
-bool SWE_Window::userEvent(int code, void* data)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("SystemUserEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("SystemUserEvent", -1, false).isTopFunction())
 	{
 	    // unref data
 	    if(code == Signal::LuaUnrefAction)
@@ -432,7 +387,7 @@ bool SWE_Window::userEvent(int code, void* data)
 		ll.pushNil();
 	    }
 
-	    int res = ll.callFunction(2, 1).getTopBoolean();
+	    bool res = ll.callFunction(2, 1).getTopBoolean();
 
 	    // remove boolean, table
 	    ll.stackPop(2);
@@ -442,17 +397,18 @@ bool SWE_Window::userEvent(int code, void* data)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 
     return false;
 }
 
-void SWE_Window::tickEvent(u32 ms)
+void SWE_system_tick_event(LuaState & ll, const Window & win, u32 ms)
 {
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, win))
     {
-	if(ll.getFieldTableIndex("SystemTickEvent", -1).isTopFunction())
+	if(ll.getFieldTableIndex("SystemTickEvent", -1, false).isTopFunction())
 	{
 	    ll.pushInteger(ms);
 	    ll.callFunction(1, 0);
@@ -461,19 +417,45 @@ void SWE_Window::tickEvent(u32 ms)
 	{
 	    ll.stackPop();
 	}
+
+	ll.stackPop();
     }
-    ll.stackPop();
 }
 
-SWE_Window* SWE_Window::get(LuaState & ll, int tableIndex, const char* funcName)
+SWE_Window::SWE_Window(lua_State* L, Window* parent)
+    : Window(parent), ll(L)
+{
+    resetState(FlagModality);
+}
+
+SWE_Window::SWE_Window(lua_State* L, const Point & pos, const Size & winsz, Window* parent)
+    : Window(pos, winsz, parent), ll(L)
+{
+    resetState(FlagModality);
+    setVisible(true);
+}
+
+void SWE_Window::toolTipInit(const std::string & str)
+{
+    toolTipInit(str, FontRenderSystem(), Color::Black, Color::Wheat, Color::MidnightBlue);
+}
+
+void SWE_Window::toolTipInit(const std::string & str, const FontRender & frs, const Color & fncolor, const Color & bgcolor, const Color & rtcolor)
+{
+    Texture text = Display::renderText(frs, str, fncolor);
+    tooltip = Display::renderRect(rtcolor, bgcolor, text.size() + Size(6, 6));
+
+    Display::renderTexture(text, text.rect(), tooltip, Rect(Point(3, 3), text.size()));
+}
+
+Window* SWE_Window::get(LuaState & ll, int tableIndex, const char* funcName)
 {
     if(ll.isTableIndex(tableIndex))
     {
 	const std::string type = ll.popFieldTableIndex("__type", tableIndex);
 
 	if(0 != type.compare("swe.window") &&
-	    0 != type.compare("swe.terminal") &&
-	    0 != type.compare("swe.polygon"))
+	    0 != type.compare("swe.terminal") && 0 != type.compare("swe.polygon"))
 	{
     	    ERROR(funcName << ": " << "table not found, index: " << tableIndex);
     	    return NULL;
@@ -492,47 +474,32 @@ SWE_Window* SWE_Window::get(LuaState & ll, int tableIndex, const char* funcName)
 	return NULL;
     }
 
-    auto ptr = static_cast<SWE_Window**>(ll.getTopUserData());
+    auto ptr = static_cast<Window**>(ll.getTopUserData());
     ll.stackPop();
 
     return ptr ? *ptr : NULL;
 }
 
-SWE_Polygon* SWE_Polygon::get(LuaState & ll, int tableIndex, const char* funcName)
+Window* SWE_Polygon::get(LuaState & ll, int tableIndex, const char* funcName)
 {
-    if(! ll.isTableIndex(tableIndex) ||
-	0 != ll.popFieldTableIndex("__type", tableIndex).compare("swe.polygon"))
-    {
-	ERROR(funcName << ": " << "table not found, index: " << tableIndex);
-    	return NULL;
-    }
-
-    if(! ll.getFieldTableIndex("userdata", tableIndex).isTopUserData())
-    {
-	ERROR(funcName << ": " << "not userdata, index: " << tableIndex << ", " << ll.getTopTypeName());
-	ll.stackPop();
-	return NULL;
-    }
-
-    auto ptr = static_cast<SWE_Polygon**>(ll.getTopUserData());
-    ll.stackPop();
-
-    return ptr ? *ptr : NULL;
+    return SWE_Window::get(ll, tableIndex, funcName);
 }
 
 /////////////////////////////////////// 
-int SWE_window_empty(lua_State* L)
+/*
+int NULL(lua_State* L)
 {
     lua_pushboolean(L, 0);
     return 1;
 }
+*/
 
 int SWE_window_set_position(lua_State* L)
 {
     // params: swe_window, posx, posy
 
     LuaState ll(L);
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
 
     if(win)
     {
@@ -558,7 +525,7 @@ int SWE_window_set_size(lua_State* L)
     // params: swe_window, width, height
 
     LuaState ll(L);
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
 
     if(win)
     {
@@ -584,7 +551,7 @@ int SWE_window_set_result(lua_State* L)
     // params: swe_window, int
 
     LuaState ll(L);
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
 
     if(win)
     {
@@ -607,7 +574,7 @@ int SWE_window_set_visible(lua_State* L)
     // params: swe_window, bool
 
     LuaState ll(L);
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
 
     if(win)
     {
@@ -628,7 +595,7 @@ int SWE_window_set_modality(lua_State* L)
     // params: swe_window, bool
 
     LuaState ll(L);
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
 
     if(win)
     {
@@ -649,7 +616,7 @@ int SWE_window_set_keyhandle(lua_State* L)
     // params: swe_window, bool
 
     LuaState ll(L);
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
 
     if(win)
     {
@@ -670,7 +637,7 @@ int SWE_window_set_mousetrack(lua_State* L)
     // params: swe_window, bool
 
     LuaState ll(L);
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
 
     if(win)
     {
@@ -690,7 +657,7 @@ int SWE_window_render_clear(lua_State* L)
     // params: swe_window, color
 
     LuaState ll(L);
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
 
     if(win)
     {
@@ -711,7 +678,7 @@ int SWE_window_render_rect(lua_State* L)
     // params: swe_window, color, rect, bool
 
     LuaState ll(L);
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
     
     if(win)
     {
@@ -756,7 +723,7 @@ int SWE_window_render_point(lua_State* L)
     // params: swe_window, color, point
 
     LuaState ll(L);
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
     
     if(win)
     {
@@ -787,7 +754,7 @@ int SWE_window_render_line(lua_State* L)
     // params: swe_window, color, point1, point2
 
     LuaState ll(L);
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
     
     if(win)
     {
@@ -830,7 +797,7 @@ int SWE_window_render_cyrcle(lua_State* L)
     // params: swe_window, color, point center, int radius, bool filled
 
     LuaState ll(L);
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
     
     if(win)
     {
@@ -874,7 +841,7 @@ int SWE_window_render_texture(lua_State* L)
 
     LuaState ll(L);
 
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
     SWE_Texture* ptr = SWE_Texture::get(ll, 2, __FUNCTION__);
     
     if(win && ptr)
@@ -931,7 +898,7 @@ int SWE_window_render_text(lua_State* L)
 
     LuaState ll(L);
 
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
     SWE_FontRender* frs = SWE_FontRender::get(ll, 2, __FUNCTION__);
 
     if(win && frs)
@@ -986,7 +953,7 @@ int SWE_window_to_json(lua_State* L)
     // params: swe_window
 
     LuaState ll(L);
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
 
     if(win)
     {
@@ -1017,7 +984,7 @@ int SWE_window_point_inarea(lua_State* L)
     // params: swe_window, point
 
     LuaState ll(L);
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
 
     if(win)
     {
@@ -1054,7 +1021,7 @@ int SWE_window_set_tooltip(lua_State* L)
 	return 0;
     }
 
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
+    auto win = static_cast<SWE_Window*>(SWE_Window::get(ll, 1, __FUNCTION__));
 
     if(! win)
     {
@@ -1087,223 +1054,154 @@ int SWE_window_set_tooltip(lua_State* L)
     return 0;
 }
 
-/* SWE_Scene */
-bool SWE_Scene::window_push(LuaState & ll, Window* v)
+int SWE_window_childrens(lua_State* L)
 {
-    if(! v)
+    // params: swe_window
+    LuaState ll(L);
+
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
+
+    // add result: table
+    ll.pushTable();
+
+    if(! win)
     {
-	ll.pushNil();
-	// stack + nil
-	return false;
+	ERROR("userdata empty");
+	return 1;
     }
 
     if(! ll.pushTable("SWE.Scene").isTopTable())
     {
 	ERROR("table not found" << ": " << "swe.scene");
-	// stack + nil
-	return false;
+	return 1;
     }
 
     // iterate SWE.Scene
-    ll.pushNil();
-
-    while(ll.nextTableIndex(-2))
-    {
-	// key: index -2, value: table -1
-	if(ll.isTopTable())
-	{
-	    if(ll.getFieldTableIndex("userdata", -1).isTopUserData())
-	    {
-		auto ptr = static_cast<Window**>(ll.getTopUserData());
-		if(ptr && *ptr == v)
-		{
-		    // stack: remove userdata
-		    ll.stackPop();
-
-		    // stack: result table only
-	    	    ll.stackReplaceIndex(-3);
-		    ll.stackPop();
-
-		    // stack + swe_window
-		    return true;
-		}
-	    }
-	    else
-	    {
-		ERROR("not userdata: " << ll.getTopTypeName());
-	    }
-
-	    // pop userdata
-	    ll.stackPop();
-	}
-
-	// pop value
-	ll.stackPop();
-    }
-
-    // pop tables
-    ll.stackPop();
-
-    // stack + nil
-    ll.pushNil();
-
-    return false;
-}
-
-bool SWE_Scene::window_remove(LuaState & ll, Window* v)
-{
-    if(! v)
-	return false;
-
-    if(! ll.pushTable("SWE.Scene").isTopTable())
-    {
-	ERROR("table not found" << ": " << "swe.scene");
-	ll.stackPop();
-	return false;
-    }
-
-    // iterate SWE.Scene
-    ll.pushNil();
-
-    while(ll.nextTableIndex(-2))
-    {
-	// key: index -2, value: table -1
-	if(ll.isTopTable())
-	{
-	    if(ll.getFieldTableIndex("userdata", -1).isTopUserData())
-	    {
-		auto ptr = static_cast<Window**>(ll.getTopUserData());
-		if(ptr && *ptr == v)
-		{
-		    // stack: remove userdata, value table
-		    ll.stackPop(2);
-		    DEBUG("index: " << ll.getTopInteger());
-
-		    // remove value from table
-		    ll.pushNil().setTableIndex(-3);
-    
-		    // stack: SWE.Scene
-		    ll.stackPop();
-		    return true;
-		}
-	    }
-	    else
-	    {
-		ERROR("not userdata: " << ll.getTopTypeName());
-	    }
-
-	    // pop userdata
-	    ll.stackPop();
-	}
-
-	// pop value
-	ll.stackPop();
-    }
-
-    // pop tables
-    ll.stackPop();
-    DEBUG("not found");
-
-    return false;
-}
-
-int SWE_Scene::window_add(LuaState & ll)
-{
-    // stack: swe_window...
-
-    if(! ll.pushTable("SWE.Scene").isTopTable())
-    {
-	ERROR("table not found" << ": " << "swe.scene");
-	ll.stackPop();
-	return 0;
-    }
-
     ll.pushNil();
     int index = 1;
 
-    // iterate SWE.Scene: find empty
     while(ll.nextTableIndex(-2))
     {
-	// key: index -2, value: empty -1
-	if(ll.isNumberIndex(-2))
+	// stack: swe_window, table result, SWE.Scene, key, value(swe_window)
+	auto child = SWE_Window::get(ll, -1, __FUNCTION__);
+	if(child && child->parent() == win)
 	{
-	    if(index < ll.toIntegerIndex(-2))
-	    {
-		// value, key, scene, swe_window
-		ll.stackPop(2);
-		break;
-	    }
-
-	    index++;
+	    // add value to table result
+	    ll.pushInteger(index++).pushValueIndex(-2).setTableIndex(-6);
 	}
 
 	// pop value
 	ll.stackPop();
     }
 
-    // scene, swe_window
-    ll.pushInteger(index).pushValueIndex(-3);
-    // swe_window, key, scene, swe_window
-    ll.setTableIndex(-3);
-    // scene, swe_window
+    // stack: swe_window, table result, SWE.Scene
     ll.stackPop();
 
-    // stack: swe_window...
-    DEBUG("index: " << index);
-    return index;
+    // stack: swe_window, table result
+    return 1;
 }
 
-Window* SWE_Scene::window_getindex(LuaState & ll, int index)
-{
-    if(ll.pushTable("SWE.Scene").isTopTable())
-    {
-	ll.pushNil();
-	// iterate SWE.Scene: find index
-	while(ll.nextTableIndex(-2))
-	{
-	    // key: index -2, value: empty -1
-	    if(ll.isNumberIndex(-2))
-	    {
-		if(index == ll.toIntegerIndex(-2))
-		{
-		    if(ll.getFieldTableIndex("userdata", -1).isTopUserData())
-		    {
-			auto ptr = static_cast<Window**>(ll.getTopUserData());
-			ll.stackPop(4);
-			return ptr ? *ptr : NULL;
-		    }
-
-		    break;
-		}
-		index++;
-	    }
-	    // pop value
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-
-    return NULL;
-}
-
-void SWE_Scene::clean(LuaState & ll, bool skipFirst)
+/* SWE_Scene */
+/// find swe_window and push top stack
+bool SWE_Scene::window_pushtop(LuaState & ll, const Window & win)
 {
     if(! ll.pushTable("SWE.Scene").isTopTable())
     {
 	ERROR("table not found" << ": " << "swe.scene");
-	return;
+	ll.stackPop();
+	return false;
     }
 
-    int count = ll.countFieldsTableIndex(-1);
-    int first = skipFirst ? 2 : 1;
+    std::string label = String::hex(win.id());
+    ll.getFieldTableIndex(label, -1, false);
 
-    for(int it = first; it <= count; ++it)
+    if(ll.isTopNil())
     {
-	DEBUG("remove index: " << it);
-	ll.pushInteger(it).pushNil().setTableIndex(-3);
+	// ERROR("window not found" << ": " << label);
+	ll.stackPop(2);
+	return false;
     }
 
-    ll.garbageCollect();
+    // stack: ..., SWE.Scene, swe_window
+    ll.stackRemoveIndex(-2);
+    return true;
+}
+
+/// remove swe_window from scene
+void SWE_Scene::window_remove(LuaState & ll, const Window & win)
+{
+    if(ll.pushTable("SWE.Scene").isTopTable())
+    {
+	ll.pushNil().setFieldTableIndex(String::hex(win.id()), -2);
+    }
+    else
+    {
+	ERROR("table not found" << ": " << "swe.scene");
+    }
+
+    // stack: SWE.Scene
+    ll.stackPop();
+}
+
+/// push top stack swe_window to scene
+bool SWE_Scene::window_add(LuaState & ll, const std::string & label, bool isroot)
+{
+    // stack: swe_window...
+
+    if(! ll.pushTable("SWE.Scene").isTopTable())
+    {
+	ERROR("table not found" << ": " << "swe.scene");
+	ll.stackPop();
+	return false;
+    }
+
+    // add swe_window to SWE.Scene[label]
+    ll.pushValueIndex(-2).setFieldTableIndex(label, -2);
+    ll.stackPop();
+
+    if(isroot)
+    {
+	// save ref: to SWE.rootwin
+	if(ll.pushTable("SWE").isTopTable())
+	    ll.pushValueIndex(-2).setFieldTableIndex("rootwin", -2);
+	ll.stackPop();
+    }
+
+    DEBUG("add window" << ": " << label << (isroot ? " (root window)" : ""));
+    return true;
+}
+
+void SWE_Scene::clean(LuaState & ll, bool saveMain)
+{
+    if(ll.pushTable("SWE.Scene").isTopTable())
+    {
+	auto root = DisplayScene::rootWindow();
+	ll.pushNil();
+
+	// iterate SWE.Scene
+	while(ll.nextTableIndex(-2))
+	{
+	    std::string key = ll.toStringIndex(-2);
+	    auto win = SWE_Window::get(ll, -1, __FUNCTION__);
+
+	    if(! saveMain || win != root)
+	    {
+		DEBUG("remove id" << ": " << key);
+		// set value to nil
+		ll.pushString(key).pushNil().setTableIndex(-5);
+	    }
+
+	    // pop value
+	    ll.stackPop();
+	}
+
+	// SWE.Scene mode: weak values
+	ll.garbageCollect();
+    }
+    else
+    {
+	ERROR("table not found" << ": " << "swe.scene");
+    }
 }
 
 const struct luaL_Reg SWE_window_functions[] = {
@@ -1323,24 +1221,25 @@ const struct luaL_Reg SWE_window_functions[] = {
     { "RenderTexture",  SWE_window_render_texture },   // [void]. table window, table texture, rect, rect
     { "RenderText",     SWE_window_render_text },      // [rect coords], table window, table fontrender, string, color, point
     { "PointInArea",	SWE_window_point_inarea },     // [bool], table window, int, int
+    { "GetChildrens",	SWE_window_childrens },        // [table], table window
     { "ToJson",		SWE_window_to_json },          // [string], table window
     // virtual
-    { "TextureInvalidEvent",SWE_window_empty },
-    { "WindowCreateEvent", SWE_window_empty },
-    { "WindowCloseEvent",  SWE_window_empty },
-    { "DisplayResizeEvent",SWE_window_empty },
-    { "MousePressEvent",   SWE_window_empty },
-    { "MouseReleaseEvent", SWE_window_empty },
-    { "MouseClickEvent",   SWE_window_empty },
-    { "MouseFocusEvent",   SWE_window_empty },
-    { "MouseMotionEvent",  SWE_window_empty },
-    { "KeyPressEvent",     SWE_window_empty },
-    { "KeyReleaseEvent",   SWE_window_empty },
-    { "ScrollUpEvent",     SWE_window_empty },
-    { "ScrollDownEvent",   SWE_window_empty },
-    { "SystemUserEvent",   SWE_window_empty },
-    { "SystemTickEvent",   SWE_window_empty },
-    { "RenderWindow",      SWE_window_empty },
+    { "TextureInvalidEvent",NULL },
+    { "WindowCreateEvent", NULL },
+    { "WindowCloseEvent",  NULL },
+    { "DisplayResizeEvent",NULL },
+    { "MousePressEvent",   NULL },
+    { "MouseReleaseEvent", NULL },
+    { "MouseClickEvent",   NULL },
+    { "MouseFocusEvent",   NULL },
+    { "MouseMotionEvent",  NULL },
+    { "KeyPressEvent",     NULL },
+    { "KeyReleaseEvent",   NULL },
+    { "ScrollUpEvent",     NULL },
+    { "ScrollDownEvent",   NULL },
+    { "SystemUserEvent",   NULL },
+    { "SystemTickEvent",   NULL },
+    { "RenderWindow",      NULL },
     { NULL, NULL }
 };
 
@@ -1360,7 +1259,7 @@ int SWE_window_create(lua_State* L)
 	parent = SWE_Window::get(ll, -1, __FUNCTION__);
     else
     // set parent DisplayWindow
-	parent = SWE_Scene::window_getindex(ll, 1);
+	parent = DisplayScene::rootWindow();
 
     ll.pushTable();
 
@@ -1368,10 +1267,11 @@ int SWE_window_create(lua_State* L)
     ll.pushString("userdata");
     auto ptr = static_cast<SWE_Window**>(ll.pushUserData(sizeof(SWE_Window*)));
     *ptr = new SWE_Window(L, Point(posx, posy), Size(width, height), parent);
-    // set metatable: __gc
+    ll.setTableIndex(-3);
+    // set metatable: __gc to table
     ll.pushTable(0, 1);
     ll.pushFunction(SWE_window_destroy).setFieldTableIndex("__gc", -2);
-    ll.setMetaTableIndex(-2).setTableIndex(-3);
+    ll.setMetaTableIndex(-2);
 
     // add values
     ll.pushString("__type").pushString("swe.window").setTableIndex(-3);
@@ -1384,13 +1284,12 @@ int SWE_window_create(lua_State* L)
     ll.pushString("keyhandle").pushBoolean(false).setTableIndex(-3);
     ll.pushString("result").pushInteger(0).setTableIndex(-3);
 
-    DEBUG(String::pointer(ptr) << ": [" << (*ptr)->toString() << "]");
-
     // set functions
     ll.setFunctionsTableIndex(SWE_window_functions, -1);
 
-    SWE_Scene::window_add(ll);
-    
+    DEBUG(String::pointer(ptr) << ": [" << (*ptr)->toString() << "]");
+    SWE_Scene::window_add(ll, String::hex((*ptr)->id()), !parent);
+
     return 1;
 }
 
@@ -1398,15 +1297,31 @@ int SWE_window_destroy(lua_State* L)
 {
     LuaState ll(L);
 
-    if(ll.isTopUserData())
+    if(ll.isTopTable())
     {
-	auto ptr = static_cast<SWE_Window**>(ll.getTopUserData());
+	SWE_Window** ptr = NULL;
+
+	if(ll.getFieldTableIndex("userdata", -1).isTopUserData())
+	    ptr = static_cast<SWE_Window**>(ll.getTopUserData());
+
+	// stack: swe_window, userdata
+	ll.stackPop();
+
 	if(ptr && *ptr)
 	{
-	    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
-	    // auto remove SWE_Scene::window_remove(ll, *ptr);
+	    // stack: swe_window
+	    if(ll.getFieldTableIndex("WindowCloseEvent", -1, false).isTopFunction())
+	    {
+		ll.callFunction(0, 0);
+	    }
+	    else
+	    {
+		ll.stackPop();
+	    }
 
-	    (*ptr)->windowCloseEvent();
+	    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
+	    // SWE.Scene mode: weak value
+	    // auto remove SWE_Scene::window_remove(ll, *ptr);
 
 	    delete *ptr;
 	    *ptr = NULL;
@@ -1430,8 +1345,8 @@ int SWE_polygon_to_json(lua_State* L)
     // params: swe_polygon
 
     LuaState ll(L);
-    SWE_Polygon* poly = SWE_Polygon::get(ll, 1, __FUNCTION__);
 
+    auto poly = static_cast<SWE_Polygon*>(SWE_Polygon::get(ll, 1, __FUNCTION__));
     if(poly)
     {
 	if(SWE_window_to_json(ll.L()))
@@ -1472,22 +1387,22 @@ const struct luaL_Reg SWE_polygon_functions[] = {
     { "PointInArea",	SWE_window_point_inarea },     // [bool], table window, int, int
     { "ToJson",		SWE_polygon_to_json },          // [string], table polygon
     // window virtual
-    { "TextureInvalidEvent",SWE_window_empty },
-    { "WindowCreateEvent", SWE_window_empty },
-    { "WindowCloseEvent",  SWE_window_empty },
-    { "DisplayResizeEvent",SWE_window_empty },
-    { "MousePressEvent",   SWE_window_empty },
-    { "MouseReleaseEvent", SWE_window_empty },
-    { "MouseClickEvent",   SWE_window_empty },
-    { "MouseFocusEvent",   SWE_window_empty },
-    { "MouseMotionEvent",  SWE_window_empty },
-    { "KeyPressEvent",     SWE_window_empty },
-    { "KeyReleaseEvent",   SWE_window_empty },
-    { "ScrollUpEvent",     SWE_window_empty },
-    { "ScrollDownEvent",   SWE_window_empty },
-    { "SystemUserEvent",   SWE_window_empty },
-    { "SystemTickEvent",   SWE_window_empty },
-    { "RenderWindow",      SWE_window_empty },
+    { "TextureInvalidEvent",NULL },
+    { "WindowCreateEvent", NULL },
+    { "WindowCloseEvent",  NULL },
+    { "DisplayResizeEvent",NULL },
+    { "MousePressEvent",   NULL },
+    { "MouseReleaseEvent", NULL },
+    { "MouseClickEvent",   NULL },
+    { "MouseFocusEvent",   NULL },
+    { "MouseMotionEvent",  NULL },
+    { "KeyPressEvent",     NULL },
+    { "KeyReleaseEvent",   NULL },
+    { "ScrollUpEvent",     NULL },
+    { "ScrollDownEvent",   NULL },
+    { "SystemUserEvent",   NULL },
+    { "SystemTickEvent",   NULL },
+    { "RenderWindow",      NULL },
     // polygon func
     { NULL, NULL }
 };
@@ -1617,15 +1532,20 @@ void SWE_Polygon::renderWindow(void)
 {
     bool extrender = false;
 
-    if(SWE_Scene::window_push(ll, this))
+    if(SWE_Scene::window_pushtop(ll, *this))
     {
         if(ll.getFieldTableIndex("RenderWindow", -1).isTopFunction())
         {
             extrender = ll.callFunction(0, 1).getTopBoolean();
+            ll.stackPop();
         }
-	ll.stackPop();
+        else
+        {
+            ll.stackPop();
+        }
+ 
+        ll.stackPop();
     }
-    ll.stackPop();
 
     if(! extrender && Engine::debugMode())
     {
@@ -1693,7 +1613,7 @@ int SWE_polygon_create(lua_State* L)
 	parent = SWE_Window::get(ll, -1, __FUNCTION__);
     else
     // set parent DisplayWindow
-	parent = SWE_Scene::window_getindex(ll, 1);
+	parent = DisplayScene::rootWindow();
     
     Points points;
     for(int it = 2; it < params; it += 2)
@@ -1710,10 +1630,11 @@ int SWE_polygon_create(lua_State* L)
     auto ptr = static_cast<SWE_Polygon**>(ll.pushUserData(sizeof(SWE_Polygon*)));
     *ptr = new SWE_Polygon(L, points, parent);
 
-    // set metatable: __gc
+    ll.setTableIndex(-3);
+    // set metatable: __gc to table
     ll.pushTable(0, 1);
     ll.pushFunction(SWE_polygon_destroy).setFieldTableIndex("__gc", -2);
-    ll.setMetaTableIndex(-2).setTableIndex(-3);
+    ll.setMetaTableIndex(-2);
 
     ll.pushString("__type").pushString("swe.polygon").setTableIndex(-3);
     ll.pushString("posx").pushInteger((*ptr)->position().x).setTableIndex(-3);
@@ -1729,40 +1650,14 @@ int SWE_polygon_create(lua_State* L)
     ll.setFunctionsTableIndex(SWE_polygon_functions, -1);
 
     DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
-
-    SWE_Scene::window_add(ll);
+    SWE_Scene::window_add(ll, String::hex((*ptr)->id()), !parent);
 
     return 1;
 }
 
 int SWE_polygon_destroy(lua_State* L)
 {
-    LuaState ll(L);
-        
-    if(ll.isTopUserData())
-    {
-        auto ptr = static_cast<SWE_Polygon**>(ll.getTopUserData());
-        if(ptr && *ptr)
-        {
-            DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
-	    // auto remove SWE_Scene::window_remove(ll, *ptr);
-
-	    (*ptr)->windowCloseEvent();
-
-            delete *ptr;
-            *ptr = NULL;
-        }
-        else
-        {
-            ERROR("userdata empty");
-        }
-    }
-    else
-    {
-        ERROR("not userdata");
-    }
-
-    return 0;
+    return SWE_window_destroy(L);
 }
 
 void SWE_Scene::registers(LuaState & ll)

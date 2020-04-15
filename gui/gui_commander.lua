@@ -251,6 +251,7 @@ function CommanderInit(win, frs2, cwd2)
 
     cmd.clear = function(cmd)
 	cmd.cwd = nil
+	cmd.list.WindowCloseEvent = nil
 	cmd.list = nil
 	cmd.btnzi = nil
 	cmd.btnzo = nil
@@ -259,7 +260,7 @@ function CommanderInit(win, frs2, cwd2)
     end
 
     cmd.btnfn.MouseClickEvent = function(px,py,pb,rx,ry,rb)
-	local editor = EditorInit(cmd.win)
+	local editor = EditorInit(cmd.win, frs)
 	SWE.MainLoop(editor)
     end
 

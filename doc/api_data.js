@@ -75,6 +75,29 @@ define({ "api": [
     "groupTitle": "SWE"
   },
   {
+    "type": "handle events intervals",
+    "url": "SWE.DisplayVideoModes(interval)",
+    "title": "SWE.DisplayHandleEvents",
+    "group": "SWE",
+    "name": "DisplayHandleEvents",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "numberl",
+            "optional": false,
+            "field": "interval",
+            "description": "<p>handle events loop for interval (ms)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
     "type": "create display window object",
     "url": "SWE.DisplayInit(title,width,height,fullscreen)(title,landscape)",
     "title": "SWE.DisplayInit",
@@ -443,6 +466,42 @@ define({ "api": [
     "groupTitle": "SWE"
   },
   {
+    "type": "concate filesystem names",
+    "url": "SWE.SystemConcatePath(item,item,..item)",
+    "title": "SWE.TableToJson",
+    "group": "SWE",
+    "name": "SystemConcatePath",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "item",
+            "description": "<p>name</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "path",
+            "description": "<p>result: filesystem path</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
     "type": "get current directory",
     "url": "SWE.SystemCurrentDirectory()",
     "title": "SWE.SystemCurrentDirectory",
@@ -507,7 +566,7 @@ define({ "api": [
     "examples": [
       {
         "title": "usage",
-        "content": "local dirname,basename = SWE.SystemDirnameBasename(\"/var/tmp/screenshot.png\")\nprint(dirname,basename)\n\n... console\n\"var/tmp\"    \"screenshot.png\"",
+        "content": "local dirname,basename = SWE.SystemDirnameBasename(\"/var/tmp/screenshot.png\")\nprint(dirname,basename)\n\n... console\n\"/var/tmp\"    \"screenshot.png\"",
         "type": "json"
       }
     ],
@@ -550,7 +609,7 @@ define({ "api": [
     "examples": [
       {
         "title": "usage",
-        "content": "local stat = SWE.SystemFileStat(\"/var/tmp/screenshot.png\")\n\n.... dump stat\n| mode  | 33204      | \n| gid   | 1000       | \n| uid   | 1000       | \n| nlink | 1          | \n| size  | 404930     | \n| atime | 1565677681 | \n| mtime | 1565677681 | \n| ctime | 1565677681 | \n| isdir | false      |",
+        "content": "local stat = SWE.SystemFileStat(\"/var/tmp/screenshot.png\")\n\n.... dump stat\n| mode  | 33204                   | \n| gid   | 1000                    | \n| uid   | 1000                    | \n| nlink | 1                       | \n| size  | 404930                  | \n| atime | 1565677681              | \n| mtime | 1565677681              | \n| ctime | 1565677681              | \n| isdir | false                   |\n| type  | file                    |\n| path  | /var/tmp/screenshot.png |",
         "type": "json"
       }
     ],
@@ -721,6 +780,42 @@ define({ "api": [
             "optional": false,
             "field": "delay",
             "description": "<p>sleep delay ms</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
+    "type": "convert table object to json string",
+    "url": "SWE.TableToJson(table)",
+    "title": "SWE.TableToJson",
+    "group": "SWE",
+    "name": "TableToJson",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "table",
+            "optional": false,
+            "field": "table",
+            "description": "<p>table object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "json",
+            "description": "<p>result: json string</p>"
           }
         ]
       }
@@ -1752,7 +1847,7 @@ define({ "api": [
             "type": "string",
             "optional": false,
             "field": "result",
-            "description": "<p>json string</p>"
+            "description": "<p>json array string</p>"
           }
         ]
       }
@@ -5900,6 +5995,613 @@ define({ "api": [
     "groupTitle": "SWE_Size"
   },
   {
+    "type": "streambuf constructor",
+    "url": "SWE.StreamBuf(),(buf)",
+    "title": "SWE.StreamBuf",
+    "group": "SWE_StreamBuf",
+    "name": "Constructor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "buf",
+            "description": "<p>initial buffer</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "result",
+            "description": "<p>streambuf object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf get 16 bit value",
+    "url": "SWE.StreamBuf.GetBE16(self)",
+    "title": "SWE.StreamBuf.GetBE16",
+    "group": "SWE_StreamBuf",
+    "name": "GetBE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>16 bit value (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf get 32 bit value",
+    "url": "SWE.StreamBuf.GetBE32(self)",
+    "title": "SWE.StreamBuf.GetBE32",
+    "group": "SWE_StreamBuf",
+    "name": "GetBE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>32 bit value (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf get 64 bit value",
+    "url": "SWE.StreamBuf.GetBE64(self)",
+    "title": "SWE.StreamBuf.GetBE64",
+    "group": "SWE_StreamBuf",
+    "name": "GetBE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>64 bit value (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf get 8 bit value",
+    "url": "SWE.StreamBuf.GetByte(self)",
+    "title": "SWE.StreamBuf.GetByte",
+    "group": "SWE_StreamBuf",
+    "name": "GetByte",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>streambuf object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>8 bit value</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf get bytes",
+    "url": "SWE.StreamBuf.GetBytes(self,length)",
+    "title": "SWE.StreamBuf.GetBytes",
+    "group": "SWE_StreamBuf",
+    "name": "GetBytes",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "length",
+            "description": "<p>length data</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "result",
+            "description": "<p>binarybuf object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf get 16 bit value",
+    "url": "SWE.StreamBuf.GetLE16(self)",
+    "title": "SWE.StreamBuf.GetLE16",
+    "group": "SWE_StreamBuf",
+    "name": "GetLE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>16 bit value (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf get 32 bit value",
+    "url": "SWE.StreamBuf.GetLE32(self)",
+    "title": "SWE.StreamBuf.GetLE32",
+    "group": "SWE_StreamBuf",
+    "name": "GetLE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>32 bit value (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf get 64 bit value",
+    "url": "SWE.StreamBuf.GetLE64(self)",
+    "title": "SWE.StreamBuf.GetLE64",
+    "group": "SWE_StreamBuf",
+    "name": "GetLE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>64 bit value (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf put 16 bit value",
+    "url": "SWE.StreamBuf.PutBE16(self,value)",
+    "title": "SWE.StreamBuf.PutBE16",
+    "group": "SWE_StreamBuf",
+    "name": "PutBE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>16 bit value put (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf put 32 bit value",
+    "url": "SWE.StreamBuf.PutBE32(self,value)",
+    "title": "SWE.StreamBuf.PutBE32",
+    "group": "SWE_StreamBuf",
+    "name": "PutBE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>32 bit value put (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf put 64 bit value",
+    "url": "SWE.StreamBuf.PutBE64(self,value)",
+    "title": "SWE.StreamBuf.PutBE64",
+    "group": "SWE_StreamBuf",
+    "name": "PutBE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>64 bit value put (big endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf put 8 bit value",
+    "url": "SWE.StreamBuf.PutByte(self,value)",
+    "title": "SWE.StreamBuf.PutByte",
+    "group": "SWE_StreamBuf",
+    "name": "PutByte",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>8 bit value put</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf put bytes",
+    "url": "SWE.StreamBuf.PutBytes(self,inputbuf)",
+    "title": "SWE.StreamBuf.PutBytes",
+    "group": "SWE_StreamBuf",
+    "name": "PutBytes",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "inputbuf",
+            "description": "<p>binarybuf object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf put 16 bit value",
+    "url": "SWE.StreamBuf.PutLE16(self,value)",
+    "title": "SWE.StreamBuf.PutLE16",
+    "group": "SWE_StreamBuf",
+    "name": "PutLE16",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>16 bit value put (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf put 32 bit value",
+    "url": "SWE.StreamBuf.PutLE32(self,value)",
+    "title": "SWE.StreamBuf.PutLE32",
+    "group": "SWE_StreamBuf",
+    "name": "PutLE32",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>32 bit value put (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "streambuf put 64 bit value",
+    "url": "SWE.StreamBuf.PutLE64(self,value)",
+    "title": "SWE.StreamBuf.PutLE64",
+    "group": "SWE_StreamBuf",
+    "name": "PutLE64",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>64 bit value put (little endian)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
+    "type": "convert streambuf to json string",
+    "url": "SWE.StreamBuf.ToJson(self)",
+    "title": "SWE.StreamBuf.ToJson",
+    "group": "SWE_StreamBuf",
+    "name": "ToJson",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.StreamBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>streambuf object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>json string</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streambuf.js",
+    "groupTitle": "SWE_StreamBuf"
+  },
+  {
     "type": "streamfile close stream",
     "url": "SWE.StreamFile.Close(self)",
     "title": "SWE.StreamFile.Close",
@@ -7200,7 +7902,7 @@ define({ "api": [
   },
   {
     "type": "streamnet recv string",
-    "url": "SWE.StreamNet.RecvString(self,endl)",
+    "url": "SWE.StreamNet.RecvString(self,endl,waitms,forcebr)",
     "title": "SWE.StreamNet.RecvString",
     "group": "SWE_StreamNet",
     "name": "RecvString",
@@ -7219,7 +7921,21 @@ define({ "api": [
             "type": "number",
             "optional": false,
             "field": "endl",
-            "description": "<p>eol byte (0 default)</p>"
+            "description": "<p>eol byte (default: 0)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "waitms",
+            "description": "<p>wait ms (default: 300)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "boolean",
+            "optional": false,
+            "field": "forcebr",
+            "description": "<p>force break without recv eol bite (default: false)</p>"
           }
         ]
       }
@@ -7519,36 +8235,6 @@ define({ "api": [
     "groupTitle": "SWE_StreamNet"
   },
   {
-    "type": "streamnet rady timeout",
-    "url": "SWE.StreamNet.SetReadyTimeout(self,timeout)",
-    "title": "SWE.StreamNet.SetReadyTimeout",
-    "group": "SWE_StreamNet",
-    "name": "SetReadyTimeout",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "SWE.StreamNet",
-            "optional": false,
-            "field": "self",
-            "description": "<p>streamnet object</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "timeout",
-            "description": "<p>ready timeout (100 ms default)</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_streamnet.js",
-    "groupTitle": "SWE_StreamNet"
-  },
-  {
     "type": "convert streamnet to json string",
     "url": "SWE.StreamNet.ToJson(self)",
     "title": "SWE.StreamNet.ToJson",
@@ -7628,7 +8314,7 @@ define({ "api": [
     "groupTitle": "SWE_StreamNet"
   },
   {
-    "type": "streamnet send string",
+    "type": "streamnet wait string marker",
     "url": "SWE.StreamNet.WaitString(self,string)",
     "title": "SWE.StreamNet.WaitString",
     "group": "SWE_StreamNet",
@@ -7648,7 +8334,7 @@ define({ "api": [
             "type": "string",
             "optional": false,
             "field": "string",
-            "description": "<p>wait this string</p>"
+            "description": "<p>wait this marker</p>"
           }
         ]
       }
@@ -7883,6 +8569,78 @@ define({ "api": [
             "optional": false,
             "field": "count",
             "description": "<p>step count (default: 1)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: cursor move first line position",
+    "url": "SWE.Terminal.CursorMoveFirst(self)",
+    "title": "SWE.Terminal.CursorMoveFirst",
+    "group": "SWE_Terminal",
+    "name": "CursorMoveFirst",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: cursor move last line position",
+    "url": "SWE.Terminal.CursorMoveLast(self)",
+    "title": "SWE.Terminal.CursorMoveLast",
+    "group": "SWE_Terminal",
+    "name": "CursorMoveLast",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
           }
         ]
       }
@@ -11848,11 +12606,54 @@ define({ "api": [
     "groupTitle": "SWE_UnicodeString"
   },
   {
-    "type": "convert unicodestring to string",
-    "url": "SWE.UnicodeString.ToString(inputbuf)",
-    "title": "SWE.UnicodeString.ToString",
+    "type": "convert UnicodeString to json string",
+    "url": "SWE.UnicodeString.ToJson(inputbuf)",
+    "title": "SWE.UnicodeString.ToJson",
     "group": "SWE_UnicodeString",
-    "name": "ToString",
+    "name": "ToJson",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "self",
+            "description": "<p>UnicodeString raw data</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>json array string</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local ucs = SWE.UnicodeString(\"Привет Бармалей!\")\nprint(ucs:ToJson())\n....\n'[0x041F,0x0440,0x0438,0x0432,0x0435,0x0442,0x0020,0x0411,0x0430,0x0440,0x043C,0x0430,0x043B,0x0435,0x0439,0x0021]'",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_unicodestring.js",
+    "groupTitle": "SWE_UnicodeString"
+  },
+  {
+    "type": "convert unicodestring to utf8 string",
+    "url": "SWE.UnicodeString.ToUtf8String(inputbuf)",
+    "title": "SWE.UnicodeString.ToUtf8String",
+    "group": "SWE_UnicodeString",
+    "name": "ToUtf8String",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -11874,7 +12675,7 @@ define({ "api": [
             "type": "string",
             "optional": false,
             "field": "result",
-            "description": "<p>string data</p>"
+            "description": "<p>utf8 cstring data</p>"
           }
         ]
       }
@@ -12067,6 +12868,49 @@ define({ "api": [
       {
         "title": "ext table fields (read only)",
         "content": "| posx      | number  | window position\n| posy      | number  | window position\n| width     | number  | window size\n| height    | number  | window size\n| visible   | boolean | window is visible (defalut false)\n| modality  | boolean | window is modality (defalut false)\n| keyhangle | boolean | window is global key handle (defalut false)",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window"
+  },
+  {
+    "type": "get children windows",
+    "url": "SWE.Window.GetChildrens(self)",
+    "title": "SWE.Window.GetChildrens",
+    "group": "SWE_Window",
+    "name": "GetChildrens",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Window",
+            "optional": false,
+            "field": "self",
+            "description": "<p>window object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "table",
+            "optional": false,
+            "field": "result",
+            "description": "<p>children windows list</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    local childs = win:GeChildrens()\n    for i = 1,#childs do\n\tSWE.Dump(childs[i])\n    end",
         "type": "json"
       }
     ],

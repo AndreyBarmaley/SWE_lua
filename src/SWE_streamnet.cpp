@@ -20,6 +20,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include "display_scene.h"
+
 #include "SWE_binarybuf.h"
 #include "SWE_streamnet.h"
 
@@ -232,7 +234,7 @@ int SWE_streamnet_recv_bytes(lua_State* L)
 
 int SWE_streamnet_recv_string(lua_State* L)
 {
-    // params: swe_streamnet, int endl
+    // params: swe_streamnet, int endl, int wait ms
 
     LuaState ll(L);
     SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
@@ -241,11 +243,14 @@ int SWE_streamnet_recv_string(lua_State* L)
     {
 	std::string res;
 	int endl = ll.toIntegerIndex(2);
+	int wait = ll.isNumberIndex(3) ? ll.toIntegerIndex(3) : 2000; // default: 2000 ms
+	bool forcebr = ll.isBooleanIndex(4) ? ll.toBooleanIndex(4) : false;
+	u32 start = Tools::ticks();
 	int byte = 0;
 
-	while(stream->isEnabled())
+	while(stream->isEnabled() && !stream->fail())
 	{
-	    if(stream->ready())
+	    if(stream->ready(0))
 	    {
 		byte = stream->get8();
 		if(byte) res.append(1, byte);
@@ -253,16 +258,16 @@ int SWE_streamnet_recv_string(lua_State* L)
 	    }
 	    else
 	    {
-		if(! Display::handleEvents())
-        	{
-            	    ERROR("break events");
-            	    break;
-        	}
-
-    	        Display::redraw();
-        	Tools::delay(1000);
-		DEBUG("not data ready");
+    	        DisplayScene::handleEvents(300);
+		// DEBUG("wait string data");
 	    }
+    
+	    if(0 < wait && start + wait < Tools::ticks())
+	    {
+		// empty data or force break
+		if(res.empty() || forcebr)
+        	    break;
+ 	    }
 	}
 
 	ll.pushString(res);
@@ -457,26 +462,6 @@ int SWE_streamnet_send_le64(lua_State* L)
     return 0;
 }
 
-int SWE_streamnet_setready_timeout(lua_State* L)
-{
-    // params: swe_streamnet, number
-
-    LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
-
-    if(stream)
-    {
-	int msTimeout = ll.toNumberIndex(2);
-	stream->setReadyTimeout(msTimeout);
-    }
-    else
-    {
-        ERROR("userdata empty");
-    }
-
-    return 0;
-}
-
 int SWE_streamnet_wait_string(lua_State* L)
 {
     // params: swe_streamnet, string
@@ -518,8 +503,11 @@ int SWE_streamnet_connect(lua_State* L)
 	int port = ll.toIntegerIndex(3);
 	bool res = stream->connect(server, port);
 
-	ll.pushString("address").pushString(server).setTableIndex(1);
-	ll.pushString("port").pushInteger(port).setTableIndex(1);
+	if(res)
+	{
+	    ll.pushString("address").pushString(server).setTableIndex(1);
+	    ll.pushString("port").pushInteger(port).setTableIndex(1);
+	}
 
 	ll.pushBoolean(res);
 	return 1;
@@ -559,8 +547,11 @@ int SWE_streamnet_listen(lua_State* L)
 	int port = ll.toIntegerIndex(2);
 	bool res = stream->listen(port);
 
-	ll.pushString("address").pushString("0.0.0.0").setTableIndex(1);
-	ll.pushString("port").pushInteger(port).setTableIndex(1);
+	if(res)
+	{
+	    ll.pushString("address").pushString("0.0.0.0").setTableIndex(1);
+	    ll.pushString("port").pushInteger(port).setTableIndex(1);
+	}
 
 	ll.pushBoolean(res);
 	return 1;
@@ -581,24 +572,16 @@ int SWE_streamnet_wait_accept(lua_State* L)
     {
 	TCPsocket sock = NULL;
 
-	while(stream->isEnabled())
+	while(stream->isEnabled() && !stream->fail())
 	{
 	    sock = stream->accept();
 	    if(sock) break;
 
-	    if(! Display::handleEvents())
-	    {
-    		ERROR("break events");
-		break;
-	    }
-
-    	    Display::redraw();
-    	    Tools::delay(10);
+    	    DisplayScene::handleEvents(20);
 	}
 
 	if(sock)
 	{
-
     	    ll.stackClear();
     	    ll.pushTable();
     	    SWE_streamnet_create(L);
@@ -680,8 +663,8 @@ int SWE_streamnet_to_json(lua_State* L)
         int port = ll.getFieldTableIndex("port", 1).getTopInteger();
 
         ll.stackPop(2);
-        std::string str = StringFormat("{\"type\":\"swe.streamnet\",\"address\":\"%1\",\"port\":%2}").
-            arg(address).arg(port);
+        std::string str = StringFormat("{\"type\":\"%1\",\"address\":\"%2\",\"port\":%3}").
+            arg("swe.streamnet").arg(address).arg(port);
 
         ll.pushString(str);
         return 1;
@@ -710,7 +693,6 @@ const struct luaL_Reg SWE_streamnet_functions[] = {
     { "SendLE64", SWE_streamnet_send_le64 },		// [void], swe_streamnet, number
     { "SendBytes", SWE_streamnet_send_bytes }, 		// [void], swe_streamnet, swe_binarybuf
     { "SendString", SWE_streamnet_send_string },	// [void], swe_streamnet, string
-    { "SetReadyTimeout",SWE_streamnet_setready_timeout},// [void], swe_streamnet, number ms
     { "WaitString", SWE_streamnet_wait_string },	// [bool], swe_streamnet, string
     { "Connect", SWE_streamnet_connect },		// [bool], swe_streamnet, string, int port
     { "Listen", SWE_streamnet_listen },			// [bool], swe_streamnet, int port

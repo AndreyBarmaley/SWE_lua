@@ -154,7 +154,7 @@ int SWE_unicodestring_insert(lua_State* L)
         }
         else
 	// params: int count, int char
-	if(ll.isIntegerIndex(3))
+	if(ll.isNumberIndex(3))
 	{
 	    int count = ll.toIntegerIndex(3);
 	    int ch = ll.toIntegerIndex(4);
@@ -360,13 +360,52 @@ int SWE_unicodestring_clear(lua_State* L)
     return 0;
 }
 
+int SWE_unicodestring_to_json(lua_State* L)
+{
+    // params: swe_unicodestring
+
+    LuaState ll(L);
+    SWE_UnicodeString* ustr = SWE_UnicodeString::get(ll, 1, __FUNCTION__);
+
+    if(ustr)
+    {
+        std::string json = StringFormat("[%1]").arg(ustr->toHexString(",", true));
+        ll.pushString(json);
+
+        return 1;
+    }
+    
+    ERROR("userdata empty");
+    return 0;
+}           
+
+int SWE_unicodestring_tostring(lua_State* L)
+{
+    // params: swe_unicodestring
+
+    LuaState ll(L);
+    SWE_UnicodeString* ustr = SWE_UnicodeString::get(ll, 1, __FUNCTION__);
+
+    if(ustr)
+    {
+        std::string str = StringFormat("%1[%2]").arg("swe.unicodestring").arg(ustr->toHexString(",", true));
+        ll.pushString(str);
+
+        return 1;
+    }
+    
+    ERROR("userdata empty");
+    return 0;
+}           
+
 const struct luaL_Reg SWE_unicodestring_functions[] = {
     { "PushBack", SWE_unicodestring_pushback },		// [bool], table unicodestring, int char, int char .. int char
     { "SetChar", SWE_unicodestring_setchar },		// [bool], table unicodestring, int pos, int char, int char .. int char
     { "GetChar", SWE_unicodestring_getchar },		// [int char], table unicodestring, int pos
     { "Insert", SWE_unicodestring_insert },		// [bool], table unicodestring, int pos, (unicodestring), (int count, int char)
     { "SubString", SWE_unicodestring_substring },	// [table unicodestring], table unicodestring, int pos, int len
-    { "ToString", SWE_unicodestring_to_cstring },       // [string], table unicodestring
+    { "ToUtf8String", SWE_unicodestring_to_cstring },   // [string], table unicodestring
+    { "ToJson", SWE_unicodestring_to_json },		// [string], table unicodestring
     { "Clear", SWE_unicodestring_clear },		// [void], table unicodestring
     { "Resize", SWE_unicodestring_resize },		// [bool], table unicodestring, int size, int val
     { "Erase", SWE_unicodestring_erase },		// [bool], table unicodestring, int pos, int count
@@ -392,11 +431,16 @@ int SWE_unicodestring_create(lua_State* L)
 
     ll.pushTable();
 
-    // userdata
+    // set: tostring
+    //ll.pushTable(0, 1);
+    //ll.pushFunction(SWE_unicodestring_tostring).setFieldTableIndex("__tostring", -2);
+    //ll.setMetaTableIndex(-2);
+
+    // set userdata
     ll.pushString("userdata");
     auto ptr = static_cast<SWE_UnicodeString**>(ll.pushUserData(sizeof(SWE_UnicodeString*)));
 
-    // set metatable: __gc
+    // set metatable: __gc to userdata
     ll.pushTable(0, 1);
     ll.pushFunction(SWE_unicodestring_destroy).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2).setTableIndex(-3);

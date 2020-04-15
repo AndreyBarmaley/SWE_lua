@@ -59,6 +59,31 @@ local function GetObjectFields(obj, stype)
     return t
 end
 
+local function UnicodeStringIsComments(ustr, spos)
+    if 2 < ustr.size then
+	local last = math.min(spos, ustr.size - 1)
+	for pos = 0, last do
+	    -- first minus
+	    if ustr:GetChar(pos) == 0x2D then
+		-- second minus
+		if pos + 1 < last and  ustr:GetChar(pos + 1) == 0x2D then
+		    return true
+		end
+	    end
+	end
+    end
+    return false
+end
+
+local function UnicodeStringCharsOnly(ustr, char)
+    for pos = 0, ustr.size - 1 do
+	if char ~= ustr:GetChar(pos) then
+	    return false
+	end
+    end
+    return true
+end
+
 local function TermStyleColor(term, str, posx, length, skip, params)
     term:CursorMoveFirst()
     term:CursorMoveRight(posx - skip)
@@ -75,23 +100,17 @@ local function TermStyleColor(term, str, posx, length, skip, params)
 	term:FillProperty(frs.blended, style, frs.hinting, length)
 	term:CursorMoveLeft(length)
     end
+end
+
+local function TermCheckSyntax(term, str, posx, length, skip, params)
     -- check syntax object
     if params.checkobject then
-	local obj,parent = GetObjectParent(str)
+	local obj, parent = GetObjectParent(str)
 	if obj == nil then
 	    term:FillBGColor(term.colors.syntaxerror, length)
 	    term:CursorMoveLeft(length)
 	end
     end
-end
-
-local function UnicodeStringCharsOnly(ustr, char)
-    for pos = 0, ustr.size - 1 do
-	if char ~= ustr:GetChar(pos) then
-	    return false
-	end
-    end
-    return true
 end
 
 local function DrawLineColored(term, ustr, skip, vals)
@@ -108,8 +127,10 @@ local function DrawLineColored(term, ustr, skip, vals)
 	return true
     end
 
-    -- FIXME add UnicodeString find template
-    local str = ustr:ToString()
+    local iscomments = UnicodeStringIsComments(ustr, 255)
+
+    -- FIXME convert, add UnicodeString.find template
+    local str = ustr:ToUtf8String()
 
     for i = 1, #vals do
 	local t = vals[i]
@@ -117,11 +138,15 @@ local function DrawLineColored(term, ustr, skip, vals)
 	if t.pattern ~= nil then
 	    local bs = 1
 	    while bs ~= nil do
-		-- FIXME add UnicodeString find template
 		local fs, ls, ss = string.find(str, t.pattern, bs)
 		if ls ~= nil then
 		    if t.tokens == nil or #t.tokens == 0 or TableFindValue(t.tokens, ss) then
+			-- apply style pattern
 			TermStyleColor(term, ss, fs - 1, ls - fs + 1, skip, t)
+			-- check err syntax highlight
+			if not iscomments then
+			    TermCheckSyntax(term, ss, fs - 1, ls - fs + 1, skip, t)
+			end
 		    end
 		    bs = ls + 1
 		else
@@ -137,7 +162,7 @@ end
 local function AreaHighLightCoords(term, termcol, termrow, pattern)
     local bs = 1
     -- FIXME add UnicodeString find template
-    local str = term.content[termrow]:ToString()
+    local str = term.content[termrow]:ToUtf8String()
     while bs ~= nil do
 	-- FIXME add UnicodeString find template
 	local fs,ls,ss = string.find(str, pattern, bs)
@@ -176,6 +201,11 @@ local function AreaFindHighLightWord(term,termcx,termcy)
     if 0 < termcx and termcx <= cols and 0 < termcy and termcy <= rows then
 	local textcol = termcx + term.skipcols
     	local textrow = termcy + term.skiprows
+
+	-- check is comment
+	if UnicodeStringIsComments(term.content[textrow], textcol - 1) then
+	    return false
+	end
 
 	for i = 1, #term.settings.highlighting do
 	    local t = term.settings.highlighting[i]
@@ -487,34 +517,6 @@ local function AreaKeyTab(area)
     end
 end
 
-function LabelActionCreate(str, frs, tpx, tpy, parent)
-    local term = SWE.Terminal(frs, string.len(str) + 2, 1, parent)
-    term.label = str
-    term.focus = false
-    term:SetPosition(tpx * frs.fixedWidth, tpy * frs.lineHeight)
-
-    term.MouseFocusEvent = function(f)
-	term.focus = f
-	SWE.DisplayDirty()
-	return true
-    end
-
-    term.RenderWindow = function()
-	term:CursorTopLeft():FillColors(SWE.Color.White, parent.colors.back)
-	if term.focus then
-	    term:FillColors(parent.colors.back, SWE.Color.Yellow, term.cols - 2, term.rows)
-	else
-	    term:FillColors(SWE.Color.Yellow, parent.colors.back, term.cols - 2, term.rows)
-	end
-	term:FillColors(SWE.Color.White, parent.colors.back)
-	term:CursorTopLeft():DrawChar("["):DrawText(term.label):DrawChar("]")
-	term:SetFlush()
-	return true
-    end
-
-    return term
-end
-
 function EditorInit(win, frs2, filename)
 
     local settings = nil
@@ -544,7 +546,10 @@ function EditorInit(win, frs2, filename)
     local area = SWE.Terminal(frs, termcols, termrows)
 
     area:SetKeyHandle(true)
+    area:SetModality(true)
+
     area.settings = settings
+    area.settings.finger_scroll = 1
     area.cursorx = 1
     area.virtualx = 1
     area.cursory = 1
@@ -558,7 +563,14 @@ function EditorInit(win, frs2, filename)
     area.colors = { back = SWE.Color.MidnightBlue, text = SWE.Color.Silver, highlight = SWE.Color.MediumBlue, syntaxerror = SWE.Color.FireBrick,
 	cursormarker = SWE.Color.LawnGreen, scrollmarker = SWE.Color.LawnGreen, spacemarker = SWE.Color.RoyalBlue }
 
-    area.close = LabelActionCreate("CLOSE", frs, area.cols - 8, area.rows - 1, area)
+    area.keyb = TermLabelActionCreate("KEYB", frs, 1, area.rows - 1, area)
+    area.close = TermLabelActionCreate("CLOSE", frs, area.cols - 8, area.rows - 1, area)
+
+    -- keyb event: mouse click
+    area.keyb.MouseClickEvent = function(px,py,pb,rx,ry,rb)
+	SWE.DisplayKeyboard(true)
+	return true
+    end
 
     -- close event: mouse click
     area.close.MouseClickEvent = function(px,py,pb,rx,ry,rb)
@@ -689,13 +701,13 @@ function EditorInit(win, frs2, filename)
     area.SystemUserEvent = function(a,b)
 	-- system signal
 	if a == SWE.Signal.FingerMoveUp then
-    	    return AreaScrollDown(area, ToInt((area.rows - 2) / 2))
+    	    return AreaScrollDown(area, area.settings.finger_scroll)
 	elseif a == SWE.Signal.FingerMoveDown then
-    	    return AreaScrollUp(area, ToInt((area.rows - 2) / 2))
+    	    return AreaScrollUp(area, area.settings.finger_scroll)
 	elseif a == SWE.Signal.FingerMoveLeft then
-    	    return AreaScrollLeft(area, ToInt((area.cols - 2) / 2))
+    	    return AreaScrollRight(area, area.settings.finger_scroll)
 	elseif a == SWE.Signal.FingerMoveRight then
-    	    return AreaScrollRight(area, ToInt((area.cols - 2) / 2))
+    	    return AreaScrollLeft(area, area.settings.finger_scroll)
 	end
 	return false
     end
@@ -706,7 +718,7 @@ function EditorInit(win, frs2, filename)
             SWE.SystemMakeDirectory(sharedir)
             local filename = SWE.SystemConcatePath(sharedir, "editor.json")
             -- json format
-	    local buf = SWE.BinaryBuf(SWE.ToJson(area.settings))
+	    local buf = SWE.BinaryBuf(SWE.TableToJson(area.settings))
             buf:SaveToFile(filename)
             SWE.Debug("save config:", filename)
         end

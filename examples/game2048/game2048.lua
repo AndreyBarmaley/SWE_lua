@@ -2,7 +2,7 @@
 
 local fullscreen = false
 
-SWE.SetDebug(true)
+SWE.SetDebug(false)
 local win = SWE.DisplayInit("Game2048", 320, 240, fullscreen)
 
 if not win then
@@ -17,6 +17,7 @@ local orders = SWE.JsonParse(SWE.BinaryBuf.ReadFromFile("game2048.json"):ToStrin
 local frs14 = SWE.FontRender("terminus.ttf", 14, true)
 local frs28 = SWE.FontRender("terminus.ttf", 22, true)
 local colors = {}
+local animationNew = {}
 local animationMove = {}
 local animationStack = {}
 local directoMove = 0
@@ -54,6 +55,7 @@ function CreateNumber(pos, val)
 
     bit.value = val
     bit.order = pos
+    bit.isnew = true
 
     bit.MoveBit = function(self, n)
 	if 0 < n and n < 17 then
@@ -64,9 +66,11 @@ function CreateNumber(pos, val)
     end
     
     bit.RenderWindow = function()
-	bit:RenderClear(colors[bit.value])
-	bit:RenderRect(SWE.Color.MediumSlateBlue, 0, 0, bit.width, bit.height)
-	bit:RenderText(frs28, tostring(bit.value), SWE.Color.Navy, bit.width / 2, bit.height / 2, SWE.Align.Center, SWE.Align.Center)
+	if not bit.isnew then
+	    bit:RenderClear(colors[bit.value])
+	    bit:RenderRect(SWE.Color.MediumSlateBlue, 0, 0, bit.width, bit.height)
+	    bit:RenderText(frs28, tostring(bit.value), SWE.Color.Navy, bit.width / 2, bit.height / 2, SWE.Align.Center, SWE.Align.Center)
+	end
 	return true
     end
 
@@ -74,6 +78,7 @@ function CreateNumber(pos, val)
 	return true
     end
 
+    table.insert(animationNew, bit)
     t.item = bit
 end
 
@@ -156,6 +161,8 @@ function win.KeyPressEvent(key)
 	return false
     end
 
+    -- SWE.Dump(SWE.TableToJson(orders))
+
     if key == SWE.Key.LEFT then
 	directMove = 1
     elseif key == SWE.Key.RIGHT then
@@ -186,9 +193,9 @@ function win.KeyPressEvent(key)
 end
 
 function win.SystemTickEvent(ms)
+    local skipnew = false
     -- check if animationMove
     if 0 < #animationMove then
-
 	MoveAnimationItem(animationMove)
 
 	--end animationMove
@@ -196,10 +203,18 @@ function win.SystemTickEvent(ms)
 	    StackToDirect(directMove)
 	    CreateNumber( GetFreePosVal() )
 	end
+	skipnew = true
     end
     if 0 < #animationStack then
-
 	MoveAnimationItem(animationStack)
+	skipnew = true
+    end
+    if not skipnew and 0 < #animationNew then
+	for k,v in pairs(animationNew) do
+	    v.isnew = false
+	end
+	animationNew = {}
+	SWE.DisplayDirty()
     end
 end
 

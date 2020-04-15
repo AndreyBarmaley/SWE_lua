@@ -22,6 +22,8 @@
 
 #include <algorithm>
 
+#include "display_scene.h"
+
 #include "SWE_rect.h"
 #include "SWE_tools.h"
 #include "SWE_texture.h"
@@ -46,411 +48,18 @@ SWE_Terminal::SWE_Terminal(lua_State* L, const FontRender & frs, int cols, int r
     setVisible(true);
 }
 
-void SWE_Terminal::renderWindow(void)
+TermWindow* SWE_Terminal::get(LuaState & ll, int tableIndex, const char* funcName)
 {
-    bool extrender = false;
-
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("RenderWindow", -1).isTopFunction())
-	{
-	    extrender = ll.callFunction(0, 1).getTopBoolean();
-	    ll.stackPop();
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-
-    if(! extrender && Engine::debugMode())
-    {
-	renderClear(Color::LightGreen);
-	for(int yy = 0; yy < height(); yy += 16)
-	{
-	    for(int xx = 0; xx < width(); xx += 32)
-	    {
-		renderColor(Color::Gray, Rect(0 == (yy % 32) ? xx + 16 : xx, yy, 16, 16));
-	    }
-	}
-	renderRect(Color::RoyalBlue, rect());
-    }
-}
-
-bool SWE_Terminal::mousePressEvent(const ButtonEvent & be)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("MousePressEvent", -1).isTopFunction())
-	{
-	    ll.pushInteger(be.position().x).pushInteger(be.position().y).pushInteger(be.button());
-	    int res = ll.callFunction(3, 1).getTopBoolean();
-	    // remove boolean, table
-	    ll.stackPop(2);
-	    return res;
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-
-    return false;
-}
-
-bool SWE_Terminal::mouseReleaseEvent(const ButtonEvent & be)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("MouseReleaseEvent", -1).isTopFunction())
-	{
-	    ll.pushInteger(be.position().x).pushInteger(be.position().y).pushInteger(be.button());
-	    int res = ll.callFunction(3, 1).getTopBoolean();
-	    // remove boolean, table
-	    ll.stackPop(2);
-	    return res;
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-
-    return false;
-}
-
-bool SWE_Terminal::mouseMotionEvent(const Point & pos, u32 buttons)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("MouseMotionEvent", -1).isTopFunction())
-	{
-	    ll.pushInteger(pos.x).pushInteger(pos.y).pushInteger(buttons);
-	    int res = ll.callFunction(3, 1).getTopBoolean();
-	    // remove boolean, table
-	    ll.stackPop(2);
-	    return res;
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-
-    return false;
-}
-
-bool SWE_Terminal::mouseClickEvent(const ButtonsEvent & be)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("MouseClickEvent", -1).isTopFunction())
-	{
-	    ll.pushInteger(be.press().position().x).pushInteger(be.press().position().y).pushInteger(be.press().button());
-	    ll.pushInteger(be.release().position().x).pushInteger(be.release().position().y).pushInteger(be.release().button());
-	    int res = ll.callFunction(6, 1).getTopBoolean();
-	    // remove boolean, table
-	    ll.stackPop();
-	    return res;
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-
-    return false;
-}
-
-void SWE_Terminal::mouseFocusEvent(void)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("MouseFocusEvent", -1).isTopFunction())
-	{
-	    ll.pushBoolean(true).callFunction(1, 0);
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-}
-
-void SWE_Terminal::mouseLeaveEvent(void)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("MouseFocusEvent", -1).isTopFunction())
-	{
-	    ll.pushBoolean(false).callFunction(1, 0);
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-}
-
-void SWE_Terminal::windowCloseEvent(void)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("WindowCloseEvent", -1, false).isTopFunction())
-	{
-	    ll.callFunction(0, 0);
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-}
-
-void SWE_Terminal::windowCreateEvent(void)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("WindowCreateEvent", -1).isTopFunction())
-	{
-	    ll.callFunction(0, 0);
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-}
-
-void SWE_Terminal::textureInvalidEvent(void)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("TextureInvalidEvent", -1).isTopFunction())
-	{
-	    ll.callFunction(0, 0);
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-}
-
-void SWE_Terminal::displayResizeEvent(const Size & winsz, bool fromsdl)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("DisplayResizeEvent", -1).isTopFunction())
-	{
-	    ll.pushInteger(winsz.w).pushInteger(winsz.h).pushBoolean(fromsdl).callFunction(3, 0);
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-}
-
-bool SWE_Terminal::keyPressEvent(const KeySym & key)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("KeyPressEvent", -1).isTopFunction())
-	{
-	    ll.pushInteger(key.keycode()).pushInteger(key.keymod()).pushInteger(key.scancode());
-	    int res = ll.callFunction(3, 1).getTopBoolean();
-	    // remove boolean, table
-	    ll.stackPop(2);
-	    return res;
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-
-    return false;
-}
-
-bool SWE_Terminal::keyReleaseEvent(const KeySym & key)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("KeyReleaseEvent", -1).isTopFunction())
-	{
-	    ll.pushInteger(key.keycode()).pushInteger(key.keymod()).pushInteger(key.scancode());
-	    int res = ll.callFunction(3, 1).getTopBoolean();
-	    // remove boolean, table
-	    ll.stackPop(2);
-	    return res;
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-
-    return false;
-}
-
-bool SWE_Terminal::scrollUpEvent(const Point & pos)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("ScrollUpEvent", -1).isTopFunction())
-	{
-	    ll.pushInteger(pos.x).pushInteger(pos.y);
-	    int res = ll.callFunction(2, 1).getTopBoolean();
-	    // remove boolean, table
-	    ll.stackPop(2);
-	    return res;
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-
-    return false;
-}
-
-bool SWE_Terminal::scrollDownEvent(const Point & pos)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("ScrollDownEvent", -1).isTopFunction())
-	{
-	    ll.pushInteger(pos.x).pushInteger(pos.y);
-	    int res = ll.callFunction(2, 1).getTopBoolean();
-	    // remove boolean, table
-	    ll.stackPop(2);
-	    return res;
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-
-    return false;
-}
-
-bool SWE_Terminal::userEvent(int code, void* data)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("SystemUserEvent", -1).isTopFunction())
-	{
-	    // unref data
-	    if(code == Signal::LuaUnrefAction)
-	    {
-		if(data)
-		{
-		    int objRef = reinterpret_cast<intptr_t>(data);
-		    luaL_unref(ll.L(), LUA_REGISTRYINDEX, objRef);
-		    DEBUG("object unref: " << String::hex(objRef));
-		}
-
-		// remove function, table
-		ll.stackPop(2);
-		return true;
-	    }
-
-	    ll.pushInteger(code);
-	    if(data)
-	    {
-		int objRef = reinterpret_cast<intptr_t>(data);
-		lua_rawgeti(ll.L(), LUA_REGISTRYINDEX, objRef);
-	    }
-	    else
-	    {
-		ll.pushNil();
-	    }
-
-	    int res = ll.callFunction(2, 1).getTopBoolean();
-
-	    // remove boolean, table
-	    ll.stackPop(2);
-	    return res;
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-
-    return false;
-}
-
-void SWE_Terminal::tickEvent(u32 ms)
-{
-    if(SWE_Scene::window_push(ll, this))
-    {
-	if(ll.getFieldTableIndex("SystemTickEvent", -1).isTopFunction())
-	{
-	    ll.pushInteger(ms);
-	    ll.callFunction(1, 0);
-	}
-	else
-	{
-	    ll.stackPop();
-	}
-    }
-    ll.stackPop();
-}
-
-SWE_Terminal* SWE_Terminal::get(LuaState & ll, int tableIndex, const char* funcName)
-{
-    if(! ll.isTableIndex(tableIndex) ||
-	0 != ll.popFieldTableIndex("__type", tableIndex).compare("swe.terminal"))
-    {
-	ERROR(funcName << ": " << "table not found, index: " << tableIndex);
-    	return NULL;
-    }
-
-    if(! ll.getFieldTableIndex("userdata", tableIndex).isTopUserData())
-    {
-	ERROR(funcName << ": " << "not userdata, index: " << tableIndex << ", " << ll.getTopTypeName());
-	ll.stackPop();
-	return NULL;
-    }
-
-    auto ptr = static_cast<SWE_Terminal**>(ll.getTopUserData());
-    ll.stackPop();
-
-    return ptr ? *ptr : NULL;
+    return static_cast<TermWindow*>(SWE_Window::get(ll, tableIndex, funcName));
 }
 
 /////////////////////////////////////// 
-int SWE_terminal_empty(lua_State* L)
-{
-    lua_pushboolean(L, 0);
-    return 1;
-}
-
 int SWE_terminal_set_position(lua_State* L)
 {
     // params: swe_terminal, posx, posy
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -476,7 +85,7 @@ int SWE_terminal_set_termsize(lua_State* L)
     // params: swe_terminal, cols, rows
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -504,7 +113,7 @@ int SWE_terminal_set_result(lua_State* L)
     // params: swe_terminal, int
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -528,7 +137,7 @@ int SWE_terminal_set_visible(lua_State* L)
     // params: swe_terminal, bool
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -552,7 +161,7 @@ int SWE_terminal_set_modality(lua_State* L)
     // params: swe_terminal, bool
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -573,7 +182,7 @@ int SWE_terminal_set_keyhandle(lua_State* L)
     // params: swe_terminal, bool
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -597,7 +206,7 @@ int SWE_terminal_render_texture(lua_State* L)
 
     LuaState ll(L);
 
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
     SWE_Texture* ptr = SWE_Texture::get(ll, 2, __FUNCTION__);
     
     if(term && ptr)
@@ -648,7 +257,7 @@ int SWE_terminal_to_json(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -664,8 +273,8 @@ int SWE_terminal_to_json(lua_State* L)
         int rows = ll.getFieldTableIndex("rows", 1).getTopInteger();
         ll.stackPop(10);
 
-        std::string str = StringFormat("{\"type\":\"swe.terminal\",\"posx\":%1,\"posy\":%2,\"width\":%3,\"height\":%4,\"visible\":%5,\"modality\":%6,\"keyhandle\":%7,\"result\":%8,\"cols\":%9,\"rows\":%10}").
-            arg(posx).arg(posy).arg(width).arg(height).arg(visible).arg(modality).arg(keyhandle).arg(result).arg(cols).arg(rows);
+        std::string str = StringFormat("{\"type\":\"%1\",\"posx\":%2,\"posy\":%3,\"width\":%4,\"height\":%5,\"visible\":%6,\"modality\":%7,\"keyhandle\":%8,\"result\":%9,\"cols\":%10,\"rows\":%11}").
+            arg("swe.terminal").arg(posx).arg(posy).arg(width).arg(height).arg(visible).arg(modality).arg(keyhandle).arg(result).arg(cols).arg(rows);
 
         ll.pushString(str);
         return 1;
@@ -681,7 +290,7 @@ int SWE_terminal_point_inarea(lua_State* L)
     // params: swe_terminal, point
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -712,7 +321,7 @@ int SWE_terminal_fill_fgcolor(lua_State* L)
     // params: swe_terminal, color, cols, rows
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -740,7 +349,7 @@ int SWE_terminal_fill_bgcolor(lua_State* L)
     // params: swe_terminal, color, cols, rows
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -768,7 +377,7 @@ int SWE_terminal_fill_colors(lua_State* L)
     // params: swe_terminal, color, color, cols, rows
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -797,7 +406,7 @@ int SWE_terminal_fill_property(lua_State* L)
     // params: swe_terminal, blended, style, hinting, cols, rows
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -827,7 +436,7 @@ int SWE_terminal_fill_charset(lua_State* L)
     // params: swe_terminal, charset, cols, rows
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -855,7 +464,7 @@ int SWE_terminal_set_fgcolor(lua_State* L)
     // params: swe_terminal, color
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -878,7 +487,7 @@ int SWE_terminal_set_bgcolor(lua_State* L)
     // params: swe_terminal, color
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -901,7 +510,7 @@ int SWE_terminal_set_colors(lua_State* L)
     // params: swe_terminal, color, color
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -928,7 +537,7 @@ int SWE_terminal_set_wrap(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -950,7 +559,7 @@ int SWE_terminal_set_padding(lua_State* L)
     // params: swe_terminal, left, right, top, bottom
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -977,7 +586,7 @@ int SWE_terminal_reset_colors(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -999,7 +608,7 @@ int SWE_terminal_reset_fgcolor(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1021,7 +630,7 @@ int SWE_terminal_reset_bgcolor(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1043,7 +652,7 @@ int SWE_terminal_reset_padding(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1065,7 +674,7 @@ int SWE_terminal_reset_wrap(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1087,7 +696,7 @@ int SWE_terminal_cursor_position(lua_State* L)
     // params: swe_terminal, posx, posy
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1122,7 +731,7 @@ int SWE_terminal_cursor_topleft(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1144,7 +753,7 @@ int SWE_terminal_cursor_topright(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1166,7 +775,7 @@ int SWE_terminal_cursor_bottomleft(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1188,7 +797,7 @@ int SWE_terminal_cursor_bottomright(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1210,7 +819,7 @@ int SWE_terminal_cursor_moveup(lua_State* L)
     // params: swe_terminal, count
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1234,7 +843,7 @@ int SWE_terminal_cursor_movedown(lua_State* L)
     // params: swe_terminal, count
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1258,7 +867,7 @@ int SWE_terminal_cursor_moveleft(lua_State* L)
     // params: swe_terminal, count
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1282,7 +891,7 @@ int SWE_terminal_cursor_moveright(lua_State* L)
     // params: swe_terminal, count
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1306,7 +915,7 @@ int SWE_terminal_cursor_movefirst(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1328,7 +937,7 @@ int SWE_terminal_cursor_movelast(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1350,7 +959,7 @@ int SWE_terminal_set_flush(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1369,7 +978,7 @@ int SWE_terminal_draw_hline(lua_State* L)
     // params: swe_terminal, length, line
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1377,22 +986,25 @@ int SWE_terminal_draw_hline(lua_State* L)
 	int length = ll.toIntegerIndex(2);
 	int symbol = 3 > params ? acs::hline(LineThin) : ll.toIntegerIndex(3);
 
-	// fg/bg color
-	if(3 < params)
+	if(length > 0)
 	{
-	    ARGB argb1 = ll.toIntegerIndex(4);
-	    if(4 < params)
+	    // fg/bg color
+	    if(3 < params)
 	    {
-		ARGB argb2 = ll.toIntegerIndex(5);
-		*term << fill::colors(Color(argb1).toColorIndex(), Color(argb2).toColorIndex(), TermSize(length, 1)) << cursor::left(length);
+		ARGB argb1 = ll.toIntegerIndex(4);
+		if(4 < params)
+		{
+		    ARGB argb2 = ll.toIntegerIndex(5);
+		    *term << fill::colors(Color(argb1).toColorIndex(), Color(argb2).toColorIndex(), TermSize(length, 1)) << cursor::left(length);
+		}
+		else
+		{
+		    *term << fill::fgcolor(Color(argb1).toColorIndex(), TermSize(length, 1)) << cursor::left(length);
+		}
 	    }
-	    else
-	    {
-		*term << fill::fgcolor(Color(argb1).toColorIndex(), TermSize(length, 1)) << cursor::left(length);
-	    }
-	}
 
-	*term << draw::hline(length, symbol);
+    	    *term << draw::hline(length, symbol);
+	}
 
 	ll.pushValueIndex(1);
 	return 1;
@@ -1410,7 +1022,7 @@ int SWE_terminal_draw_vline(lua_State* L)
     // params: swe_terminal, length, line
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1418,21 +1030,25 @@ int SWE_terminal_draw_vline(lua_State* L)
 	int length = ll.toIntegerIndex(2);
 	int symbol = 3 > params ? acs::vline(LineThin) : ll.toIntegerIndex(3);
 
-	// fg/bg color
-	if(3 < params)
+	if(length > 0)
 	{
-	    ARGB argb1 = ll.toIntegerIndex(4);
-	    if(4 < params)
+	    // fg/bg color
+	    if(3 < params)
 	    {
-		ARGB argb2 = ll.toIntegerIndex(5);
-		*term << fill::colors(Color(argb1).toColorIndex(), Color(argb2).toColorIndex(), TermSize(1, length)) << cursor::left() << cursor::up(length-1);
+		ARGB argb1 = ll.toIntegerIndex(4);
+		if(4 < params)
+		{
+		    ARGB argb2 = ll.toIntegerIndex(5);
+		    *term << fill::colors(Color(argb1).toColorIndex(), Color(argb2).toColorIndex(), TermSize(1, length)) << cursor::left() << cursor::up(length-1);
+		}
+		else
+		{
+		    *term << fill::fgcolor(Color(argb1).toColorIndex(), TermSize(1, length)) << cursor::left() << cursor::up(length-1);
+		}
 	    }
-	    else
-	    {
-		*term << fill::fgcolor(Color(argb1).toColorIndex(), TermSize(1, length)) << cursor::left() << cursor::up(length-1);
-	    }
+
+	    *term << draw::vline(length, symbol);
 	}
-	*term << draw::vline(length, symbol);
 
 	ll.pushValueIndex(1);
 	return 1;
@@ -1450,7 +1066,7 @@ int SWE_terminal_draw_rect(lua_State* L)
     // params: swe_terminal, rtw, rth, line
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1496,7 +1112,7 @@ int SWE_terminal_draw_text(lua_State* L)
     // params: swe_terminal, text, .. text
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1544,7 +1160,7 @@ int SWE_terminal_draw_char(lua_State* L)
     // params: swe_terminal, char, .. char
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1585,7 +1201,7 @@ int SWE_terminal_charset_info(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    SWE_Terminal* term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
 
     if(term)
     {
@@ -1660,22 +1276,22 @@ const struct luaL_Reg SWE_terminal_functions[] = {
     { "DrawChar",	SWE_terminal_draw_char },	// [swe_terminal], table terminal, char, ..., char
     { "CharsetInfo",	SWE_terminal_charset_info },	// [table], table terminal
     // virtual
-    { "TextureInvalidEvent",SWE_terminal_empty },
-    { "WindowCreateEvent", SWE_terminal_empty },
-    { "WindowCloseEvent",  SWE_terminal_empty },
-    { "DisplayResizeEvent",SWE_terminal_empty },
-    { "MousePressEvent",   SWE_terminal_empty },
-    { "MouseReleaseEvent", SWE_terminal_empty },
-    { "MouseClickEvent",   SWE_terminal_empty },
-    { "MouseFocusEvent",   SWE_terminal_empty },
-    { "MouseMotionEvent",  SWE_terminal_empty },
-    { "KeyPressEvent",     SWE_terminal_empty },
-    { "KeyReleaseEvent",   SWE_terminal_empty },
-    { "ScrollUpEvent",     SWE_terminal_empty },
-    { "ScrollDownEvent",   SWE_terminal_empty },
-    { "SystemUserEvent",   SWE_terminal_empty },
-    { "SystemTickEvent",   SWE_terminal_empty },
-    { "RenderWindow",      SWE_terminal_empty },
+    { "TextureInvalidEvent",NULL },
+    { "WindowCreateEvent", NULL },
+    { "WindowCloseEvent",  NULL },
+    { "DisplayResizeEvent",NULL },
+    { "MousePressEvent",   NULL },
+    { "MouseReleaseEvent", NULL },
+    { "MouseClickEvent",   NULL },
+    { "MouseFocusEvent",   NULL },
+    { "MouseMotionEvent",  NULL },
+    { "KeyPressEvent",     NULL },
+    { "KeyReleaseEvent",   NULL },
+    { "ScrollUpEvent",     NULL },
+    { "ScrollDownEvent",   NULL },
+    { "SystemUserEvent",   NULL },
+    { "SystemTickEvent",   NULL },
+    { "RenderWindow",      NULL },
     { NULL, NULL }
 };
 
@@ -1692,7 +1308,7 @@ int SWE_terminal_create(lua_State* L)
 	parent = SWE_Terminal::get(ll, -1, __FUNCTION__);
     else
     // set parent DisplayWindow
-	parent = SWE_Scene::window_getindex(ll, 1);
+	parent = DisplayScene::rootWindow();
 
     //
     ll.pushTable();
@@ -1714,10 +1330,11 @@ int SWE_terminal_create(lua_State* L)
 	*ptr = new SWE_Terminal(L, systemFont(), *parent);
     }
 
-    // set metatable: __gc
+    ll.setTableIndex(-3);
+    // set metatable: __gc to table
     ll.pushTable(0, 1);
     ll.pushFunction(SWE_terminal_destroy).setFieldTableIndex("__gc", -2);
-    ll.setMetaTableIndex(-2).setTableIndex(-3);
+    ll.setMetaTableIndex(-2);
 
     ll.pushString("__type").pushString("swe.terminal").setTableIndex(-3);
     ll.pushString("visible").pushBoolean((*ptr)->isVisible()).setTableIndex(-3);
@@ -1735,40 +1352,14 @@ int SWE_terminal_create(lua_State* L)
     ll.setFunctionsTableIndex(SWE_terminal_functions, -1);
 
     DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
-
-    SWE_Scene::window_add(ll);
+    SWE_Scene::window_add(ll, String::hex((*ptr)->id()), !parent);
 
     return 1;
 }
 
 int SWE_terminal_destroy(lua_State* L)
 {
-    LuaState ll(L);
-        
-    if(ll.isTopUserData())
-    {
-        auto ptr = static_cast<SWE_Terminal**>(ll.getTopUserData());
-        if(ptr && *ptr)
-        {
-            DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
-	    // auto remove SWE_Scene::window_remove(ll, *ptr);
-
-	    (*ptr)->windowCloseEvent();
-
-            delete *ptr;
-            *ptr = NULL;
-        }
-        else
-        {
-            ERROR("userdata empty");
-        }
-    }
-    else
-    {
-        ERROR("not userdata");
-    }
-
-    return 0;
+    return SWE_window_destroy(L);
 }
 
 int SWE_char_ltee(lua_State* L)

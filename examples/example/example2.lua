@@ -44,7 +44,7 @@ end
 
 function area.RenderWindow()
     area:RenderClear(area.bgcolor)
-    area:RenderRect(SWE.Color.Yellow, 0, 0, win.width, win.height)
+    area:RenderRect(SWE.Color.Yellow, 0, 0, area.width, area.height)
     return true
 end
 

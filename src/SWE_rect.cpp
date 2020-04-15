@@ -242,6 +242,29 @@ int SWE_rect_to_json(lua_State* L)
     return 0;
 }
 
+int SWE_rect_tostring(lua_State* L)
+{
+    // params: swe_rect
+
+    LuaState ll(L);
+
+    if(ll.isTableIndex(1) && 0 == ll.popFieldTableIndex("__type", 1).compare("swe.rect"))
+    {
+	int rx = ll.getFieldTableIndex("posx", 1).getTopInteger();
+	int ry = ll.getFieldTableIndex("posy", 1).getTopInteger();
+	int rw = ll.getFieldTableIndex("width", 1).getTopInteger();
+	int rh = ll.getFieldTableIndex("height", 1).getTopInteger();
+
+	ll.stackPop(4);
+	ll.pushString(StringFormat("%1[%2,%3,%4,%5]").arg("swe.rect").arg(rx).arg(ry).arg(rw).arg(rh));
+
+	return 1;
+    }
+
+    ERROR("userdata empty");
+    return 0;
+}
+
 int SWE_rect_unpack(lua_State* L)
 {
     // params: swe_rect
@@ -289,6 +312,11 @@ int SWE_rect_create(LuaState & ll, int rx, int ry, int rw, int rh)
     ll.pushInteger(ry).setFieldTableIndex("posy", -2);
     ll.pushInteger(rw).setFieldTableIndex("width", -2);
     ll.pushInteger(rh).setFieldTableIndex("height", -2);
+
+    // set: tostring
+    ll.pushTable(0, 1);
+    ll.pushFunction(SWE_rect_tostring).setFieldTableIndex("__tostring", -2);
+    ll.setMetaTableIndex(-2);
 
     // set functions
     ll.setFunctionsTableIndex(SWE_rect_functions, -1);
@@ -344,6 +372,27 @@ int SWE_point_to_json(lua_State* L)
     return 0;
 }
 
+int SWE_point_tostring(lua_State* L)
+{
+    // params: swe_point
+
+    LuaState ll(L);
+
+    if(ll.isTableIndex(1) && 0 == ll.popFieldTableIndex("__type", 1).compare("swe.point"))
+    {
+	int px = ll.getFieldTableIndex("posx", 1).getTopInteger();
+	int py = ll.getFieldTableIndex("posy", 1).getTopInteger();
+
+	ll.stackPop(2);
+	ll.pushString(StringFormat("%1[%2,%3]").arg("swe.point").arg(px).arg(py));
+
+	return 1;
+    }
+
+    ERROR("userdata empty");
+    return 0;
+}
+
 int SWE_point_unpack(lua_State* L)
 {
     // params: swe_point
@@ -388,6 +437,11 @@ int SWE_point_create(lua_State* L)
     ll.pushInteger(px).setFieldTableIndex("posx", -2);
     ll.pushInteger(py).setFieldTableIndex("posy", -2);
 
+    // set: tostring
+    ll.pushTable(0, 1);
+    ll.pushFunction(SWE_point_tostring).setFieldTableIndex("__tostring", -2);
+    ll.setMetaTableIndex(-2);
+
     // set functions
     ll.setFunctionsTableIndex(SWE_point_functions, -1);
 
@@ -426,6 +480,27 @@ int SWE_size_to_json(lua_State* L)
         ERROR("userdata empty");
     }
 
+    return 0;
+}
+
+int SWE_size_tostring(lua_State* L)
+{
+    // params: swe_size
+
+    LuaState ll(L);
+
+    if(ll.isTableIndex(1) && 0 == ll.popFieldTableIndex("__type", 1).compare("swe.size"))
+    {
+	int sw = ll.getFieldTableIndex("width", 1).getTopInteger();
+	int sh = ll.getFieldTableIndex("height", 1).getTopInteger();
+
+	ll.stackPop(2);
+	ll.pushString(StringFormat("%1[%2,%3]").arg("swe.size").arg(sw).arg(sh));
+
+	return 1;
+    }
+
+    ERROR("userdata empty");
     return 0;
 }
 
@@ -472,6 +547,11 @@ int SWE_size_create(lua_State* L)
     ll.pushString("swe.size").setFieldTableIndex("__type", -2);
     ll.pushInteger(sw).setFieldTableIndex("width", -2);
     ll.pushInteger(sh).setFieldTableIndex("height", -2);
+
+    // set: tostring
+    ll.pushTable(0, 1);
+    ll.pushFunction(SWE_size_tostring).setFieldTableIndex("__tostring", -2);
+    ll.setMetaTableIndex(-2);
 
     // set functions
     ll.setFunctionsTableIndex(SWE_size_functions, -1);

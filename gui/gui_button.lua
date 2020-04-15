@@ -21,7 +21,7 @@ function TextButtonCreate(posx, posy, text, frs, parent)
 
     btn.MouseFocusEvent = function(f)
 	btn.focused = f
-	SWE.PushEvent(SWE.Action.ButtonDirty, nil, btn)
+	SWE.PushEvent(SWE.Action.ObjectDirty, nil, btn)
     end
 
     btn.TextureInvalidEvent = function()
@@ -48,7 +48,7 @@ function TextButtonCreate(posx, posy, text, frs, parent)
 
     btn.SystemUserEvent = function(a,b)
         -- button dirty
-        if a == SWE.Action.ButtonDirty then
+        if a == SWE.Action.ObjectDirty then
             SWE.DisplayDirty()
 	    return true
         elseif a == SWE.Action.FontChanged then
@@ -62,4 +62,44 @@ function TextButtonCreate(posx, posy, text, frs, parent)
     end
 
     return btn
+end
+
+function TermLabelActionCreate(str, frs, tpx, tpy, parent, fgcol, bgcol)
+    local term = SWE.Terminal(frs, string.len(str) + 2, 1, parent)
+    term.label = str
+    term.fgcol = fgcol or SWE.Color.Yellow
+    term.bgcol = bgcol or parent.colors.back or SWE.Color.Black
+    term.brcol1 = parent.colors.text or SWE.Color.White
+    term.brcol2 = parent.colors.back or SWE.Color.Black
+    term.focus = false
+    term.disable = false
+    term:SetPosition(tpx * frs.fixedWidth, tpy * frs.lineHeight)
+
+    term.MouseFocusEvent = function(f)
+	if not term.disable then
+    	    term.focus = f
+    	    SWE.DisplayDirty()
+    	    return true
+	end
+	return false
+    end
+
+    term.RenderWindow = function()
+        term:CursorTopLeft():FillColors(term.brcol1, term.brcol2, 1, 1)
+	if not term.disable then
+    	    if term.focus then
+        	term:FillColors(term.bgcol, term.fgcol, term.cols - 2, term.rows)
+    	    else
+        	term:FillColors(term.fgcol, term.bgcol, term.cols - 2, term.rows)
+    	    end
+	else
+    	    term:FillColors(SWE.Color.Black, SWE.Color.Gray, term.cols - 2, term.rows)
+	end
+        term:FillColors(term.brcol1, term.brcol2, 1, 1)
+        term:CursorTopLeft():DrawChar("["):DrawText(term.label):DrawChar("]")
+        term:SetFlush()
+        return true
+    end
+
+    return term
 end

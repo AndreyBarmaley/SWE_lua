@@ -409,7 +409,7 @@ int SWE_streamfile_seek(lua_State* L)
     if(stream)
     {
 	int offset = ll.toIntegerIndex(2);
-	int whence = ll.isIntegerIndex(3) ? ll.toIntegerIndex(3) : RW_SEEK_SET;
+	int whence = ll.isNumberIndex(3) ? ll.toIntegerIndex(3) : RW_SEEK_SET;
 	bool res = stream->seek(offset, whence);
 	ll.pushBoolean(res);
     }
@@ -509,8 +509,8 @@ int SWE_streamfile_to_json(lua_State* L)
 	int pos = stream->tell();
 
         ll.stackPop(2);
-        std::string str = StringFormat("{\"type\":\"swe.streamfile\",\"filename\":\"%1\",\"mode\":\"%2\",\"tell\":%3}").
-            arg(name).arg(mode).arg(pos);
+        std::string str = StringFormat("{\"type\":\"%1\",\"filename\":\"%2\",\"mode\":\"%3\",\"tell\":%4}").
+            arg("swe.streamfile").arg(name).arg(mode).arg(pos);
 
         ll.pushString(str);
         return 1;

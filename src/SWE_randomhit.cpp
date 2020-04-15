@@ -103,10 +103,30 @@ int SWE_randomhit_to_json(lua_State* L)
         int chance = ll.getFieldTableIndex("chance", 1).getTopInteger();
         ll.stackPop(1);
 
-        std::string str = StringFormat("{\"type\":\"swe.randomhit\",\"chance\":%1,\"order\":\"%2\"}").
-            arg(chance).arg(hit->toString());
+        std::string str = StringFormat("{\"type\":\"%1\",\"chance\":%2,\"order\":\"%3\"}").
+            arg("swe.randomhit").arg(chance).arg(hit->toString());
 
         ll.pushString(str);
+	return 1;
+    }
+
+    ERROR("userdata empty");
+    return 0;
+}
+
+int SWE_randomhit_tostring(lua_State* L)
+{
+    // params: swe_randomhit
+
+    LuaState ll(L);
+    SWE_RandomHit* hit = SWE_RandomHit::get(ll, 1, __FUNCTION__);
+
+    if(hit)
+    {
+        int chance = ll.getFieldTableIndex("chance", 1).getTopInteger();
+        ll.stackPop(1);
+
+        ll.pushString(StringFormat("%1[%2,%3]").arg("swe.randomhit").arg(chance).arg(hit->toString()));
 	return 1;
     }
 
@@ -125,13 +145,19 @@ int SWE_randomhit_create(lua_State* L)
 {
     // empty params
     LuaState ll(L);
+
     ll.pushTable();
 
-    // userdata
+    // set: tostring
+    ll.pushTable(0, 1);
+    ll.pushFunction(SWE_randomhit_tostring).setFieldTableIndex("__tostring", -2);
+    ll.setMetaTableIndex(-2);
+
+    // set userdata
     ll.pushString("userdata");
     auto ptr = static_cast<SWE_RandomHit**>(ll.pushUserData(sizeof(SWE_RandomHit*)));
 
-    // set metatable: __gc
+    // set metatable: __gc to userdata
     ll.pushTable(0, 1);
     ll.pushFunction(SWE_randomhit_destroy).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2).setTableIndex(-3);

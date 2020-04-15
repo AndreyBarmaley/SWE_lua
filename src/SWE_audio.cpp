@@ -120,6 +120,12 @@ int SWE_music_play(lua_State* L)
 	if(Systems::isFile(filename2)) std::swap(filename, filename2);
     }
 
+    if(! Systems::isFile(filename))
+    {
+        std::string filename2 = SWE_Tools::toRunningPath(ll, filename);
+	if(Systems::isFile(filename2)) std::swap(filename, filename2);
+    }
+
     if(Systems::isFile(filename))
     {
 	DEBUG(filename);
@@ -183,6 +189,12 @@ int SWE_sound_play(lua_State* L)
     if(! Systems::isFile(filename))
     {
         std::string filename2 = SWE_Tools::toCurrentPath(ll, filename);
+	if(Systems::isFile(filename2)) std::swap(filename, filename2);
+    }
+
+    if(! Systems::isFile(filename))
+    {
+        std::string filename2 = SWE_Tools::toRunningPath(ll, filename);
 	if(Systems::isFile(filename2)) std::swap(filename, filename2);
     }
 

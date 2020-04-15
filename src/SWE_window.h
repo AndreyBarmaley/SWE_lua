@@ -31,6 +31,24 @@ struct lua_State;
 int SWE_window_create(lua_State*);
 int SWE_window_destroy(lua_State*);
 
+void SWE_window_create_event(LuaState &, const Window &);
+void SWE_texture_invalid_event(LuaState &, const Window &);
+void SWE_display_resize_event(LuaState &, const Window &, const Size &, bool);
+bool SWE_mouse_press_event(LuaState &, const Window &, const ButtonEvent &);
+bool SWE_mouse_release_event(LuaState &, const Window &, const ButtonEvent &);
+bool SWE_mouse_motion_event(LuaState &, const Window &, const Point &, u32);
+void SWE_mouse_tracking_event(LuaState &, const Window &, const Point &, u32);
+bool SWE_mouse_click_event(LuaState &, const Window &, const ButtonsEvent &);
+void SWE_mouse_focus_event(LuaState &, const Window &);
+void SWE_mouse_leave_event(LuaState &, const Window &);
+bool SWE_key_press_event(LuaState &, const Window &, const KeySym &);
+bool SWE_key_release_event(LuaState &, const Window &, const KeySym &);
+bool SWE_scroll_up_event(LuaState &, const Window &, const Point &);
+bool SWE_scroll_down_event(LuaState &, const Window &, const Point &);
+bool SWE_system_user_event(LuaState &, const Window &, int, void*);
+void SWE_system_tick_event(LuaState &, const Window &, u32);
+void SWE_window_render(LuaState &, const Window &);
+
 class SWE_Window : public Window
 {
     Texture	tooltip;
@@ -40,35 +58,33 @@ protected:
 
     const Texture* tooltipTexture(void) const override { return & tooltip; }
 
-    void	windowCreateEvent(void) override;
-    void	textureInvalidEvent(void) override;
-    void	displayResizeEvent(const Size &, bool) override;
-    bool	mousePressEvent(const ButtonEvent &) override;
-    bool	mouseReleaseEvent(const ButtonEvent &) override;
-    bool	mouseMotionEvent(const Point &, u32 buttons) override;
-    void	mouseTrackingEvent(const Point &, u32 buttons) override;
-    bool	mouseClickEvent(const ButtonsEvent &) override;
-    void        mouseFocusEvent(void) override;
-    void        mouseLeaveEvent(void) override;
-    bool	keyPressEvent(const KeySym &) override;
-    bool	keyReleaseEvent(const KeySym &) override;
-    bool        scrollUpEvent(const Point &) override;
-    bool        scrollDownEvent(const Point &) override;
-    bool        userEvent(int, void*) override;
-    void        tickEvent(u32 ms) override;
-    //void        signalReceive(int, const SignalMember*) override;
+    void	windowCreateEvent(void) override { SWE_window_create_event(ll, *this); }
+    void	textureInvalidEvent(void) override { SWE_texture_invalid_event(ll, *this); }
+    void	displayResizeEvent(const Size & sz, bool sdl) override { SWE_display_resize_event(ll, *this, sz, sdl); }
+    bool	mousePressEvent(const ButtonEvent & be) override { return SWE_mouse_press_event(ll, *this, be); }
+    bool	mouseReleaseEvent(const ButtonEvent & be) override { return SWE_mouse_release_event(ll, *this, be); }
+    bool	mouseMotionEvent(const Point & pos, u32 buttons) override { return SWE_mouse_motion_event(ll, *this, pos, buttons); }
+    void	mouseTrackingEvent(const Point & pos, u32 buttons) override { SWE_mouse_tracking_event(ll, *this, pos, buttons); }
+    bool	mouseClickEvent(const ButtonsEvent & be) override { return SWE_mouse_click_event(ll, *this, be); }
+    void        mouseFocusEvent(void) override { SWE_mouse_focus_event(ll, *this); }
+    void        mouseLeaveEvent(void) override { SWE_mouse_leave_event(ll, *this); }
+    bool	keyPressEvent(const KeySym & ks) override { return SWE_key_press_event(ll, *this, ks); }
+    bool	keyReleaseEvent(const KeySym & ks) override { return SWE_key_release_event(ll, *this, ks); }
+    bool        scrollUpEvent(const Point & pos) override { return SWE_scroll_up_event(ll, *this, pos); }
+    bool        scrollDownEvent(const Point & pos) override { return SWE_scroll_down_event(ll, *this, pos); }
+    bool        userEvent(int code, void* data) override { return SWE_system_user_event(ll, *this, code, data); }
+    void        tickEvent(u32 ms) override { SWE_system_tick_event(ll, *this, ms); }
 
 public:
     SWE_Window(lua_State*, Window* parent);
     SWE_Window(lua_State*, const Point &, const Size &, Window* parent);
 
-    void        renderWindow(void) override;
-    void	windowCloseEvent(void);
+    void        renderWindow(void) override { SWE_window_render(ll, *this); }
 
     void        toolTipInit(const std::string &, const FontRender &, const Color & fn, const Color & bg, const Color & rt);
     void        toolTipInit(const std::string &);
 
-    static SWE_Window* get(LuaState &, int tableIndex, const char* funcName);
+    static Window* get(LuaState &, int tableIndex, const char* funcName);
     static void registers(LuaState &);
 };
 
@@ -101,18 +117,17 @@ public:
     void	includeRegion(const Points &);
     void	excludeRegion(const Points &);
 
-    static SWE_Polygon* get(LuaState &, int tableIndex, const char* funcName);
+    static Window* get(LuaState &, int tableIndex, const char* funcName);
     static void registers(LuaState &);
 };
 
 namespace SWE_Scene
 {
-    int		window_add(LuaState &);
-    bool	window_push(LuaState &, Window*);
-    bool	window_remove(LuaState &, Window*);
-    Window*	window_getindex(LuaState &, int);
+    bool	window_add(LuaState &, const std::string &, bool isroot);
+    bool	window_pushtop(LuaState &, const Window &);
+    void	window_remove(LuaState &, const Window &);
 
-    void	clean(LuaState &, bool skipFirst);
+    void	clean(LuaState &, bool saveMain);
     void	registers(LuaState &);
 }
 

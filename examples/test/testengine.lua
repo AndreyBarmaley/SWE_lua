@@ -179,6 +179,7 @@ print("has intersection",res1)
 
 local res2 = rt1:GetIntersectRect(rt2)
 print("intersect rects",res2:ToJson())
+print("tostring: ", res2)
 
 local hit = SWE.RandomHit(33)
 print(hit:ToJson())
@@ -200,3 +201,16 @@ print(hit:ToJson())
 for i = 2,100 do
     local check = hit:Check()
 end
+
+local utf81 = "ПриветБармалей1234567890qwerty"
+local ustr1 = SWE.UnicodeString(utf81)
+local ustr2 = ustr1:SubString(6,8)
+if ustr2.size ~= 8 then
+    error("SWE.UnicodeString(string) FAILED")
+end
+SWE.Dump(ustr2)
+--print(ustr2:ToString())
+
+local utf82 = "Привет Бармалей!"
+local ustr3 = SWE.UnicodeString(utf82)
+print(ustr3:ToJson())

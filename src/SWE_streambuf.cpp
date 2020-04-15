@@ -412,8 +412,8 @@ int SWE_streambuf_to_json(lua_State* L)
 	std::string data = stream->get().toHexString(",", true);
 	stream->seekg(tellg);
 
-        std::string str = StringFormat("{\"type\":\"swe.streambuf\",\"tellg\":%1,\"tellp\":%2,\"binary\":[%3]}").
-            arg(stream->tellg()).arg(stream->tellp()).arg(data);
+        std::string str = StringFormat("{\"type\":\"%1\",\"tellg\":%2,\"tellp\":%3,\"binary\":[%4]}").
+            arg("swe.streambuf").arg(stream->tellg()).arg(stream->tellp()).arg(data);
 
         ll.pushString(str);
         return 1;
@@ -444,7 +444,7 @@ const struct luaL_Reg SWE_streambuf_functions[] = {
 //    { "Tell", SWE_streambuf_tell },			// [int], swe_streambuf
 //    { "Open", SWE_streambuf_open }, 			// [bool], swe_streambuf, string, string
 //    { "Close", SWE_streambuf_close }, 		// [swe_streambuf], swe_streambuf
-//    { "ToJson", SWE_streambuf_to_json },		// [string], swe_streambuf
+    { "ToJson", SWE_streambuf_to_json },		// [string], swe_streambuf
     { NULL, NULL }
 };
 

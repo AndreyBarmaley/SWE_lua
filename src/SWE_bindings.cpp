@@ -46,7 +46,7 @@
 #include "SWE_translation.h"
 #include "SWE_unicodestring.h"
 
-#define SWE_LUA_VERSION 20200320
+#define SWE_LUA_VERSION 20200407
 #define SWE_LUA_LICENSE "GPL3"
 
 int SWE_window_create(lua_State*);
@@ -66,8 +66,7 @@ int SWE_init2(lua_State* L)
     {
 	SWE_Scene::clean(ll, true);
 	// return display window
-	Window* win = SWE_Scene::window_getindex(ll, 1);
-
+	Window* win = DisplayScene::rootWindow();
 	if(win)
 	{
 	    DisplayScene::destroyChilds(*win);
@@ -76,8 +75,7 @@ int SWE_init2(lua_State* L)
 	    win->setVisible(true);
 
 	    // push to stack
-	    SWE_Scene::window_push(ll, win);
-	    return 1;
+	    return SWE_Scene::window_pushtop(ll, *win) ? 1 : 0;
 	}
     }
 
@@ -114,20 +112,24 @@ int SWE_init(lua_State* L)
     // check also initialized
     if(! dsz.isEmpty() && (winsz.isEmpty() || winsz == dsz))
     {
-	SWE_Scene::clean(ll, true);
-
 	// return display window
-	Window* win = SWE_Scene::window_getindex(ll, 1);
+	Window* win = DisplayScene::rootWindow();
 	if(win)
 	{
 	    DisplayScene::destroyChilds(*win);
+	    SWE_Scene::clean(ll, true);
 
 	    DEBUG("display found: " << dsz.toString());
 	    win->setVisible(true);
 
 	    // push to stack
-	    SWE_Scene::window_push(ll, win);
-	    return 1;
+	    if(SWE_Scene::window_pushtop(ll, *win))
+	    {
+		return 1;
+	    }
+
+	    ERROR("display is loss");
+	    return 0;
 	}
     }
     
@@ -161,10 +163,8 @@ int SWE_display_window(lua_State* L)
     // params: none
     LuaState ll(L);
 
-    Window* win = SWE_Scene::window_getindex(ll, 1);
-    SWE_Scene::window_push(ll, win);
-
-    return 1;
+    Window* win = DisplayScene::rootWindow();
+    return win ? SWE_Scene::window_pushtop(ll, *win) : 0;
 }
 
 int SWE_display_dirty(lua_State* L)
@@ -211,8 +211,7 @@ int SWE_loop(lua_State* L)
     // params: swe_window
     LuaState ll(L);
 
-    SWE_Window* win = SWE_Window::get(ll, 1, __FUNCTION__);
-
+    auto win = SWE_Window::get(ll, 1, __FUNCTION__);
     if(win)
     {
 	int res = win->exec();
@@ -329,6 +328,12 @@ int SWE_register_directory(lua_State* L)
     }
 
     std::string name = ll.getTopString();
+
+    if(! Systems::isDirectory(name))
+    {
+	std::string name2 = SWE_Tools::toRunningPath(ll, name);
+	if(Systems::isDirectory(name2)) std::swap(name, name2);
+    }
 
     if(! Systems::isDirectory(name))
     {
@@ -464,6 +469,12 @@ int SWE_system_read_directory(lua_State* L)
     if(! Systems::isDirectory(dirpath))
     {
 	std::string dirpath2 = SWE_Tools::toCurrentPath(ll, dirpath);
+	if(Systems::isDirectory(dirpath2)) std::swap(dirpath, dirpath2);
+    }
+
+    if(! Systems::isDirectory(dirpath))
+    {
+	std::string dirpath2 = SWE_Tools::toRunningPath(ll, dirpath);
 	if(Systems::isDirectory(dirpath2)) std::swap(dirpath, dirpath2);
     }
 
@@ -614,6 +625,7 @@ int SWE_system_file_stat(lua_State* L)
 
     ll.pushBoolean(isdir).setFieldTableIndex("isdir", -2);
     ll.pushString(access).setFieldTableIndex("access", -2);
+    ll.pushString(path).setFieldTableIndex("path", -2);
 
     return 1;
 }
@@ -714,7 +726,7 @@ int SWE_push_event(lua_State* L)
 
     int code = ll.toIntegerIndex(1);
     void* data = NULL;
-    SWE_Window* dst = 3 > params || ! ll.isTableIndex(3) ? NULL : SWE_Window::get(ll, 3, __FUNCTION__);
+    auto  dst = 3 > params || ! ll.isTableIndex(3) ? NULL : SWE_Window::get(ll, 3, __FUNCTION__);
 
     // store ref
     if(! ll.isNilIndex(2))
@@ -730,7 +742,7 @@ int SWE_push_event(lua_State* L)
     if(data)
     {
 	// main window
-	Window* win = SWE_Scene::window_getindex(ll, 1);
+	Window* win = DisplayScene::rootWindow();
 	DisplayScene::pushEvent(win, Signal::LuaUnrefAction, data);
     }
 
@@ -767,6 +779,16 @@ int SWE_display_keyboard(lua_State* L)
     return 0;
 }
 
+int SWE_display_handleevents(lua_State* L)
+{
+    // params: int interval
+    LuaState ll(L);
+    u32 interval = ll.isNumberIndex(1) ? ll.toIntegerIndex(1) : 0;
+    DisplayScene::handleEvents(interval);
+
+    return 0;
+}
+
 // library interface
 const struct luaL_Reg SWE_functions[] = {
     { "DisplayInit", SWE_init },	// [table swe_window], string title, int width, int height
@@ -786,6 +808,7 @@ const struct luaL_Reg SWE_functions[] = {
     { "DisplayVideoModes", SWE_display_videomodes }, 		// [string list], void
     { "DisplaySize", SWE_display_size }, 			// [int list], void
     { "DisplayKeyboard", SWE_display_keyboard }, 		// [void], bool show
+    { "DisplayHandleEvents", SWE_display_handleevents }, 	// [void], int interval
     { "RenderScreenshot", SWE_render_screenshot }, 		// [bool], string filename
     { "LuaRegisterDirectory", SWE_register_directory }, 	// [bool], string directory
     { "SystemSleep", SWE_system_delay }, 			// [void], int

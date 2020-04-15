@@ -24,6 +24,7 @@
 #define _SWE_LUA_TERMINAL_
 
 #include "engine.h"
+#include "SWE_window.h"
 
 struct lua_State;
 
@@ -35,30 +36,30 @@ class SWE_Terminal : public TermWindow
 protected:
     LuaState    ll;
 
-    void        windowCreateEvent(void) override;
-    void        textureInvalidEvent(void) override;
-    void        displayResizeEvent(const Size &, bool) override;
-    bool        mousePressEvent(const ButtonEvent &) override;
-    bool        mouseReleaseEvent(const ButtonEvent &) override;
-    bool        mouseMotionEvent(const Point &, u32 buttons) override;
-    bool        mouseClickEvent(const ButtonsEvent &) override;
-    void        mouseFocusEvent(void) override;
-    void        mouseLeaveEvent(void) override;
-    bool        keyPressEvent(const KeySym &) override;
-    bool        keyReleaseEvent(const KeySym &) override;
-    bool        scrollUpEvent(const Point &) override;
-    bool        scrollDownEvent(const Point &) override;
-    bool        userEvent(int, void*) override;
-    void        tickEvent(u32 ms) override;
+    void        windowCreateEvent(void) override { SWE_window_create_event(ll, *this); }
+    void        textureInvalidEvent(void) override { SWE_texture_invalid_event(ll, *this); }
+    void        displayResizeEvent(const Size & sz, bool sdl) override { SWE_display_resize_event(ll, *this, sz, sdl); }
+    bool        mousePressEvent(const ButtonEvent & be) override { return SWE_mouse_press_event(ll, *this, be); }
+    bool        mouseReleaseEvent(const ButtonEvent & be) override { return SWE_mouse_release_event(ll, *this, be); }
+    bool        mouseMotionEvent(const Point & pos, u32 buttons) override { return SWE_mouse_motion_event(ll, *this, pos, buttons); }
+    void        mouseTrackingEvent(const Point & pos, u32 buttons) override { SWE_mouse_tracking_event(ll, *this, pos, buttons); }
+    bool        mouseClickEvent(const ButtonsEvent & be) override { return SWE_mouse_click_event(ll, *this, be); }
+    void        mouseFocusEvent(void) override { SWE_mouse_focus_event(ll, *this); }
+    void        mouseLeaveEvent(void) override { SWE_mouse_leave_event(ll, *this); }
+    bool        keyPressEvent(const KeySym & ks) override { return SWE_key_press_event(ll, *this, ks); }
+    bool        keyReleaseEvent(const KeySym & ks) override { return SWE_key_release_event(ll, *this, ks); }
+    bool        scrollUpEvent(const Point & pos) override { return SWE_scroll_up_event(ll, *this, pos); }
+    bool        scrollDownEvent(const Point & pos) override { return SWE_scroll_down_event(ll, *this, pos); }
+    bool        userEvent(int code, void* data) override { return SWE_system_user_event(ll, *this, code, data); }
+    void        tickEvent(u32 ms) override { SWE_system_tick_event(ll, *this, ms); }
 
 public:
     SWE_Terminal(lua_State*, const FontRender &, Window &);
     SWE_Terminal(lua_State*, const FontRender &, int cols, int rows, Window &);
 
-    void        renderWindow(void) override;
-    void        windowCloseEvent(void);
+    void        renderWindow(void) override { SWE_window_render(ll, *this); }
 
-    static SWE_Terminal* get(LuaState &, int tableIndex, const char* funcName);
+    static TermWindow* get(LuaState &, int tableIndex, const char* funcName);
     static void registers(LuaState &);
 };
 
