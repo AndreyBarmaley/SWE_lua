@@ -23,7 +23,7 @@
 #ifndef _SWE_LUA_U16STRING_
 #define _SWE_LUA_U16STRING_
 
-#include "engine.h"
+#include "SWE_global.h"
 
 struct lua_State;
 

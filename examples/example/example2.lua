@@ -35,9 +35,9 @@ end
 
 function butn.RenderWindow()
     if butn.pressed then
-	butn:RenderTexture(butn.tx2, 0, 0, butn.tx2.width, butn.tx2.height, 0, 0, butn.tx2.width, butn.tx2.height)
+	butn:RenderTexture(butn.tx2, 0, 0)
     else
-	butn:RenderTexture(butn.tx1, 0, 0, butn.tx1.width, butn.tx1.height, 0, 0, butn.tx1.width, butn.tx1.height)
+	butn:RenderTexture(butn.tx1, 0, 0)
     end
     return true
 end

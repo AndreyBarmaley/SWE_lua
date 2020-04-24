@@ -258,16 +258,26 @@ int SWE_texture_render_texture(lua_State* L)
     // params: swe_texture, swe_texture, [srcx, srcy, srcw, srch], [dstx, dsty, dstw, dsth]
     // params: swe_texture, swe_texture, rect src, rect dst
 
+
     LuaState ll(L);
 
-    SWE_Texture* tx1 = SWE_Texture::get(ll, 1, __FUNCTION__);
-    SWE_Texture* tx2 = SWE_Texture::get(ll, 2, __FUNCTION__);
+    // dst texture
+    SWE_Texture* txd = SWE_Texture::get(ll, 1, __FUNCTION__);
+
+    // src texture
+    SWE_Texture* txs = SWE_Texture::get(ll, 2, __FUNCTION__);
     
-    if(tx1 && tx2)
+    if(txs && txd)
     {
 	Rect src, dst;
         int params = ll.stackSize();
 
+	if(3 > params)
+	{
+	    src = txs->rect();
+	    dst = txd->rect();
+	}
+	else
 	if(ll.isTableIndex(3))
 	{
     	    src = SWE_Rect::get(ll, 3, __FUNCTION__);
@@ -296,7 +306,7 @@ int SWE_texture_render_texture(lua_State* L)
 	    dst.h = 9 > params ? src.h : ll.toIntegerIndex(10);
 	}
 
-	Display::renderTexture(*tx2, src, *tx1, dst);
+	Display::renderTexture(*txs, src, *txd, dst);
     }
     else
     {

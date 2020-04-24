@@ -23,7 +23,7 @@
 #ifndef _SWE_LUA_BINARYBUF_
 #define _SWE_LUA_BINARYBUF_
 
-#include "engine.h"
+#include "SWE_global.h"
 
 struct lua_State;
 

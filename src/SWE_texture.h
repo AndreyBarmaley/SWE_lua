@@ -23,7 +23,7 @@
 #ifndef _SWE_LUA_TEXTURE_
 #define _SWE_LUA_TEXTURE_
 
-#include "engine.h"
+#include "SWE_global.h"
 
 struct lua_State;
 

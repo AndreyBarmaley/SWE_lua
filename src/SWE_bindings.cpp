@@ -24,9 +24,6 @@
 #include <sys/stat.h>
 #include <sstream>
 
-#include "engine.h"
-#include "display_scene.h"
-
 #include "SWE_keys.h"
 #include "SWE_rect.h"
 #include "SWE_tools.h"
@@ -58,34 +55,28 @@ int SWE_init2(lua_State* L)
 
     std::string title = ll.toStringIndex(1);
     bool landscape =  ll.toBooleanIndex(2);
-    const Size & dsz = Display::size();
+    Window* win = DisplayScene::rootWindow();
 
     // check also initialized
-    if((landscape && dsz.w > dsz.h) ||
-	(! landscape && dsz.w < dsz.h))
+    if(win && ((landscape && win->width() > win->height()) || (! landscape && win->width() < win->height())))
     {
 	SWE_Scene::clean(ll, true);
-	// return display window
-	Window* win = DisplayScene::rootWindow();
-	if(win)
-	{
-	    DisplayScene::destroyChilds(*win);
+	DEBUG("display found: " << win->size().toString());
 
-	    DEBUG("display found: " << dsz.toString());
-	    win->setVisible(true);
+	win->setVisible(true);
 
-	    // push to stack
-	    return SWE_Scene::window_pushtop(ll, *win) ? 1 : 0;
-	}
+	// push to stack
+	return SWE_Scene::window_pushtop(ll, *win) ? 1 : 0;
     }
 
     SWE_Scene::clean(ll, false);
+    DEBUG("display init: " << (landscape ? "landscape" : "portrait"));
 
     if(Display::init(title, landscape))
     {
-	const Size & dsz2 = Display::size();
+	const Size & dsz = Display::size();
 	ll.stackClear();
-	ll.pushTable().pushInteger(0).pushInteger(0).pushInteger(dsz2.w).pushInteger(dsz2.h).pushNil();
+	ll.pushTable().pushInteger(0).pushInteger(0).pushInteger(dsz.w).pushInteger(dsz.h).pushNil();
 
 	SWE_window_create(L);
 	return 1;
@@ -107,39 +98,34 @@ int SWE_init(lua_State* L)
     std::string title = ll.toStringIndex(1);
     Size winsz = 3 > params ? Size(0, 0) : Size(ll.toIntegerIndex(2), ll.toIntegerIndex(3));
     bool fullscreen = 4 > params ? false : ll.toBooleanIndex(4);
-    const Size & dsz = Display::size();
+    Window* win = DisplayScene::rootWindow();
 
     // check also initialized
-    if(! dsz.isEmpty() && (winsz.isEmpty() || winsz == dsz))
+    if(win && (winsz.isEmpty() || winsz == win->size()))
     {
-	// return display window
-	Window* win = DisplayScene::rootWindow();
-	if(win)
+	SWE_Scene::clean(ll, true);
+	DEBUG("display found: " << win->size().toString());
+
+	win->setVisible(true);
+
+	// push to stack
+	if(SWE_Scene::window_pushtop(ll, *win))
 	{
-	    DisplayScene::destroyChilds(*win);
-	    SWE_Scene::clean(ll, true);
-
-	    DEBUG("display found: " << dsz.toString());
-	    win->setVisible(true);
-
-	    // push to stack
-	    if(SWE_Scene::window_pushtop(ll, *win))
-	    {
 		return 1;
-	    }
-
-	    ERROR("display is loss");
-	    return 0;
 	}
+
+	ERROR("display is loss");
+	return 0;
     }
     
     SWE_Scene::clean(ll, false);
+    DEBUG("display init: " << winsz.toString());
 
     if(Display::init(title, winsz, fullscreen))
     {
-	const Size & dsz2 = Display::size();
+	const Size & dsz = Display::size();
 	ll.stackClear();
-	ll.pushTable().pushInteger(0).pushInteger(0).pushInteger(dsz2.w).pushInteger(dsz2.h).pushNil();
+	ll.pushTable().pushInteger(0).pushInteger(0).pushInteger(dsz.w).pushInteger(dsz.h).pushNil();
 
 	SWE_window_create(L);
 	return 1;
@@ -248,28 +234,32 @@ int SWE_cursor_hide(lua_State* L)
     return 0;
 }
 
+int SWE_print(lua_State* L)
+{
+    // params: 
+    LuaState ll(L);
+    std::ostringstream os;
+
+    for(int index = 1; index <= ll.stackSize(); ++index)
+    {
+	if(1 < index) os << ", ";
+	os << ll.toStringIndex(index);
+    }
+
+    COUT(String::time() << ": [" << "PRINT" << "]\t" << os.str());
+    return 0;
+}
+
 int SWE_debug(lua_State* L)
 {
     // params: 
     LuaState ll(L);
-
     std::ostringstream os;
-    bool sep = false;
 
     for(int index = 1; index <= ll.stackSize(); ++index)
     {
-	if(sep)
-	    os << ", ";
-
-	if(ll.isStringIndex(index))
-	    os << ll.toStringIndex(index);
-	else
-	if(ll.isNumberIndex(index))
-	    os << ll.toNumberIndex(index);
-	else
-	    os << ll.getTypeName(ll.getTypeIndex(index));
-
-	sep = true;
+	if(1 < index) os << ", ";
+	os << ll.toStringIndex(index);
     }
 
     VERBOSE(os.str());
@@ -759,6 +749,42 @@ int SWE_set_debug(lua_State* L)
     return 0;
 }
 
+int SWE_system_run_command(lua_State* L)
+{
+    // params: string list
+    LuaState ll(L);
+
+    int params = ll.stackSize();
+    std::string cmdParams;
+
+    for(int it = 1; it <= params; ++it)
+	cmdParams.append(ll.toStringIndex(it)).append(1, 0x20);
+
+    DEBUG("`" << cmdParams << "'");
+    FILE* pipe = popen(cmdParams.c_str(), "r");
+
+    if(!pipe)
+    {
+	ERROR("popen error");
+	return 0;
+    }
+
+    // result table
+    ll.pushTable();
+
+    char buffer[512];
+    int index = 1;
+
+    while(! std::feof(pipe))
+    {
+        if(std::fgets(buffer, sizeof(buffer), pipe))
+	    ll.pushInteger(index++).pushString(String::chomp(buffer)).setTableIndex(-3);
+    }
+
+    pclose(pipe);
+    return 1;
+}
+
 int SWE_display_keyboard(lua_State* L)
 {
     // params: bool
@@ -793,8 +819,9 @@ int SWE_display_handleevents(lua_State* L)
 const struct luaL_Reg SWE_functions[] = {
     { "DisplayInit", SWE_init },	// [table swe_window], string title, int width, int height
     { "Dump", SWE_dump }, 		// [void], void or object
-    { "Debug", SWE_debug },		// [void], string
-    { "MainLoop", SWE_loop }, 		// [int winresult], table: window
+    { "Debug", SWE_debug },		// [void], params
+    { "Print", SWE_print },		// [void], params
+    { "MainLoop", SWE_loop }, 		// [int window result code], table: window
     { "CursorShow", SWE_cursor_show },	// [void], void
     { "CursorHide", SWE_cursor_hide },	// [void], void
     { "CursorLoad", SWE_cursor_load },	// [void], table swe_texture, int offsetx, int offsety
@@ -821,6 +848,7 @@ const struct luaL_Reg SWE_functions[] = {
     { "SystemConcatePath", SWE_system_concate_path },		// [string], string list
     { "SystemMemoryUsage", SWE_system_memory_usage },		// [number], void
     { "SystemMobileOs", SWE_system_mobile_osname },		// [string], void
+    { "SystemRunCommand", SWE_system_run_command },		// [table], string cmd, string params, string params
     { "StringEncodeToUTF8", SWE_string_encode_utf8 },		// [string], string str, string from charset
     { NULL, NULL }
 };
@@ -902,7 +930,7 @@ extern "C" {
     SWE_UnicodeString::registers(ll);
 
     bool res = Engine::init();
-    if(! res) ERROR("engine init failed");
+    if(! res) ERROR("libswe init failed");
 
     DEBUG("usage " << LUA_RELEASE << ", " << "init version: " << SWE_LUA_VERSION);
     return 1;

@@ -23,7 +23,6 @@
 #ifndef _SWE_LUA_TERMINAL_
 #define _SWE_LUA_TERMINAL_
 
-#include "engine.h"
 #include "SWE_window.h"
 
 struct lua_State;

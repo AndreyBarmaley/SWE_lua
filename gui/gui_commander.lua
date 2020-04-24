@@ -256,6 +256,7 @@ function CommanderInit(win, frs2, cwd2)
 	cmd.btnzi = nil
 	cmd.btnzo = nil
 	cmd.btnx = nil
+	cmd.win.RenderWindow = nil
 	cmd.win = nil
     end
 

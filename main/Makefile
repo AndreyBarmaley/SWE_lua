@@ -2,10 +2,10 @@
 #
 
 TARGET		:= SWE_lua
-LIBENGINE	:= ../$(ENGINEDIR)/libengine.a
+LIBENGINE	:= ../$(LIBSWEDIR)/libswe.a
 LIBSWE		:= ../src/SWE.a
 LIBS		:= $(LIBENGINE) $(LIBS)
-CFLAGS		:= $(CFLAGS) -I../$(ENGINEDIR)
+CFLAGS		:= $(CFLAGS) -I../$(LIBSWEDIR)
 
 RES		:= SWE_lua.res
 ICOFILE		:= ../swe_lua.ico

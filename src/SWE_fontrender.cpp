@@ -267,7 +267,7 @@ int SWE_fontrender_create_ttf(lua_State* L)
     ll.pushString("fixedWidth").pushInteger((*ptr)->symbolAdvance(0x20)).setTableIndex(-3);
     ll.pushString("lineHeight").pushInteger((*ptr)->lineSkipHeight()).setTableIndex(-3);
 
-    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
+    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]" << ", " << "fontId: " << String::hex((*ptr)->id().value(), 4));
 
     // set functions
     ll.setFunctionsTableIndex(SWE_fontrender_functions, -1);
@@ -357,7 +357,7 @@ int SWE_fontrender_create_psf(lua_State* L)
     ll.pushString("lineHeight").pushInteger((*ptr)->lineSkipHeight()).setTableIndex(-3);
 
 
-    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
+    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]" << ", " << "fontId: " << String::hex((*ptr)->id().value(), 4));
 
     // set functions
     ll.setFunctionsTableIndex(SWE_fontrender_functions, -1);
@@ -397,7 +397,7 @@ int SWE_fontrender_create_sys(lua_State* L)
     ll.pushString("fixedWidth").pushInteger((*ptr)->symbolAdvance(0x20)).setTableIndex(-3);
     ll.pushString("lineHeight").pushInteger((*ptr)->lineSkipHeight()).setTableIndex(-3);
 
-    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
+    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]" << ", " << "fontId: " << String::hex((*ptr)->id().value(), 4));
 
     // set functions
     ll.setFunctionsTableIndex(SWE_fontrender_functions, -1);

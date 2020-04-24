@@ -23,7 +23,7 @@
 #ifndef _SWE_LUA_COLOR_
 #define _SWE_LUA_COLOR_
 
-#include "engine.h"
+#include "SWE_global.h"
 
 namespace SWE_Color
 {

@@ -23,7 +23,7 @@
 #ifndef _SWE_LUA_FONTRENDER_
 #define _SWE_LUA_FONTRENDER_
 
-#include "engine.h"
+#include "SWE_global.h"
 
 struct lua_State;
 

@@ -22,8 +22,6 @@
 
 #include <algorithm>
 
-#include "display_scene.h"
-
 #include "SWE_rect.h"
 #include "SWE_tools.h"
 #include "SWE_texture.h"
@@ -54,32 +52,6 @@ TermWindow* SWE_Terminal::get(LuaState & ll, int tableIndex, const char* funcNam
 }
 
 /////////////////////////////////////// 
-int SWE_terminal_set_position(lua_State* L)
-{
-    // params: swe_terminal, posx, posy
-
-    LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
-    {
-	int posx = ll.toIntegerIndex(2);
-	int posy = ll.toIntegerIndex(3);
-
-	term->setPosition(Point(posx, posy));
-
-	// userdata, posy, posx, swe_terminal...
-	ll.pushInteger(posx).setFieldTableIndex("posx", 1);
-	ll.pushInteger(posy).setFieldTableIndex("posy", 1);
-    }
-    else
-    {
-	ERROR("userdata empty");
-    }
-
-    return 0;
-}
-
 int SWE_terminal_set_termsize(lua_State* L)
 {
     // params: swe_terminal, cols, rows
@@ -108,150 +80,6 @@ int SWE_terminal_set_termsize(lua_State* L)
     return 0;
 }
 
-int SWE_terminal_set_result(lua_State* L)
-{
-    // params: swe_terminal, int
-
-    LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
-    {
-	bool result = ll.toIntegerIndex(2);
-
-	term->setResultCode(result);
-
-	// userdata, bool, swe_terminal...
-	ll.pushInteger(result).setFieldTableIndex("result", 1);
-    }
-    else
-    {
-	ERROR("userdata empty");
-    }
-
-    return 0;
-}
-
-int SWE_terminal_set_visible(lua_State* L)
-{
-    // params: swe_terminal, bool
-
-    LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
-    {
-	bool visible = ll.toBooleanIndex(2);
-
-	term->setVisible(visible);
-
-	// userdata, bool, swe_terminal...
-	ll.pushBoolean(visible).setFieldTableIndex("visible", 1);
-    }
-    else
-    {
-	ERROR("userdata empty");
-    }
-
-    return 0;
-}
-
-int SWE_terminal_set_modality(lua_State* L)
-{
-    // params: swe_terminal, bool
-
-    LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
-    {
-	bool modality = ll.toBooleanIndex(2);
-	term->setState(FlagModality, modality);
-
-	ll.pushBoolean(modality).setFieldTableIndex("modality", 1);
-    }
-    else
-    {
-	ERROR("userdata empty");
-    }
-
-    return 0;
-}
-int SWE_terminal_set_keyhandle(lua_State* L)
-{
-    // params: swe_terminal, bool
-
-    LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
-    {
-	bool keyhandle = ll.toBooleanIndex(2);
-	term->setState(FlagKeyHandle, keyhandle);
-
-	ll.pushBoolean(keyhandle).setFieldTableIndex("keyhandle", 1);
-    }
-    else
-    {
-	ERROR("userdata empty");
-    }
-
-    return 0;
-}
-
-int SWE_terminal_render_texture(lua_State* L)
-{
-    // params: swe_terminal, swe_texture, [srcx, srcy, srcw, srch], [dstx, dsty, dstw, dsth]
-    // params: swe_terminal, swe_texture, rect src, rect dst
-
-    LuaState ll(L);
-
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-    SWE_Texture* ptr = SWE_Texture::get(ll, 2, __FUNCTION__);
-    
-    if(term && ptr)
-    {
-	Rect src, dst;
-        int params = ll.stackSize();
-
-	if(ll.isTableIndex(3))
-	{
-	    src = SWE_Rect::get(ll, 3, __FUNCTION__);
-
-	    if(ll.isTableIndex(4))
-	    {
-		dst = SWE_Rect::get(ll, 4, __FUNCTION__);
-	    }
-	    else
-	    {
-    		dst.x = ll.toIntegerIndex(4);
-    		dst.y = ll.toIntegerIndex(5);
-    		dst.w = 6 > params ? src.w : ll.toIntegerIndex(6);
-    		dst.h = 6 > params ? src.h : ll.toIntegerIndex(7);
-	    }
-	}
-	else
-	{
-    	    src.x = ll.toIntegerIndex(3);
-    	    src.y = ll.toIntegerIndex(4);
-	    src.w = ll.toIntegerIndex(5);
-    	    src.h = ll.toIntegerIndex(6);
-    	    dst.x = ll.toIntegerIndex(7);
-    	    dst.y = ll.toIntegerIndex(8);
-    	    dst.w = 9 > params ? src.w : ll.toIntegerIndex(9);
-    	    dst.h = 9 > params ? src.h : ll.toIntegerIndex(10);
-	}
-
-	term->renderTexture(*ptr, src, dst);
-    }
-    else
-    {
-	ERROR("userdata empty");
-    }
-
-    return 0;
-}
-
 int SWE_terminal_to_json(lua_State* L)
 {
     // params: swe_terminal
@@ -264,7 +92,6 @@ int SWE_terminal_to_json(lua_State* L)
         bool visible = ll.getFieldTableIndex("visible", 1).getTopBoolean();
         bool modality = ll.getFieldTableIndex("modality", 1).getTopBoolean();
         bool keyhandle = ll.getFieldTableIndex("keyhandle", 1).getTopBoolean();
-        int result = ll.getFieldTableIndex("result", 1).getTopInteger();
         int posx = ll.getFieldTableIndex("posx", 1).getTopInteger();
         int posy = ll.getFieldTableIndex("posy", 1).getTopInteger();
         int width = ll.getFieldTableIndex("width", 1).getTopInteger();
@@ -273,41 +100,10 @@ int SWE_terminal_to_json(lua_State* L)
         int rows = ll.getFieldTableIndex("rows", 1).getTopInteger();
         ll.stackPop(10);
 
-        std::string str = StringFormat("{\"type\":\"%1\",\"posx\":%2,\"posy\":%3,\"width\":%4,\"height\":%5,\"visible\":%6,\"modality\":%7,\"keyhandle\":%8,\"result\":%9,\"cols\":%10,\"rows\":%11}").
-            arg("swe.terminal").arg(posx).arg(posy).arg(width).arg(height).arg(visible).arg(modality).arg(keyhandle).arg(result).arg(cols).arg(rows);
+        std::string str = StringFormat("{\"type\":\"%1\",\"posx\":%2,\"posy\":%3,\"width\":%4,\"height\":%5,\"visible\":%6,\"modality\":%7,\"keyhandle\":%8,\"cols\":%9,\"rows\":%10}").
+            arg("swe.terminal").arg(posx).arg(posy).arg(width).arg(height).arg(visible).arg(modality).arg(keyhandle).arg(cols).arg(rows);
 
         ll.pushString(str);
-        return 1;
-    }
-
-    ERROR("userdata empty");
-    return 0;
-}
-
-int SWE_terminal_point_inarea(lua_State* L)
-{
-    // params: swe_terminal, ptx, pty
-    // params: swe_terminal, point
-
-    LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
-    {
-	Point pt;
-
-	// params: swe_terminal, point
-	if(ll.isTableIndex(2))
-	    pt = SWE_Point::get(ll, 2, __FUNCTION__);
-	else
-	{
-    	    pt.x = ll.toIntegerIndex(2);
-    	    pt.y = ll.toIntegerIndex(3);
-	}
-
-	bool res = term->isAreaPoint(pt);
-        ll.pushBoolean(res);
-
         return 1;
     }
 
@@ -1232,14 +1028,14 @@ int SWE_terminal_charset_info(lua_State* L)
 }
 
 const struct luaL_Reg SWE_terminal_functions[] = {
-    { "SetVisible",     SWE_terminal_set_visible },      // [void], table terminal, bool flag
-    { "SetResult",      SWE_terminal_set_result },       // [void], table terminal, int code
-    { "SetModality",    SWE_terminal_set_modality },     // [void], table terminal, int code
-    { "SetKeyHandle",   SWE_terminal_set_keyhandle },    // [void], table terminal, int code
-    { "SetPosition",    SWE_terminal_set_position },     // [void], table window. point pos
+    { "SetVisible",     SWE_window_set_visible },      // [void], table terminal, bool flag
+    { "SetResultCode",  SWE_window_set_result },       // [void], table terminal, int code
+    { "SetModality",    SWE_window_set_modality },     // [void], table terminal, int code
+    { "SetKeyHandle",   SWE_window_set_keyhandle },    // [void], table terminal, int code
+    { "SetPosition",    SWE_window_set_position },     // [void], table window. point pos
+    { "RenderTexture",  SWE_window_render_texture },   // [void]. table terminal, table texture, rect, rect
+    { "PointInArea",	SWE_window_point_inarea },     // [bool], table terminal, int, int
     { "SetTermSize",    SWE_terminal_set_termsize },     // [void], table window. int cols, int rows
-    { "RenderTexture",  SWE_terminal_render_texture },   // [void]. table terminal, table texture, rect, rect
-    { "PointInArea",	SWE_terminal_point_inarea },     // [bool], table terminal, int, int
     { "ToJson",		SWE_terminal_to_json },          // [string], table terminal
     // 
     { "FillFGColor",	SWE_terminal_fill_fgcolor },	// [swe_terminal], table terminal, color, cols, rows
@@ -1336,23 +1132,25 @@ int SWE_terminal_create(lua_State* L)
     ll.pushFunction(SWE_terminal_destroy).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2);
 
+    const std::string hexid = String::hex((*ptr)->id());
+
     ll.pushString("__type").pushString("swe.terminal").setTableIndex(-3);
     ll.pushString("visible").pushBoolean((*ptr)->isVisible()).setTableIndex(-3);
     ll.pushString("modality").pushBoolean(false).setTableIndex(-3);
     ll.pushString("keyhandle").pushBoolean(false).setTableIndex(-3);
-    ll.pushString("result").pushInteger(0).setTableIndex(-3);
     ll.pushString("posx").pushInteger((*ptr)->position().x).setTableIndex(-3);
     ll.pushString("posy").pushInteger((*ptr)->position().y).setTableIndex(-3);
     ll.pushString("width").pushInteger((*ptr)->width()).setTableIndex(-3);
     ll.pushString("height").pushInteger((*ptr)->height()).setTableIndex(-3);
     ll.pushString("cols").pushInteger(cols).setTableIndex(-3);
     ll.pushString("rows").pushInteger(rows).setTableIndex(-3);
+    ll.pushString("hexid").pushString(hexid).setTableIndex(-3);
 
     // set functions
     ll.setFunctionsTableIndex(SWE_terminal_functions, -1);
 
     DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
-    SWE_Scene::window_add(ll, String::hex((*ptr)->id()), !parent);
+    SWE_Scene::window_add(ll, hexid, !parent);
 
     return 1;
 }

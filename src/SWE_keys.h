@@ -23,7 +23,7 @@
 #ifndef _SWE_LUA_KEYS_
 #define _SWE_LUA_KEYS_
 
-#include "engine.h"
+#include "SWE_global.h"
 
 namespace SWE_Key
 {

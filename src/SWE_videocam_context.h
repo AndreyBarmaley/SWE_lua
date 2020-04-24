@@ -23,7 +23,7 @@
 #ifndef _SWE_LUA_VIDEOCAM_CONTEXT_
 #define _SWE_LUA_VIDEOCAM_CONTEXT_
 
-#include "engine.h"
+#include "SWE_global.h"
 
 struct CaptureContext
 {

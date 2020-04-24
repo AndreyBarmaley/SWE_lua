@@ -24,8 +24,6 @@
 #include "SWE_binarybuf.h"
 #include "SWE_audio.h"
 
-#ifndef DISABLE_AUDIO
-
 int SWE_mixer_volume(lua_State* L)
 {
     // params: int volume (255 max)
@@ -37,10 +35,14 @@ int SWE_mixer_volume(lua_State* L)
         return 0;
     }
 
+#ifdef DISABLE_AUDIO
+    ERROR("not supported module: " << "swe.audio");
+    ll.pushInteger(0);
+#else
     int volume = ll.getTopNumber();
-
     int res = Music::volume(volume);
     ll.pushInteger(res);
+#endif
 
     return 1;
 }
@@ -49,7 +51,11 @@ int SWE_mixer_reset(lua_State* L)
 {
     // params: none
 
+#ifdef DISABLE_AUDIO
+    ERROR("not supported module: " << "swe.audio");
+#else
     Music::reset();
+#endif
     return 0;
 }
 
@@ -58,8 +64,13 @@ int SWE_music_isplaying(lua_State* L)
     // params: none
     LuaState ll(L);
 
+#ifdef DISABLE_AUDIO
+    ERROR("not supported module: " << "swe.audio");
+    ll.pushBoolean(false);
+#else
     bool res = Music::isPlaying();
     ll.pushBoolean(res);
+#endif
 
     return 1;
 }
@@ -68,7 +79,11 @@ int SWE_music_pause(lua_State* L)
 {
     // params: none
 
+#ifdef DISABLE_AUDIO
+    ERROR("not supported module: " << "swe.audio");
+#else
     Music::pause();
+#endif
     return 0;
 }
 
@@ -76,7 +91,11 @@ int SWE_music_resume(lua_State* L)
 {
     // params: none
 
+#ifdef DISABLE_AUDIO
+    ERROR("not supported module: " << "swe.audio");
+#else
     Music::resume();
+#endif
     return 0;
 }
 
@@ -89,8 +108,13 @@ int SWE_music_playbuf(lua_State* L)
 
     if(buf)
     {
+#ifdef DISABLE_AUDIO
+	ERROR("not supported module: " << "swe.audio");
+        ll.pushBoolean(false);
+#else
 	bool res = Music::play(*buf);
         ll.pushBoolean(res);
+#endif
     }
     else
     {
@@ -128,9 +152,14 @@ int SWE_music_play(lua_State* L)
 
     if(Systems::isFile(filename))
     {
+#ifdef DISABLE_AUDIO
+	ERROR("not supported module: " << "swe.audio");
+	ll.pushBoolean(false);
+#else
 	DEBUG(filename);
 	bool res = Music::play(filename);
 	ll.pushBoolean(res);
+#endif
     }
     else
     {
@@ -146,9 +175,13 @@ int SWE_sound_isplaying(lua_State* L)
     // params: none
     LuaState ll(L);
 
+#ifdef DISABLE_AUDIO
+    ERROR("not supported module: " << "swe.audio");
+    ll.pushBoolean(false);
+#else
     bool res = Sound::isPlaying();
     ll.pushBoolean(res);
-
+#endif
     return 1;
 }
 
@@ -161,8 +194,13 @@ int SWE_sound_playbuf(lua_State* L)
 
     if(buf)
     {
+#ifdef DISABLE_AUDIO
+	ERROR("not supported module: " << "swe.audio");
+        ll.pushBoolean(false);
+#else
 	bool res = Sound::play(*buf);
         ll.pushBoolean(res);
+#endif
     }
     else
     {
@@ -200,9 +238,14 @@ int SWE_sound_play(lua_State* L)
 
     if(Systems::isFile(filename))
     {
+#ifdef DISABLE_AUDIO
+	ERROR("not supported module: " << "swe.audio");
+	ll.pushBoolean(false);
+#else
 	DEBUG(filename);
 	bool res = Sound::play(filename);
 	ll.pushBoolean(res);
+#endif
     }
     else
     {
@@ -227,15 +270,12 @@ const struct luaL_Reg SWE_audio_functions[] = {
     { NULL, NULL }
 };
 
-#endif
 
 void SWE_Audio::registers(LuaState & ll)
 {
-#ifndef DISABLE_AUDIO
     ll.pushTable("SWE.Audio");
     // set functions
     ll.setFunctionsTableIndex(SWE_audio_functions, -1);
     ll.stackPop();
-#endif
 }
 

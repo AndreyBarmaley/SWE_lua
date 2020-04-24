@@ -3,6 +3,9 @@
 SWE.LuaRegisterDirectory("gui")
 require 'gui_tools'
 require 'gui_button'
+require 'gui_action'
+
+SWE.Action.EditorCursorPositionChanged	= 336001
 
 local frs = {}
 
@@ -114,11 +117,21 @@ local function TermCheckSyntax(term, str, posx, length, skip, params)
     end
 end
 
+local function UnicodeStringFind(ustr, pattern, bs)
+    -- FIXME convert to ASCII string
+    local str = ustr:ToUtf8String()
+    return string.find(str, pattern, bs)
+end
+
 local function DrawLineColored(term, ustr, skip, vals)
     --
     term:CursorMoveFirst()
     if 0 < ustr.size and skip < ustr.size then
-	term:DrawText(ustr:SubString(skip))
+	if 0 < skip then
+	    term:DrawText(ustr:SubString(skip))
+	else
+	    term:DrawText(ustr)
+	end
     end
 
     -- mark space string
@@ -130,16 +143,13 @@ local function DrawLineColored(term, ustr, skip, vals)
 
     local iscomments = UnicodeStringIsComments(ustr, 255)
 
-    -- FIXME convert, add UnicodeString.find template
-    local str = ustr:ToUtf8String()
-
     for i = 1, #vals do
 	local t = vals[i]
 
 	if t.pattern ~= nil then
 	    local bs = 1
 	    while bs ~= nil do
-		local fs, ls, ss = string.find(str, t.pattern, bs)
+		local fs, ls, ss = UnicodeStringFind(ustr, t.pattern, bs)
 		if ls ~= nil then
 		    if t.tokens == nil or #t.tokens == 0 or TableFindValue(t.tokens, ss) then
 			-- apply style pattern
@@ -162,11 +172,8 @@ end
 
 local function AreaHighLightCoords(term, termcol, termrow, pattern)
     local bs = 1
-    -- FIXME add UnicodeString find template
-    local str = term.content[termrow]:ToUtf8String()
     while bs ~= nil do
-	-- FIXME add UnicodeString find template
-	local fs,ls,ss = string.find(str, pattern, bs)
+	local fs,ls,ss = UnicodeStringFind(term.content[termrow], pattern, bs)
 
 	if ls ~= nil then
 	    -- focused word
@@ -232,11 +239,11 @@ local function AreaScrollUp(area, skip)
 	if 0 > area.skiprows then
 	    area.skiprows = 0
 	end
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     elseif 1 < area.cursory then
 	area.cursory = 1
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     end
     return false
@@ -248,15 +255,15 @@ local function AreaScrollDown(area, skip)
 	if area.skiprows + area.rows - 2 > #area.content then
 	    area.skiprows = #area.content - area.rows + 2
 	end
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     elseif area.rows - 2 > #area.content then
 	area.cursory = #area.content
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     elseif area.cursory < area.rows - 2 then
 	area.cursory = area.rows - 2
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     end
     return false
@@ -268,12 +275,12 @@ local function AreaScrollLeft(area, skip)
 	if 0 > area.skipcols then
 	    area.skipcols = 0
 	end
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     elseif 1 < area.cursorx then
 	area.cursorx = 1
 	area.virtualx = area.cursorx + area.skipcols
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     end
     return false
@@ -285,12 +292,12 @@ local function AreaScrollRight(area, skip)
 	if area.skipcols + area.cols - 2 > area.maxlen - 1 then
 	    area.skipcols = area.maxlen - area.cols + 1
 	end
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     elseif area.cursorx < area.cols - 2 then
 	area.cursorx = area.cols - 2
 	area.virtualx = area.cursorx + area.skipcols
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     end
     return false
@@ -301,7 +308,7 @@ local function AreaLineHome(area)
 	area.skipcols = 0
 	area.cursorx = 1
 	area.virtualx = area.cursorx + area.skipcols
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     end
     return false
@@ -320,7 +327,7 @@ local function AreaGotoLineEnd(area)
 	    area.cursorx = ustr.size + 1
 	end
 	area.virtualx = area.cursorx + area.skipcols
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     end
     return false
@@ -342,6 +349,7 @@ local function AreaVirtualLineEnd(area)
 	    area.skipcols = area.cursorx - area.cols + 2
 	    area.cursorx = area.cols - 2
 	end
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
         return true
     end
     return false
@@ -364,7 +372,7 @@ local function AreaKeyReturn(area)
     area.skipcols = 0
     if area.cursory < area.rows - 2 then
 	area.cursory = area.cursory + 1
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     end
     return AreaScrollDown(area, 1)
@@ -378,7 +386,7 @@ local function AreaKeyBackspace(area)
 	area.cursorx = area.cursorx - 1
 	area.virtualx = area.cursorx + area.skipcols
 	area.status.modify = true
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     elseif AreaScrollLeft(area, 1) then
 	local textrow = area.cursory + area.skiprows
@@ -399,7 +407,7 @@ local function AreaKeyBackspace(area)
 	ustr:Insert(ustr.size, area.content[textrow2])
 	table.remove(area.content, textrow2)
 	area.status.modify = true
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     elseif AreaScrollUp(area, 1) then
 	local textrow1 = area.cursory + area.skiprows
@@ -419,8 +427,9 @@ end
 local function AreaKeyUp(area)
     if 1 < area.cursory then
 	area.cursory = area.cursory - 1
-	AreaVirtualLineEnd(area)
-	SWE.DisplayDirty()
+	if not AreaVirtualLineEnd(area) then
+	    SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
+	end
 	return true
     end
     return AreaScrollUp(area, 1)
@@ -429,8 +438,9 @@ end
 local function AreaKeyDown(area)
     if area.cursory < area.rows - 2 then
 	area.cursory = area.cursory + 1
-	AreaVirtualLineEnd(area)
-	SWE.DisplayDirty()
+	if not AreaVirtualLineEnd(area) then
+	    SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
+	end
 	return true
     end
     return AreaScrollDown(area, 1)
@@ -440,8 +450,7 @@ local function AreaKeyLeft(area)
     if 1 < area.cursorx then
 	area.cursorx = area.cursorx - 1
 	area.virtualx = area.cursorx + area.skipcols
-	AreaFindHighLightWord(area,area.cursorx,area.cursory)
-	SWE.DisplayDirty()
+	SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	return true
     elseif AreaScrollLeft(area, 1) then
 	return true
@@ -450,8 +459,9 @@ local function AreaKeyLeft(area)
     -- move up
     if 1 < area.cursory then
 	area.cursory = area.cursory - 1
-	AreaGotoLineEnd(area)
-	SWE.DisplayDirty()
+	if not AreaGotoLineEnd(area) then
+	    SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
+	end
 	return true
     elseif AreaScrollUp(area, 1) then
 	return AreaGotoLineEnd(area)
@@ -469,8 +479,7 @@ local function AreaKeyRight(area)
 	if area.cursorx < area.cols - 2 then
 	    area.cursorx = area.cursorx + 1
 	    area.virtualx = area.cursorx + area.skipcols
-	    AreaFindHighLightWord(area,area.cursorx,area.cursory)
-	    SWE.DisplayDirty()
+	    SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
 	    return true
 	elseif AreaScrollRight(area, 1) then
 	    return true
@@ -480,8 +489,9 @@ local function AreaKeyRight(area)
     -- move down
     if area.cursory < area.rows - 2 then
 	area.cursory = area.cursory + 1
-	AreaLineHome(area)
-	SWE.DisplayDirty()
+	if not AreaLineHome(area) then
+	    SWE.PushEvent(SWE.Action.EditorCursorPositionChanged, nil, area)
+	end
 	return true
     elseif AreaScrollDown(area, 1) then
 	return AreaLineHome(area)
@@ -676,6 +686,10 @@ function EditorInit(win, frs2, filename)
 	if SWE.Key.ESCAPE == key then
     	    win:SetVisible(false)
 	    return true
+	-- android back key
+	elseif key == 0x4000010e then
+    	    win:SetVisible(false)
+	    return true
 	elseif SWE.Key.RETURN == key then	return AreaKeyReturn(area)
 	elseif SWE.Key.BACKSPACE == key then	return AreaKeyBackspace(area)
 	elseif SWE.Key.HOME == key then		return AreaLineHome(area)
@@ -709,6 +723,9 @@ function EditorInit(win, frs2, filename)
     	    return AreaScrollRight(area, area.settings.finger_scroll)
 	elseif a == SWE.Signal.FingerMoveRight then
     	    return AreaScrollLeft(area, area.settings.finger_scroll)
+	elseif a == SWE.Action.EditorCursorPositionChanged then
+	    AreaFindHighLightWord(area,area.cursorx,area.cursory)
+	    SWE.DisplayDirty()
 	end
 	return false
     end

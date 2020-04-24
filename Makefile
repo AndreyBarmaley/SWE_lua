@@ -4,9 +4,9 @@
 DEBUG := 1
 
 ifdef OLDENGINE
-ENGINEVER := ver12
+SDLVER := ver12
 else
-ENGINEVER := ver20
+SDLVER := ver20
 endif
 DISABLE_FIREWARE := 1
 
@@ -15,7 +15,7 @@ DEBUG :=
 DISABLE_FFMPEG	 := 1
 DISABLE_FIREWARE := 1
 export DISABLE_FFMPEG DISABLE_FIREWARE
-ENGINEVER := ver12
+SDLVER := ver12
 endif
 
 ifeq ($(PLATFORM),mingw32)
@@ -25,9 +25,9 @@ export DISABLE_FFMPEG DISABLE_FIREWARE
 endif
 
 TARGET := SWE
-ENGINEDIR := ../../engine
+LIBSWEDIR := ../../engine
 
-include Makefile.$(ENGINEVER)
+include Makefile.$(SDLVER)
 
 ifdef DEBUG
 CFLAGS          := $(CFLAGS) -std=c++11 -O0 -g -Wall -Werror -Wno-sign-compare
@@ -87,7 +87,7 @@ endif
 
 include Makefile.$(PLATFORM)
 
-export ENGINEDIR EXT CXX AR LINK WINDRES LDFLAGS CFLAGS LIBS PLATFORM LUASRC IDICON RESICON
+export LIBSWEDIR EXT CXX AR LINK WINDRES LDFLAGS CFLAGS LIBS PLATFORM LUASRC IDICON RESICON
 
 .PHONY: clean
 
@@ -95,7 +95,7 @@ all:
 ifdef LUASRC
 	$(MAKE) -C $(LUASRC) $(LUADST)
 endif
-	$(MAKE) -C $(ENGINEDIR) libengine.a
+	$(MAKE) -C $(LIBSWEDIR)
 	$(MAKE) -C src SWE.a
 	$(MAKE) -C main
 	cp -f main/$(TARGET)_lua$(EXT) .
@@ -107,6 +107,6 @@ clean:
 ifdef LUASRC
 	$(MAKE) -C $(LUASRC) clean
 endif
-	$(MAKE) -C $(ENGINEDIR) clean
+	$(MAKE) -C $(LIBSWEDIR) clean
 	$(MAKE) -C main clean
 	$(MAKE) -C src clean

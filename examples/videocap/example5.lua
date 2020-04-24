@@ -43,9 +43,13 @@ function CreateSimpleColorWindow(color, str, posx, posy, parent)
     win.RenderWindow = function()
 	win:RenderClear(win.colbg)
 	win:RenderRect(win.colbr, win.rtbar, true)
-	win:RenderTexture(win.text, 0, 0, win.text.width, win.text.height, (win.width - win.text.width) / 2, 2)
+	win:RenderTexture(win.text, (win.width - win.text.width) / 2, 2)
 	if win.focus and win.parent.frame ~= nil then
-	    win:RenderTexture(win.parent.frame, 0, 0, win.parent.frame.width, win.parent.frame.height, 10, 26, 128, 96, false)
+	    --win:RenderTexture(win.parent.frame, 10, 26)
+	    local small = SWE.Texture(128, 96)
+	    small:RenderTexture(win.parent.frame)
+	    win:RenderTexture(small, 10, 26)
+	    --win:RenderTexture(win.parent.frame, 10, 26, 128, 96)
 	else
 	    win:RenderRect(SWE.Color.Blue, 10, 26, 128, 96, true)
 	end

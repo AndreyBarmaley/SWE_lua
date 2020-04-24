@@ -24,7 +24,7 @@
 #define _SWE_LUA_WINDOW_
 
 #include <set>
-#include "engine.h"
+#include "SWE_global.h"
 
 struct lua_State;
 
@@ -48,6 +48,14 @@ bool SWE_scroll_down_event(LuaState &, const Window &, const Point &);
 bool SWE_system_user_event(LuaState &, const Window &, int, void*);
 void SWE_system_tick_event(LuaState &, const Window &, u32);
 void SWE_window_render(LuaState &, const Window &);
+
+int SWE_window_set_visible(lua_State* L);
+int SWE_window_set_result(lua_State* L);
+int SWE_window_set_modality(lua_State* L);
+int SWE_window_set_position(lua_State* L);
+int SWE_window_set_keyhandle(lua_State* L);
+int SWE_window_point_inarea(lua_State* L);
+int SWE_window_render_texture(lua_State* L);
 
 class SWE_Window : public Window
 {
@@ -125,9 +133,8 @@ namespace SWE_Scene
 {
     bool	window_add(LuaState &, const std::string &, bool isroot);
     bool	window_pushtop(LuaState &, const Window &);
-    void	window_remove(LuaState &, const Window &);
 
-    void	clean(LuaState &, bool saveMain);
+    void	clean(LuaState &, bool saveDisplay);
     void	registers(LuaState &);
 }
 

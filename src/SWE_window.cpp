@@ -23,8 +23,6 @@
 #include <sstream>
 #include <algorithm>
 
-#include "display_scene.h"
-
 #include "SWE_rect.h"
 #include "SWE_tools.h"
 #include "SWE_texture.h"
@@ -836,8 +834,10 @@ int SWE_window_render_cyrcle(lua_State* L)
 
 int SWE_window_render_texture(lua_State* L)
 {
-    // params: swe_window, swe_texture, [srcx, srcy, srcw, srch], [dstx, dsty, dstw, dsth]
-    // params: swe_window, swe_texture, rect src, rect dst
+    // params: swe_window, swe_texture, [srcx, srcy, srcw, srch], [dstx, dsty]
+    // params: swe_window, swe_texture, [dstx, dsty]
+    // params: swe_window, swe_texture, rect src, point dst
+    // params: swe_window, swe_texture, point dst
 
     LuaState ll(L);
 
@@ -846,9 +846,9 @@ int SWE_window_render_texture(lua_State* L)
     
     if(win && ptr)
     {
-	Rect src, dst;
+	Rect src;
+	Point dst;
         int params = ll.stackSize();
-	bool fixedsize = true;
 
 	if(ll.isTableIndex(3))
 	{
@@ -856,32 +856,34 @@ int SWE_window_render_texture(lua_State* L)
 
 	    if(ll.isTableIndex(4))
 	    {
-		dst = SWE_Rect::get(ll, 4, __FUNCTION__);
-    		fixedsize = 5 > params ? true : ll.toBooleanIndex(5);
+		dst = SWE_Point::get(ll, 4, __FUNCTION__);
 	    }
 	    else
 	    {
-    		dst.x = ll.toIntegerIndex(4);
-    		dst.y = ll.toIntegerIndex(5);
-    		dst.w = 6 > params ? src.w : ll.toIntegerIndex(6);
-    		dst.h = 7 > params ? src.h : ll.toIntegerIndex(7);
-    		fixedsize = 8 > params ? true : ll.toBooleanIndex(8);
+    		dst = src;
+		src = ptr->rect();
 	    }
 	}
 	else
 	{
-    	    src.x = ll.toIntegerIndex(3);
-    	    src.y = ll.toIntegerIndex(4);
-	    src.w = ll.toIntegerIndex(5);
-    	    src.h = ll.toIntegerIndex(6);
-    	    dst.x = ll.toIntegerIndex(7);
-    	    dst.y = ll.toIntegerIndex(8);
-    	    dst.w = 9 > params ? src.w : ll.toIntegerIndex(9);
-    	    dst.h = 10 > params ? src.h : ll.toIntegerIndex(10);
-    	    fixedsize = 11 > params ? true : ll.toBooleanIndex(11);
+	    if(4 < params)
+    	    {
+		src.x = ll.toIntegerIndex(3);
+    		src.y = ll.toIntegerIndex(4);
+		src.w = ll.toIntegerIndex(5);
+    		src.h = ll.toIntegerIndex(6);
+    		dst.x = ll.toIntegerIndex(7);
+    		dst.y = ll.toIntegerIndex(8);
+	    }
+	    else
+	    {
+    		dst.x = ll.toIntegerIndex(3);
+    		dst.y = ll.toIntegerIndex(4);
+		src = ptr->rect();
+	    }
 	}
 
-	win->renderTexture(*ptr, src, dst, fixedsize);
+	win->renderTexture(*ptr, src, dst);
     }
     else
     {
@@ -960,15 +962,14 @@ int SWE_window_to_json(lua_State* L)
         bool visible = ll.getFieldTableIndex("visible", 1).getTopBoolean();
         bool modality = ll.getFieldTableIndex("modality", 1).getTopBoolean();
         bool keyhandle = ll.getFieldTableIndex("keyhandle", 1).getTopBoolean();
-        int result = ll.getFieldTableIndex("result", 1).getTopInteger();
         int posx = ll.getFieldTableIndex("posx", 1).getTopInteger();
         int posy = ll.getFieldTableIndex("posy", 1).getTopInteger();
         int width = ll.getFieldTableIndex("width", 1).getTopInteger();
         int height = ll.getFieldTableIndex("height", 1).getTopInteger();
         ll.stackPop(8);
 
-        std::string str = StringFormat("{\"type\":\"swe.window\",\"posx\":%1,\"posy\":%2,\"width\":%3,\"height\":%4,\"visible\":%5,\"modality\":%6,\"keyhandle\":%7,\"result\":%8}").
-            arg(posx).arg(posy).arg(width).arg(height).arg(visible).arg(modality).arg(keyhandle).arg(result);
+        std::string str = StringFormat("{\"type\":\"swe.window\",\"posx\":%1,\"posy\":%2,\"width\":%3,\"height\":%4,\"visible\":%5,\"modality\":%6,\"keyhandle\":%7}").
+            arg(posx).arg(posy).arg(width).arg(height).arg(visible).arg(modality).arg(keyhandle);
 
         ll.pushString(str);
         return 1;
@@ -1070,19 +1071,19 @@ int SWE_window_childrens(lua_State* L)
 	return 1;
     }
 
-    if(! ll.pushTable("SWE.Scene").isTopTable())
+    if(! ll.pushTable("SWE.Scene.Windows").isTopTable())
     {
 	ERROR("table not found" << ": " << "swe.scene");
 	return 1;
     }
 
-    // iterate SWE.Scene
+    // iterate SWE.Scene.Windows
     ll.pushNil();
     int index = 1;
 
     while(ll.nextTableIndex(-2))
     {
-	// stack: swe_window, table result, SWE.Scene, key, value(swe_window)
+	// stack: swe_window, table result, SWE.Scene.Windows, key, value(swe_window)
 	auto child = SWE_Window::get(ll, -1, __FUNCTION__);
 	if(child && child->parent() == win)
 	{
@@ -1094,10 +1095,53 @@ int SWE_window_childrens(lua_State* L)
 	ll.stackPop();
     }
 
-    // stack: swe_window, table result, SWE.Scene
+    // stack: swe_window, table result, SWE.Scene.Windows
     ll.stackPop();
 
     // stack: swe_window, table result
+    return 1;
+}
+
+/// remove swe_window from stack
+int SWE_scene_removetop(lua_State* L)
+{
+    // stack: ..., swe_window
+    LuaState ll(L);
+
+    if(! ll.isTopTable())
+    {
+	ERROR("table not found" << ": " << "swe.window");
+	ll.pushBoolean(false);
+	return 1;
+    }
+
+    auto win = SWE_Window::get(ll, -1, __FUNCTION__);
+    if(! win)
+    {
+	ERROR("userdata empty");
+	ll.pushBoolean(false);
+	return 1;
+    }
+
+    if(! ll.pushTable("SWE.Scene.Windows").isTopTable())
+    {
+	ERROR("table not found" << ": " << "swe.scene.windows");
+	ll.stackPop();
+	ll.pushBoolean(false);
+	return 1;
+    }
+
+    win->setVisible(false);
+    std::string hexid = String::hex(win->id());
+
+    ll.pushNil().setFieldTableIndex(hexid, -2);
+    ll.stackPop();
+
+    // SWE.Scene.Windows mode: weak values
+    DisplayScene::removeItem(*win);
+    ll.garbageCollect();
+
+    ll.pushBoolean(true);
     return 1;
 }
 
@@ -1105,9 +1149,10 @@ int SWE_window_childrens(lua_State* L)
 /// find swe_window and push top stack
 bool SWE_Scene::window_pushtop(LuaState & ll, const Window & win)
 {
-    if(! ll.pushTable("SWE.Scene").isTopTable())
+    // stack: ..., swe_window
+    if(! ll.pushTable("SWE.Scene.Windows").isTopTable())
     {
-	ERROR("table not found" << ": " << "swe.scene");
+	ERROR("table not found" << ": " << "swe.scene.windows");
 	ll.stackPop();
 	return false;
     }
@@ -1122,91 +1167,137 @@ bool SWE_Scene::window_pushtop(LuaState & ll, const Window & win)
 	return false;
     }
 
-    // stack: ..., SWE.Scene, swe_window
+    // stack: ..., SWE.Scene.Windows, swe_window
     ll.stackRemoveIndex(-2);
     return true;
-}
-
-/// remove swe_window from scene
-void SWE_Scene::window_remove(LuaState & ll, const Window & win)
-{
-    if(ll.pushTable("SWE.Scene").isTopTable())
-    {
-	ll.pushNil().setFieldTableIndex(String::hex(win.id()), -2);
-    }
-    else
-    {
-	ERROR("table not found" << ": " << "swe.scene");
-    }
-
-    // stack: SWE.Scene
-    ll.stackPop();
 }
 
 /// push top stack swe_window to scene
 bool SWE_Scene::window_add(LuaState & ll, const std::string & label, bool isroot)
 {
     // stack: swe_window...
-
-    if(! ll.pushTable("SWE.Scene").isTopTable())
+    if(! ll.pushTable("SWE.Scene.Windows").isTopTable())
     {
-	ERROR("table not found" << ": " << "swe.scene");
+	ERROR("table not found" << ": " << "swe.scene.windows");
 	ll.stackPop();
 	return false;
     }
 
-    // add swe_window to SWE.Scene[label]
-    ll.pushValueIndex(-2).setFieldTableIndex(label, -2);
-    ll.stackPop();
-
     if(isroot)
     {
-	// save ref: to SWE.rootwin
-	if(ll.pushTable("SWE").isTopTable())
-	    ll.pushValueIndex(-2).setFieldTableIndex("rootwin", -2);
+	// save ref: to SWE.Scene.display
+	if(ll.pushTable("SWE.Scene").isTopTable())
+	{
+	    // stack: swe_window, SWE.Scene.Windows, SWE.Scene
+	    if(ll.getFieldTableIndex("display", -1, false).isTopTable())
+	    {
+		// remove old display from SWE.Scene.Window
+		std::string hexid = ll.popFieldTableIndex("hexid", -1);
+		ll.pushNil().setFieldTableIndex(hexid, -4);
+		DEBUG("display ref: " << "remove");
+	    }
+	    ll.stackPop();
+
+	    // set swe_window to SWE.Scene.display
+	    ll.pushValueIndex(-3).setFieldTableIndex("display", -2);
+	    DEBUG("display ref: " << "set" << ": " << label);
+
+	    // clean old display references
+	    ll.garbageCollect();
+	}
+
+	// remove SWE.Scene
 	ll.stackPop();
     }
 
-    DEBUG("add window" << ": " << label << (isroot ? " (root window)" : ""));
+    // add swe_window to SWE.Scene.Windows[label]
+    ll.pushValueIndex(-2).setFieldTableIndex(label, -2);
+
+    // remove SWE.Scene.Windows
+    ll.stackPop();
+
+    DEBUG("add window" << ": " << label << (isroot ? " (display)" : ""));
     return true;
 }
 
-void SWE_Scene::clean(LuaState & ll, bool saveMain)
+void SWE_Scene::clean(LuaState & ll, bool saveDisplay)
 {
-    if(ll.pushTable("SWE.Scene").isTopTable())
-    {
-	auto root = DisplayScene::rootWindow();
-	ll.pushNil();
+    DisplayScene::sceneDestroy();
 
-	// iterate SWE.Scene
+    if(ll.pushTable("SWE.Scene.Windows").isTopTable())
+    {
+	// iterate SWE.Scene.Windows: remove all items
+	ll.pushNil();
 	while(ll.nextTableIndex(-2))
 	{
-	    std::string key = ll.toStringIndex(-2);
-	    auto win = SWE_Window::get(ll, -1, __FUNCTION__);
-
-	    if(! saveMain || win != root)
-	    {
-		DEBUG("remove id" << ": " << key);
-		// set value to nil
-		ll.pushString(key).pushNil().setTableIndex(-5);
-	    }
+	    std::string hexid = ll.toStringIndex(-2);
 
 	    // pop value
 	    ll.stackPop();
+	    DEBUG("window id: " << hexid);
+
+	    // stack: ..., SWE.Scene.Window, key,
+	    ll.pushNil().setFieldTableIndex(hexid, -3);
 	}
 
-	// SWE.Scene mode: weak values
+	if(ll.pushTable("SWE.Scene").isTopTable())
+	{
+	    // remove SWE.Scene.display
+	    if(! saveDisplay)
+	    {
+		DEBUG("display ref: " << "remove");
+		// remove old display from SWE.Scene
+		ll.pushNil().setFieldTableIndex("display", -2);
+	    }
+	    else
+	    {
+		// add SWE.Scene.display to SWE.Scene.Windows
+		if(ll.getFieldTableIndex("display", -1).isTopTable())
+		{
+		    auto win = SWE_Window::get(ll, -1, __FUNCTION__);
+		    if(win)
+		    {
+			DisplayScene::addItem(*win);
+			// add SWE.Scene.Window hexid
+			std::string hexid = String::hex(win->id());
+			ll.setFieldTableIndex(hexid, -3);
+			DEBUG("display ref: " << "set" << ": " << hexid);
+		    }
+		    else
+		    {
+			ll.stackPop();
+			ERROR("userdata empty");
+		    }
+		}
+		else
+	        {
+		    ll.stackPop();
+		}
+	    }
+	}
+	else
+	{
+	    ERROR("table not found" << ": " << "swe.scene");
+	}
+
+	// SWE.Scene
+	ll.stackPop();
+
+	// SWE.Scene.Windows mode: weak values
 	ll.garbageCollect();
     }
     else
     {
-	ERROR("table not found" << ": " << "swe.scene");
+	ERROR("table not found" << ": " << "swe.scene.windows");
     }
+
+    // SWE.Scene.Windows
+    ll.stackPop();
 }
 
 const struct luaL_Reg SWE_window_functions[] = {
     { "SetVisible",     SWE_window_set_visible },      // [void], table window, bool flag
-    { "SetResult",      SWE_window_set_result },       // [void], table window, int code
+    { "SetResultCode",  SWE_window_set_result },       // [void], table window, int code
     { "SetModality",    SWE_window_set_modality },     // [void], table window, int code
     { "SetKeyHandle",   SWE_window_set_keyhandle },    // [void], table window, int code
     { "SetMouseTracking", SWE_window_set_mousetrack }, // [void], table window, int code
@@ -1218,7 +1309,7 @@ const struct luaL_Reg SWE_window_functions[] = {
     { "RenderLine",     SWE_window_render_line },      // [void], table window, enum: color, point, point
     { "RenderCyrcle",   SWE_window_render_cyrcle },    // [void], table window, enum: color, point, int, bool
     { "RenderPoint",    SWE_window_render_point },     // [void], table window, enum: color, point
-    { "RenderTexture",  SWE_window_render_texture },   // [void]. table window, table texture, rect, rect
+    { "RenderTexture",  SWE_window_render_texture },   // [void]. table window, table texture, rect, point
     { "RenderText",     SWE_window_render_text },      // [rect coords], table window, table fontrender, string, color, point
     { "PointInArea",	SWE_window_point_inarea },     // [bool], table window, int, int
     { "GetChildrens",	SWE_window_childrens },        // [table], table window
@@ -1273,6 +1364,8 @@ int SWE_window_create(lua_State* L)
     ll.pushFunction(SWE_window_destroy).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2);
 
+    const std::string hexid = String::hex((*ptr)->id());
+
     // add values
     ll.pushString("__type").pushString("swe.window").setTableIndex(-3);
     ll.pushString("posx").pushInteger((*ptr)->position().x).setTableIndex(-3);
@@ -1282,13 +1375,13 @@ int SWE_window_create(lua_State* L)
     ll.pushString("visible").pushBoolean((*ptr)->isVisible()).setTableIndex(-3);
     ll.pushString("modality").pushBoolean(false).setTableIndex(-3);
     ll.pushString("keyhandle").pushBoolean(false).setTableIndex(-3);
-    ll.pushString("result").pushInteger(0).setTableIndex(-3);
+    ll.pushString("hexid").pushString(hexid).setTableIndex(-3);
 
     // set functions
     ll.setFunctionsTableIndex(SWE_window_functions, -1);
 
     DEBUG(String::pointer(ptr) << ": [" << (*ptr)->toString() << "]");
-    SWE_Scene::window_add(ll, String::hex((*ptr)->id()), !parent);
+    SWE_Scene::window_add(ll, hexid, !parent);
 
     return 1;
 }
@@ -1320,7 +1413,7 @@ int SWE_window_destroy(lua_State* L)
 	    }
 
 	    DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
-	    // SWE.Scene mode: weak value
+	    // SWE.Scene.Windows mode: weak value
 	    // auto remove SWE_Scene::window_remove(ll, *ptr);
 
 	    delete *ptr;
@@ -1370,7 +1463,7 @@ int SWE_polygon_to_json(lua_State* L)
 const struct luaL_Reg SWE_polygon_functions[] = {
     // window func
     { "SetVisible",     SWE_window_set_visible },      // [void], table window, bool flag
-    { "SetResult",      SWE_window_set_result },       // [void], table window, int code
+    { "SetResultCode",  SWE_window_set_result },       // [void], table window, int code
     { "SetModality",    SWE_window_set_modality },     // [void], table window, int code
     { "SetKeyHandle",   SWE_window_set_keyhandle },    // [void], table window, int code
     { "SetMouseTracking", SWE_window_set_mousetrack }, // [void], table window, int code
@@ -1614,7 +1707,7 @@ int SWE_polygon_create(lua_State* L)
     else
     // set parent DisplayWindow
 	parent = DisplayScene::rootWindow();
-    
+
     Points points;
     for(int it = 2; it < params; it += 2)
     {
@@ -1636,6 +1729,8 @@ int SWE_polygon_create(lua_State* L)
     ll.pushFunction(SWE_polygon_destroy).setFieldTableIndex("__gc", -2);
     ll.setMetaTableIndex(-2);
 
+    const std::string hexid = String::hex((*ptr)->id());
+
     ll.pushString("__type").pushString("swe.polygon").setTableIndex(-3);
     ll.pushString("posx").pushInteger((*ptr)->position().x).setTableIndex(-3);
     ll.pushString("posy").pushInteger((*ptr)->position().y).setTableIndex(-3);
@@ -1644,13 +1739,13 @@ int SWE_polygon_create(lua_State* L)
     ll.pushString("visible").pushBoolean((*ptr)->isVisible()).setTableIndex(-3);
     ll.pushString("modality").pushBoolean(false).setTableIndex(-3);
     ll.pushString("keyhandle").pushBoolean(false).setTableIndex(-3);
-    ll.pushString("result").pushInteger(0).setTableIndex(-3);
+    ll.pushString("hexid").pushString(hexid).setTableIndex(-3);
 
     // set functions
     ll.setFunctionsTableIndex(SWE_polygon_functions, -1);
 
     DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
-    SWE_Scene::window_add(ll, String::hex((*ptr)->id()), !parent);
+    SWE_Scene::window_add(ll,  hexid, !parent);
 
     return 1;
 }
@@ -1664,9 +1759,15 @@ void SWE_Scene::registers(LuaState & ll)
 {
     // SWE.Scene
     ll.pushTable("SWE.Scene");
+    ll.pushFunction(SWE_scene_removetop).setFieldTableIndex("Remove", -2);
+
+    // SWE.Scene.Windows
+    ll.pushTable("SWE.Scene.Windows");
     // set metatable: weak mode
     ll.pushTable(0, 1).pushString("v").setFieldTableIndex("__mode", -2);
     ll.setMetaTableIndex(-2).stackPop();
+
+    ll.stackPop();
 }
 
 void SWE_Window::registers(LuaState & ll)

@@ -12,15 +12,33 @@ ifndef SDL_LIBS
 SDL_LIBS       := $(shell sdl-config --libs)
 endif
 
-ENGINE_CFLAGS   := $(SDL_CFLAGS) $(shell pkg-config SDL_ttf --cflags) $(shell pkg-config SDL_image --cflags)
-ENGINE_LIBS     := $(SDL_LIBS) $(shell pkg-config SDL_ttf --libs) $(shell pkg-config SDL_image --libs) -lSDL_gfx -lpng
+ENGINE_CFLAGS   := $(SDL_CFLAGS)
+ENGINE_LIBS     := $(SDL_LIBS) -lSDL_gfx
 
-ifndef DISABLE_NETWORK
+ifdef DISABLE_TTF
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DDISABLE_TTF
+else
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) $(shell pkg-config SDL_ttf --cflags)
+ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config SDL_ttf --libs)
+endif
+
+ifdef DISABLE_IMAGE
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DDISABLE_IMAGE
+else
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) $(shell pkg-config SDL_image --cflags)
+ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config SDL_image --libs) -lpng
+endif
+
+ifdef DISABLE_NETWORK
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DDISABLE_NETWORK
+else
 ENGINE_CFLAGS   := $(ENGINE_CFLAGS) $(shell pkg-config SDL_net --cflags)
 ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config SDL_net --libs)
 endif
 
-ifndef DISABLE_AUDIO
+ifdef DISABLE_AUDIO
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DDISABLE_AUDIO
+else
 ENGINE_CFLAGS   := $(ENGINE_CFLAGS) $(shell pkg-config SDL_mixer --cflags)
 ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config SDL_mixer --libs)
 endif

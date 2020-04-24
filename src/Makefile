@@ -2,9 +2,9 @@
 #
 
 TARGET		:= SWE
-LIBENGINE	:= ../$(ENGINEDIR)/libengine.a
+LIBENGINE	:= ../$(LIBSWEDIR)/libswe.a
 LIBS		:= $(LIBENGINE) $(LIBS)
-CFLAGS		:= $(CFLAGS) -I../$(ENGINEDIR)
+CFLAGS		:= $(CFLAGS) -I../$(LIBSWEDIR)
 
 all: $(TARGET).so $(TARGET).a
 

@@ -1,13 +1,22 @@
 -- usage:
 --
--- local fb = FileBrowserInit(win, frs, path, cols, rows)
+-- local fb = FileBrowserInit(win, frs, path, { params })
 --
 -- win: parent window
 -- frs: font render
 -- path: filesystem path
--- cols: preffered columns
--- rows: preffered rows
 --
+-- params.cols: preffered columns
+-- params.rows: preffered rows
+-- params.include: include filter
+-- params.exclude: exclude filter
+--
+-- virtual functions:
+-- fb.ActionFile = function(self, path, stat)
+-- ...
+-- end
+--
+-- return: fb.result selected item, (filesystem path)
 --
 
 require 'gui_tools'
@@ -147,15 +156,26 @@ local function SortStatItems(a,b)
     return SortFileNames(a.path, b.path)
 end
 
-local function ReadDirectory(cwd)
+local function FindFilter(str, filter)
+    if type(filter) == "table" then
+	for i=1,#filter do
+	    if string.find(str, tostring(filter[i])) then
+		return true
+	    end
+	end
+    end
+    return string.find(str, tostring(filter))
+end
+
+local function ReadDirectory(cwd, include, exclude)
     local names = SWE.SystemReadDirectory(cwd)
     local res = {}
     local dotIndex = nil
 
     for k,v in pairs(names) do
         if v == "file" then
-            if string.find(k, "%.lua$") then
-        	if not string.find(k, "start%.lua") then
+            if not include or FindFilter(k, include) then
+        	if not exclude or not FindFilter(k, exclude) then
             	    table.insert(res, SWE.SystemFileStat(k))
 		end
             end
@@ -205,6 +225,66 @@ local function TermRenderStatItem(term, item, index)
     term:ResetColors()
 end
 
+local function TermScrollUp(term, num)
+    local page = term.rows - 2
+
+    if term.skipitems == 0 and term.selitem == 1 then
+	return false
+    end
+
+    local skip = num or page
+
+    if 1 < term.skipitems - 2 * skip then
+	term.skipitems = term.skipitems - skip
+	SWE.PushEvent(SWE.Action.ItemSelected, term.items[term.skipitems + term.selitem], term)
+	SWE.DisplayDirty()
+	return true
+    elseif #term.items < page then
+	term.skipitems = 0
+	term.selitem = 1
+	SWE.PushEvent(SWE.Action.ItemSelected, term.items[term.skipitems + term.selitem], term)
+	SWE.DisplayDirty()
+	return true
+    else
+	term.skipitems = 0
+	term.selitem = 1
+	SWE.PushEvent(SWE.Action.ItemSelected, term.items[term.skipitems + term.selitem], term)
+	SWE.DisplayDirty()
+	return true
+    end
+    return false
+end
+
+local function TermScrollDown(term, num)
+    local page = term.rows - 2
+
+    if term.skipitems == #term.items - page and term.selitem == page then
+	return false
+    end
+
+    local skip = num or page
+
+    if term.skipitems + 2 * skip < #term.items then
+	term.skipitems = term.skipitems + skip
+	SWE.PushEvent(SWE.Action.ItemSelected, term.items[term.skipitems + term.selitem], term)
+	SWE.DisplayDirty()
+	return true
+    elseif #term.items < page then
+	term.skipitems = 0
+	term.selitem = #term.items
+	SWE.PushEvent(SWE.Action.ItemSelected, term.items[term.skipitems + term.selitem], term)
+	SWE.DisplayDirty()
+	return true
+    else
+	term.skipitems = #term.items - page
+	term.selitem = page
+	SWE.PushEvent(SWE.Action.ItemSelected, term.items[term.skipitems + term.selitem], term)
+	SWE.DisplayDirty()
+	return true
+    end
+    return false
+end
+
 local function TermSelectedUp(term)
     if term.selitem > 1 then
 	term.selitem = term.selitem - 1
@@ -221,13 +301,15 @@ local function TermSelectedUp(term)
 end
 
 local function TermSelectedDown(term)
-    local items = math.min(#term.items, term.rows - 2)
+    local page = term.rows - 2
+    local items = math.min(#term.items, page)
+
     if term.selitem < items then
 	term.selitem = term.selitem + 1
 	SWE.PushEvent(SWE.Action.ItemSelected, term.items[term.skipitems + term.selitem], term)
 	SWE.DisplayDirty()
 	return true
-    elseif #term.items > term.skipitems + term.rows - 2 then
+    elseif #term.items > term.skipitems + page then
 	term.skipitems = term.skipitems + 1
 	SWE.PushEvent(SWE.Action.ItemSelected, term.items[term.skipitems + term.selitem], term)
 	SWE.DisplayDirty()
@@ -245,23 +327,14 @@ local function TermSelectedFirst(term)
 end
 
 local function TermSelectedLast(term)
+    local page = term.rows - 2
     term.skipitems = 0
-    term.selitem = math.min(#term.items, term.rows - 2)
-    if #term.items > term.rows - 2 then
-	term.skipitems = #term.items - (term.rows - 2)
+    term.selitem = math.min(#term.items, page)
+    if #term.items > page then
+	term.skipitems = #term.items - page
     end
     SWE.PushEvent(SWE.Action.ItemSelected, term.items[term.skipitems + term.selitem], term)
     SWE.DisplayDirty()
-    return true
-end
-
-local function TermScrollUp(term)
-    print("scroll up")
-    return true
-end
-
-local function TermScrollDown(term)
-    print("scroll down")
     return true
 end
 
@@ -269,10 +342,11 @@ local function TermSelectName(term, name)
     if name then
 	for i=1,#term.items do
 	    local dirn,basen = SWE.SystemDirnameBasename(term.items[i].path)
+	    local page = term.rows - 2
 	    if name == basen then
-		if i > term.rows - 2 then
-		    term.skipitems = i - (term.rows - 2)
-		    term.selitem = term.rows - 2
+		if i > page then
+		    term.skipitems = i - page
+		    term.selitem = page
 		else
 		    term.skipitems = 0
 		    term.selitem = i
@@ -305,7 +379,7 @@ end
 
 local function TermFillItems(term, path)
     term.cwd = path
-    term.items = ReadDirectory(term.cwd)
+    term.items = ReadDirectory(term.cwd, term.include, term.exclude)
     term.skipitems = 0
     term.selitem = 1
     SWE.PushEvent(SWE.Action.ItemSelected, term.items[term.skipitems + term.selitem], term)
@@ -314,41 +388,70 @@ end
 
 local function TermSelectedAction(term)
     local item = term.items[term.skipitems + term.selitem]
-    local dirn,basen = SWE.SystemDirnameBasename(item.path)
+    if not item then
+	return false
+    end
     if item.isdir then
+	term:ActionDirectory(item.path, item)
+    else
+	term:ActionFile(item.path, item)
+    end
+    return true
+end
+
+function FileBrowserInit(win, frs, path, params)
+    local cols = params.cols or ToInt(win.width / frs.fixedWidth)
+    local rows = params.rows or ToInt(win.height / frs.lineHeight)
+
+    local term = SWE.Terminal(frs, cols, rows, win)
+
+    SWE.Debug("create terminal: " .. tostring(cols) .. "x" .. tostring(rows),
+		"window: (" .. tostring(term.width) .. "x" .. tostring(term.height) .. ")",
+		"font size: (" .. tostring(frs.size) .. "," .. tostring(frs.fixedWidth) .. "x" .. tostring(frs.lineHeight) .. ")")
+
+    term:SetModality(true)
+
+    term.colors = { back = SWE.Color.MidnightBlue, text = SWE.Color.Silver, highlight = SWE.Color.MediumBlue, syntaxerror = SWE.Color.FireBrick,
+        cursormarker = SWE.Color.LawnGreen, scrollmarker = SWE.Color.LawnGreen, spacemarker = SWE.Color.RoyalBlue }
+    term.frs = frs
+    term.include = params.include
+    term.exclude = params.exclude
+    term.button1 = TermLabelActionCreate("SELECT", term.frs, 3, term.rows - 1, term, SWE.Color.White)
+    term.button1.disable = true
+    term.button2 = TermLabelActionCreate("CANCEL", term.frs, term.cols - 10, term.rows - 1, term, SWE.Color.White)
+    TermFillItems(term, path)
+
+    term.button1.MouseClickEvent = function(px,py,pb,rx,ry,rb)
+	if term.term.button1.disable then
+	    return false
+	end
+	term:SetVisible(false)
+        return true
+    end
+
+    term.button2.MouseClickEvent = function(px,py,pb,rx,ry,rb)
+	if term.term.button2.disable then
+	    return false
+	end
+	term.result = nil
+	term:SetVisible(false)
+        return true
+    end
+
+    term.ActionFile = function(self, path, item)
+	term:SetVisible(false)
+    end
+
+    term.ActionDirectory = function(self, path, item)
+	local dirn,basen = SWE.SystemDirnameBasename(path)
 	if basen == ".." then
 	    local dirn2,basen2 = SWE.SystemDirnameBasename(dirn)
 	    TermFillItems(term, dirn2)
 	    TermSelectName(term, basen2)
 	else
-	    TermFillItems(term, item.path)
+	    TermFillItems(term, path)
 	end
 	SWE.DisplayDirty()
-    end
-    return true
-end
-
-function FileBrowserInit(win, frs, path, cols0, rows0)
-
-    local cols = cols0 or ToInt(win.width / frs.fixedWidth)
-    local rows = rows0 or ToInt(win.height / frs.lineHeight)
-
-    local term = SWE.Terminal(frs, cols, rows, win)
-    term.colors = { back = SWE.Color.MidnightBlue, text = SWE.Color.Silver, highlight = SWE.Color.MediumBlue, syntaxerror = SWE.Color.FireBrick,
-        cursormarker = SWE.Color.LawnGreen, scrollmarker = SWE.Color.LawnGreen, spacemarker = SWE.Color.RoyalBlue }
-
-    term:SetModality(true)
-    term.frs = frs
-    term.close = TermLabelActionCreate("CLOSE", term.frs, (term.cols - 5) / 2, term.rows - 1, term, SWE.Color.White)
-    term.close.disable = true
-    TermFillItems(term, path)
-
-    term.close.MouseClickEvent = function(px,py,pb,rx,ry,rb)
-	if term.close.disable then
-	    return false
-	end
-	term:SetVisible(false)
-        return true
     end
 
     term.RenderWindow = function()
@@ -358,6 +461,8 @@ function FileBrowserInit(win, frs, path, cols0, rows0)
         term:CursorPosition(0, 0):DrawRect(term.cols, term.rows, SWE.Line.Thin)
     	term:CursorPosition(0, 1)
 
+	local page = term.rows - 2
+
 	-- content
 	for i=1, #term.items do
 	    if i > term.skipitems then
@@ -365,24 +470,33 @@ function FileBrowserInit(win, frs, path, cols0, rows0)
 		term:CursorMoveDown(1):CursorMoveFirst()
 	    end
 
-	    if i - term.skipitems > term.rows - 3 then
+	    if i - term.skipitems > page - 1 then
 		break
 	    end
 	end
 
-        -- render vscroll
-        if term.rows - 2 < #term.items then
-            local bary = ToInt((term.skipitems + term.selitem - 1) * (term.rows - 2) / #term.items)
-            local barh = ToInt((term.rows - 2) * (term.rows - 2) / #term.items)
-            if bary > (term.rows - 2) - barh then
-                bary = (term.rows - 2) - barh
-            end
-            term:CursorPosition(term.cols - 1, bary + 1):DrawVLine(barh,SWE.Char.VLine(SWE.Line.Double),term.colors.scrollmarker)
-        end
+	-- render vscroll
+	if page < #term.items then
+    	    local bary = ToInt((term.skipitems + term.selitem - 1) * page / #term.items)
+    	    local barh = ToInt(page * page / #term.items)
+    	    if bary > page - barh then
+        	bary = page - barh
+    	    end
+	    term:CursorPosition(term.cols - 1, bary + 1):DrawVLine(barh,SWE.Char.VLine(SWE.Line.Double),term.colors.scrollmarker)
+	end
 
         -- sync changes
         term:SetFlush()
         return true
+    end
+
+    term.DisplayResizeEvent = function(w,h)
+        local cols = ToInt(w / term.frs.fixedWidth)
+        local rows = ToInt(h / term.frs.lineHeight)
+        term:SetTermSize(cols,rows)
+        if w ~= term.width or h ~= term.height then
+            term:SetPosition((w - term.width)/2, (h - term.height)/2)
+        end
     end
 
     term.MouseClickEvent = function(px,py,pb,rx,ry,rb)
@@ -392,8 +506,12 @@ function FileBrowserInit(win, frs, path, cols0, rows0)
 	    if term.selitem == rows then
 		return TermSelectedAction(term)
 	    end
-	    term.selitem = rows
-	    SWE.DisplayDirty()
+	    if rows > #term.items then
+		term.selitem = #term.items
+	    else
+		term.selitem = rows
+	    end
+	    SWE.PushEvent(SWE.Action.ItemSelected, term.items[term.skipitems + term.selitem], term)
 	end
 	return true
     end
@@ -414,11 +532,21 @@ function FileBrowserInit(win, frs, path, cols0, rows0)
 	elseif key == SWE.Key.RETURN then
 	    return TermSelectedAction(term)
 	elseif key == SWE.Key.ESCAPE then
+	    term.result = nil
+	    term:SetVisible(false)
+	    return true
+	-- android back
+	elseif key == 0x4000010e then
+	    term.result = nil
 	    term:SetVisible(false)
 	    return true
 	end
 
 	return false
+    end
+
+    term.LocalUserEvent = function(self, event, obj)
+        return false
     end
 
     term.SystemUserEvent = function(event,obj)
@@ -427,12 +555,20 @@ function FileBrowserInit(win, frs, path, cols0, rows0)
         elseif event == SWE.Signal.FingerMoveDown then
             return TermScrollUp(term)
         elseif event == SWE.Action.ItemSelected then
-	    term.close.disable = obj.isdir
+	    if term.button1 then
+		term.button1.disable = obj.isdir
+	    end
+	    if obj.isdir then
+		term.result = nil
+	    else
+		term.result = term.items[term.skipitems + term.selitem].path
+	    end
 	    SWE.DisplayDirty()
         elseif event == SWE.Action.ChangeValue then
     	    TermFillItems(term, obj)
 	end
-        return false
+
+        return term:LocalUserEvent(event, obj)
     end
 
     term.WindowCloseEvent = function()

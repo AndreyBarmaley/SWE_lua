@@ -1,6 +1,6 @@
 -- require 'SWE'
 
-SWE.SetDebug(false)
+SWE.SetDebug(true)
 local win = SWE.DisplayInit("Lua SWE Clock", 320, 240, false)
 
 if not win then
@@ -30,6 +30,7 @@ function win.SystemTickEvent(tick)
 	win.half = 0
 	SWE.DisplayDirty()
     end
+    collectgarbage()
 end
 
 function win.MouseClickEvent(px, py, pbtn, rx, ry, rbtn)
@@ -44,11 +45,9 @@ function win.RenderWindow()
 
     if win.time then
 	-- render time
-	win:RenderTexture(win.time, 0, 0, win.time.width, win.time.height,
-			(win.width - win.time.width) / 2, (win.height - win.time.height) / 2 )
+	win:RenderTexture(win.time, (win.width - win.time.width) / 2, (win.height - win.time.height) / 2 )
 	-- render date
-	win:RenderTexture(win.date, 0, 0, win.date.width, win.date.height,
-			(win.width - win.date.width) / 2, win.height - win.date.height - 10)
+	win:RenderTexture(win.date, (win.width - win.date.width) / 2, win.height - win.date.height - 10)
     end
 
     return true

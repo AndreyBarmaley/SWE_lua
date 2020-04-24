@@ -20,8 +20,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "display_scene.h"
-
 #include "SWE_binarybuf.h"
 #include "SWE_streamnet.h"
 
@@ -53,11 +51,14 @@ SWE_StreamNet* SWE_StreamNet::get(LuaState & ll, int tableIndex, const char* fun
 /////////////////////////////////////////////////////////////////////
 int SWE_streamnet_recv_byte(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+	return 0;
+#else
     // params: swe_streamnet
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
         int byte = stream->get8();
@@ -71,15 +72,19 @@ int SWE_streamnet_recv_byte(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_recv_be16(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
         int res = stream->getBE16();
@@ -93,15 +98,19 @@ int SWE_streamnet_recv_be16(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_recv_be32(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
         int res = stream->getBE32();
@@ -115,15 +124,19 @@ int SWE_streamnet_recv_be32(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_recv_be64(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
         double res = stream->getBE64();
@@ -137,15 +150,19 @@ int SWE_streamnet_recv_be64(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_recv_le16(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
         int res = stream->getLE16();
@@ -159,15 +176,19 @@ int SWE_streamnet_recv_le16(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_recv_le32(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
         int res = stream->getLE32();
@@ -181,15 +202,19 @@ int SWE_streamnet_recv_le32(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_recv_le64(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
         double res = stream->getLE64();
@@ -203,15 +228,19 @@ int SWE_streamnet_recv_le64(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_recv_bytes(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, size
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	int size = ll.toIntegerIndex(2);
@@ -230,15 +259,19 @@ int SWE_streamnet_recv_bytes(lua_State* L)
 
     ERROR("userdata empty");
     return 0;
+#endif
 }
 
 int SWE_streamnet_recv_string(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, int endl, int wait ms
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	std::string res;
@@ -279,12 +312,16 @@ int SWE_streamnet_recv_string(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_send_bytes(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, swe_binarybuf
-
     LuaState ll(L);
 
     SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
@@ -300,15 +337,19 @@ int SWE_streamnet_send_bytes(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_send_string(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, string
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	std::string str = ll.toStringIndex(2);
@@ -320,15 +361,19 @@ int SWE_streamnet_send_string(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_send_byte(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, number
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	int byte = ll.toIntegerIndex(2);
@@ -340,15 +385,19 @@ int SWE_streamnet_send_byte(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_send_be16(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, number
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	int res = ll.toIntegerIndex(2);
@@ -360,15 +409,19 @@ int SWE_streamnet_send_be16(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_send_be32(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, number
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	int res = ll.toIntegerIndex(2);
@@ -380,15 +433,19 @@ int SWE_streamnet_send_be32(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_send_be64(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, number
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	double res = ll.toNumberIndex(2);
@@ -400,15 +457,19 @@ int SWE_streamnet_send_be64(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_send_le16(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, number
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	int res = ll.toIntegerIndex(2);
@@ -420,15 +481,19 @@ int SWE_streamnet_send_le16(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_send_le32(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, number
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	int res = ll.toIntegerIndex(2);
@@ -440,15 +505,19 @@ int SWE_streamnet_send_le32(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_send_le64(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, number
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	double res = ll.toNumberIndex(2);
@@ -460,12 +529,16 @@ int SWE_streamnet_send_le64(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_wait_string(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, string
-
     LuaState ll(L);
 
     SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
@@ -488,15 +561,19 @@ int SWE_streamnet_wait_string(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_connect(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, string, int port
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	std::string server = ll.toStringIndex(2);
@@ -515,15 +592,19 @@ int SWE_streamnet_connect(lua_State* L)
 
     ERROR("userdata empty");
     return 0;
+#endif
 }
 
 int SWE_streamnet_data_ready(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, int port
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	bool res = stream->ready();
@@ -533,15 +614,19 @@ int SWE_streamnet_data_ready(lua_State* L)
 
     ERROR("userdata empty");
     return 0;
+#endif
 }
 
 int SWE_streamnet_listen(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet, int port
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	int port = ll.toIntegerIndex(2);
@@ -559,15 +644,19 @@ int SWE_streamnet_listen(lua_State* L)
 
     ERROR("userdata empty");
     return 0;
+#endif
 }
 
 int SWE_streamnet_wait_accept(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	TCPsocket sock = NULL;
@@ -608,15 +697,19 @@ int SWE_streamnet_wait_accept(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_disable(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	bool enabled = ll.toBooleanIndex(2);
@@ -629,15 +722,19 @@ int SWE_streamnet_disable(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_close(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
 	stream->close();
@@ -648,15 +745,19 @@ int SWE_streamnet_close(lua_State* L)
     }
 
     return 0;
+#endif
 }
 
 int SWE_streamnet_to_json(lua_State* L)
 {   
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     // params: swe_streamnet
-
     LuaState ll(L);
-    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
 
+    SWE_StreamNet* stream = SWE_StreamNet::get(ll, 1, __FUNCTION__);
     if(stream)
     {
         std::string address = ll.getFieldTableIndex("address", 1).getTopString();
@@ -672,6 +773,7 @@ int SWE_streamnet_to_json(lua_State* L)
 
     ERROR("userdata empty");
     return 0;
+#endif
 }
 
 const struct luaL_Reg SWE_streamnet_functions[] = {
@@ -744,7 +846,6 @@ int SWE_streamnet_create(lua_State* L)
 
     // set functions
     ll.setFunctionsTableIndex(SWE_streamnet_functions, -1);
-
     DEBUG(String::pointer(ptr) << ": [" << String::pointer(*ptr) << "]");
 
     return 1;
@@ -779,6 +880,10 @@ int SWE_streamnet_destroy(lua_State* L)
 
 int SWE_streamnet_local_addresses(lua_State* L)
 {
+#ifdef DISABLE_NETWORK
+        ERROR("not supported module: " << "swe.streamnet");
+        return 0;
+#else
     LuaState ll(L);
 
     StringList addrs = StreamNetwork::localAddresses();
@@ -786,6 +891,7 @@ int SWE_streamnet_local_addresses(lua_State* L)
 	ll.pushString(*it);
 
     return addrs.size();
+#endif
 }
 
 const struct luaL_Reg SWE_streamnet_functions2[] = {

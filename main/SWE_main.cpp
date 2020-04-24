@@ -22,7 +22,8 @@
 
 #include <unistd.h>
 #include <functional>
-#include "engine.h"
+
+#include "../src/SWE_global.h"
 
 extern "C" {
     int luaopen_SWE(lua_State* L);
@@ -122,7 +123,7 @@ int main(int argc, char** argv)
 	// check params
 	if(runfile.empty())
 	{
-	    ERROR("file not found runfile");
+	    ERROR("file not found runfile: " << start);
 	    return EXIT_FAILURE;
 	}
 
@@ -147,9 +148,28 @@ int main(int argc, char** argv)
 
 	    DEBUG("set SWE.runfile: " << runfile);
 	    ll.pushString(runfile).setFieldTableIndex("runfile", -2);
+	}
+    	ll.stackPop();
 
+	// change print -> SWE.Print
+#ifdef ANDROID
+	if(ll.pushTable("SWE").isTopTable())
+	{
+	    if(ll.pushTable("_G").isTopTable())
+	    {
+		if(ll.getFieldTableIndex("Print", -2).isTopFunction())
+		{
+		    ll.setFieldTableIndex("print", -2);
+		}
+    		else
+		{
+		    ll.stackPop();
+		}
+	    }
     	    ll.stackPop();
 	}
+    	ll.stackPop();
+#endif
 
         ll.doFile(runfile);
 

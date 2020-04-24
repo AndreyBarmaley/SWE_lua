@@ -448,19 +448,38 @@ int SWE_binarybuf_getbyte(lua_State* L)
 
     if(buf)
     {
-	int offset = ll.toIntegerIndex(2);
+	int offset1 = ll.toIntegerIndex(2);
+	int offset2 = ll.isNumberIndex(3) ? ll.toIntegerIndex(3) : 0;
 
-	if(0 <= offset && offset < buf->size())
+	if(0 <= offset2)
 	{
-	    ll.pushInteger(buf->operator[](offset));
+	    if(offset2 < buf->size() && 0 <= offset1 && offset1 < offset2)
+	    {
+		for(int offset = offset1; offset <= offset2; ++offset)
+		    ll.pushInteger(buf->operator[](offset));
+
+		return offset2 - offset1 + 1;
+	    }
+	    else
+	    {
+    		ERROR("out of range");
+		ll.pushInteger(0);
+	    }
 	}
 	else
 	{
-    	    ERROR("out of range");
-	    ll.pushInteger(0);
-	}
+	    if(0 <= offset1 && offset1 < buf->size())
+	    {
+		ll.pushInteger(buf->operator[](offset1));
+	    }
+	    else
+	    {
+    		ERROR("out of range");
+		ll.pushInteger(0);
+	    }
 
-	return 1;
+	    return 1;
+	}
     }
 
     ERROR("userdata empty");
@@ -779,7 +798,7 @@ const struct luaL_Reg SWE_binarybuf_functions[] = {
     { "ToString", SWE_binarybuf_to_cstring },		// [string], table binarybuf
     { "ToJson", SWE_binarybuf_to_json },		// [string], table binarybuf
     { "SetByte", SWE_binarybuf_setbyte },		// [bool], table binarybuf, int offset, int byte, int byte ... int byte
-    { "GetByte", SWE_binarybuf_getbyte },		// [int byte], table binarybuf, int offset
+    { "GetByte", SWE_binarybuf_getbyte },		// [int byte], table binarybuf, int offset1, int offset2
     { "SetBytes", SWE_binarybuf_setbytes },		// [bool], table binarybuf, int offset, table binarybuf, int offset, int size
     { "GetBytes", SWE_binarybuf_getbytes },		// [table binarybuf], table binarybuf, int offset, int size
     { "Insert", SWE_binarybuf_insert },                 // [bool], table binarybuf, int offset, (binarybuf, subpos, sublen), (int count, int byte)

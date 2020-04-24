@@ -2,7 +2,7 @@
 
 local fullscreen = false
 
-SWE.SetDebug(false)
+SWE.SetDebug(true)
 
 local win = SWE.DisplayInit("Game15", 320, 240, fullscreen)
 

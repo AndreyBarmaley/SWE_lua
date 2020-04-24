@@ -468,7 +468,7 @@
   {
     "type": "concate filesystem names",
     "url": "SWE.SystemConcatePath(item,item,..item)",
-    "title": "SWE.TableToJson",
+    "title": "SWE.SystemConcatePath",
     "group": "SWE",
     "name": "SystemConcatePath",
     "parameter": {
@@ -735,6 +735,56 @@
       {
         "title": "usage",
         "content": "local names = SWE.SystemReadDirectory(\"/var/tmp\")\n\n.... dump names\n| \"/var/tmp/world.log\" | \"file\"      |\n| \"/var/tmp/hello.log\" | \"file\"      |\n| \"/var/tmp/mc-root\"   | \"directory\" |",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
+    "type": "run command, get result outputs",
+    "url": "SWE.SystemRunCommand(cmd,param,param,..param)",
+    "title": "SWE.SystemRunCommand",
+    "group": "SWE",
+    "name": "SystemRunCommand",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "cmd",
+            "description": "<p>command</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "param",
+            "description": "<p>parameters</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "table",
+            "optional": false,
+            "field": "result",
+            "description": "<p>result: output strings</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local out = SWE.SystemRunCommand(\"getent\", \"passwd\")\n\n.... dump output table\n| root:x:0:0:root:/root:/bin/bash         |\n| bin:x:1:1:bin:/bin:/sbin/nologin        |\n| daemon:x:2:2:daemon:/sbin:/sbin/nologin |\n| adm:x:3:4:adm:/var/adm:/sbin/nologin    |",
         "type": "json"
       }
     ],
@@ -1296,7 +1346,7 @@
   },
   {
     "type": "get byte value",
-    "url": "SWE.BinaryBuf.GetByte(self,offset)",
+    "url": "SWE.BinaryBuf.GetByte(self,offset1,offset2)",
     "title": "SWE.BinaryBuf.GetByte",
     "group": "SWE_BinaryBuf",
     "name": "GetByte",
@@ -1314,8 +1364,15 @@
             "group": "Parameter",
             "type": "number",
             "optional": false,
-            "field": "offset",
-            "description": "<p>offset data</p>"
+            "field": "offset1",
+            "description": "<p>first data offset</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "offset2",
+            "description": "<p>last data offset (default: nil)</p>"
           }
         ]
       }
@@ -1325,10 +1382,10 @@
         "Return": [
           {
             "group": "Return",
-            "type": "number",
+            "type": "list",
             "optional": false,
             "field": "result",
-            "description": "<p>byte value</p>"
+            "description": "<p>bytes list values</p>"
           }
         ]
       }
@@ -10801,7 +10858,7 @@
   },
   {
     "type": "terminal render texture",
-    "url": "SWE.Terminal.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty,dstw,dsth)(self,texture,src_rt,dst_rt)",
+    "url": "SWE.Terminal.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty)(self,texture,src_rt,dst_pt)(self,texture,dstx,dsty)(self,texture,dst_pt)",
     "title": "SWE.Terminal.RenderTexture",
     "group": "SWE_Terminal_Window",
     "name": "RenderTexture",
@@ -10866,20 +10923,6 @@
           },
           {
             "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "dstw",
-            "description": "<p>dst size (default srcw)</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "dsth",
-            "description": "<p>dst size (default srch)</p>"
-          },
-          {
-            "group": "Parameter",
             "type": "SWE.Rect",
             "optional": false,
             "field": "src_rt",
@@ -10887,10 +10930,10 @@
           },
           {
             "group": "Parameter",
-            "type": "SWE.Rect",
+            "type": "SWE.Point",
             "optional": false,
-            "field": "dst_rt",
-            "description": "<p>dst rect object</p>"
+            "field": "dst_pt",
+            "description": "<p>dst point object</p>"
           }
         ]
       }
@@ -10998,10 +11041,10 @@
   },
   {
     "type": "terminal set result code",
-    "url": "SWE.Terminal.SetResult(self,code)",
-    "title": "SWE.Terminal.SetResult",
+    "url": "SWE.Terminal.SetResultCode(self,code)",
+    "title": "SWE.Terminal.SetResultCode",
     "group": "SWE_Terminal_Window",
-    "name": "SetResult",
+    "name": "SetResultCode",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -11488,8 +11531,8 @@
     "groupTitle": "SWE_Texture"
   },
   {
-    "type": "texture render texture",
-    "url": "SWE.Texture.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty,dstw,dsth)(self,texture,rect_src,rect_dst)",
+    "type": "texture scaled render to texture",
+    "url": "SWE.Texture.RenderTexture(self,texture),(self,texture,srcx,srcy,srcw,srch,dstx,dsty,dstw,dsth)(self,texture,rect_src,rect_dst)",
     "title": "SWE.Texture.RenderTexture",
     "group": "SWE_Texture",
     "name": "RenderTexture",
@@ -11501,14 +11544,14 @@
             "type": "SWE.Texture",
             "optional": false,
             "field": "self",
-            "description": "<p>texture object</p>"
+            "description": "<p>dst texture object</p>"
           },
           {
             "group": "Parameter",
             "type": "SWE.Texture",
             "optional": false,
             "field": "texture",
-            "description": "<p>source texture object</p>"
+            "description": "<p>src texture object</p>"
           },
           {
             "group": "Parameter",
@@ -11543,7 +11586,7 @@
             "type": "SWE.Rect",
             "optional": false,
             "field": "rect_src",
-            "description": "<p>rect object</p>"
+            "description": "<p>src rect object</p>"
           },
           {
             "group": "Parameter",
@@ -11578,7 +11621,7 @@
             "type": "SWE.Rect",
             "optional": false,
             "field": "rect_dst",
-            "description": "<p>rect object</p>"
+            "description": "<p>dst rect object</p>"
           }
         ]
       }
@@ -11586,7 +11629,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local image1 = SWE.Texture.Image(\"logo.png\")\nlocal image2 = image.Texture(200,100)\n-- copy texture area(50, 50, 50, 50) from image1 to texture image2 dst pos(100, 50)\nimage2:RenderTexture(image1,50,50,50,50,100,50)\nprint(image2.width,image2.height)",
+        "content": "local image1 = SWE.Texture.Image(\"logo.png\")\nlocal image2 = SWE.Texture.Texture(200,100)\n-- copy texture area(50, 50, 50, 50) from image1 to texture image2 dst pos(100, 50)\nimage2:RenderTexture(image1,50,50,50,50,100,50)\nprint(image2.width,image2.height)",
         "type": "json"
       }
     ],
@@ -13346,7 +13389,7 @@
   },
   {
     "type": "window render texture",
-    "url": "SWE.Window.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty,dstw,dsth)(self,texture,src_rt,dst_rt)",
+    "url": "SWE.Window.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty)(self,texture,src_rt,dst_pt)(self,texture,dstx,dsty)(self,texture,dst_pt)",
     "title": "SWE.Window.RenderTexture",
     "group": "SWE_Window",
     "name": "RenderTexture",
@@ -13411,20 +13454,6 @@
           },
           {
             "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "dstw",
-            "description": "<p>dst size (default srcw)</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "dsth",
-            "description": "<p>dst size (default srch)</p>"
-          },
-          {
-            "group": "Parameter",
             "type": "SWE.Rect",
             "optional": false,
             "field": "src_rt",
@@ -13432,10 +13461,10 @@
           },
           {
             "group": "Parameter",
-            "type": "SWE.Rect",
+            "type": "SWE.Point",
             "optional": false,
-            "field": "dst_rt",
-            "description": "<p>dst rect object</p>"
+            "field": "dst_pt",
+            "description": "<p>dst point object</p>"
           }
         ]
       }
@@ -13543,10 +13572,10 @@
   },
   {
     "type": "window set result code",
-    "url": "SWE.Window.SetResult(self,code)",
-    "title": "SWE.Window.SetResult",
+    "url": "SWE.Window.SetResultCode(self,code)",
+    "title": "SWE.Window.SetResultCode",
     "group": "SWE_Window",
-    "name": "SetResult",
+    "name": "SetResultCode",
     "parameter": {
       "fields": {
         "Parameter": [

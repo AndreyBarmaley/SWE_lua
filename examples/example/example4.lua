@@ -28,9 +28,7 @@ function win.RenderWindow()
 
     win:RenderClear(SWE.Color.Silver)
     win:RenderRect(SWE.Color.Red, 0, 0, win.width, win.height)
-
-    win:RenderTexture(txMUK, 0, 0, txMUK.width, txMUK.height,
-			(win.width - txMUK.width) / 2, win.height - txMUK.height - 3)
+    win:RenderTexture(txMUK, (win.width - txMUK.width) / 2, win.height - txMUK.height - 3)
 
     -- force free texture
     txMUK = nil

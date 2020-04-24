@@ -23,12 +23,20 @@
 #ifndef _SWE_LUA_STREAMNET_
 #define _SWE_LUA_STREAMNET_
 
-#include "engine.h"
+#include "SWE_global.h"
 
 struct lua_State;
 
 int SWE_streamnet_create(lua_State*);
 int SWE_streamnet_destroy(lua_State*);
+
+#ifdef DISABLE_NETWORK
+struct StreamNetwork
+{
+    StreamNetwork() {}
+    StreamNetwork(const std::string & srv, int port) {}
+};
+#endif
 
 class SWE_StreamNet : public StreamNetwork
 {

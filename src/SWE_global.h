@@ -20,21 +20,10 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _SWE_LUA_TOOLS_
-#define _SWE_LUA_TOOLS_
+#ifndef _SWE_LUA_GLOBAL_
+#define _SWE_LUA_GLOBAL_
 
-#include "SWE_global.h"
-
-namespace SWE_Tools
-{
-    std::string		toJsonString(LuaState &, int tableIndex);
-    std::string		toCurrentPath(LuaState &, const std::string &);
-    std::string		toRunningPath(LuaState &, const std::string &);
-    std::string		convertEncoding(LuaState &, const std::string &);
-
-    int			pushJsonObject(LuaState &, const JsonObject*);
-    int			pushJsonArray(LuaState &, const JsonArray*);
-    int			pushJsonValue(LuaState &, const JsonValue*);
-}
+#include "libswe.h"
+using namespace SWE;
 
 #endif

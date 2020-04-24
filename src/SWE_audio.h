@@ -23,7 +23,7 @@
 #ifndef _SWE_LUA_AUDIO_
 #define _SWE_LUA_AUDIO_
 
-#include "engine.h"
+#include "SWE_global.h"
 
 namespace SWE_Audio
 {

@@ -374,7 +374,8 @@ function StackNumbers(...)
 		nextmove = i1
 	    elseif orders[i2].item.value == orders[i1].item.value then
 		orders[i2].item.value = orders[i2].item.value * 2
-		orders[i1].item:SetVisible(false) -- don't rely: collect garbage
+		orders[i1].item:SetVisible(false)
+		SWE.Scene.Remove(orders[i1].item)
 		orders[i1].item = nil
 		res = true
 	    elseif nextmove == i2 then

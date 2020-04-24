@@ -23,7 +23,7 @@
 #ifndef _SWE_LUA_SIGNAL_
 #define _SWE_LUA_SIGNAL_
 
-#include "engine.h"
+#include "SWE_global.h"
 
 namespace SWE_Signal
 {
