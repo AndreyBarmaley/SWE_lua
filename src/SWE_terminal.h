@@ -47,8 +47,8 @@ protected:
     void        mouseLeaveEvent(void) override { SWE_mouse_leave_event(ll, *this); }
     bool        keyPressEvent(const KeySym & ks) override { return SWE_key_press_event(ll, *this, ks); }
     bool        keyReleaseEvent(const KeySym & ks) override { return SWE_key_release_event(ll, *this, ks); }
-    bool        scrollUpEvent(const Point & pos) override { return SWE_scroll_up_event(ll, *this, pos); }
-    bool        scrollDownEvent(const Point & pos) override { return SWE_scroll_down_event(ll, *this, pos); }
+    bool        scrollUpEvent(void) override { return SWE_scroll_up_event(ll, *this); }
+    bool        scrollDownEvent(void) override { return SWE_scroll_down_event(ll, *this); }
     bool        userEvent(int code, void* data) override { return SWE_system_user_event(ll, *this, code, data); }
     void        tickEvent(u32 ms) override { SWE_system_tick_event(ll, *this, ms); }
 

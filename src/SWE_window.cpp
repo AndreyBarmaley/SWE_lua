@@ -307,12 +307,13 @@ bool SWE_key_release_event(LuaState & ll, const Window & win, const KeySym & key
     return false;
 }
 
-bool SWE_scroll_up_event(LuaState & ll, const Window & win, const Point & pos)
+bool SWE_scroll_up_event(LuaState & ll, const Window & win)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
 	if(ll.getFieldTableIndex("ScrollUpEvent", -1, false).isTopFunction())
 	{
+	    const Point & pos = Display::mouseCursorPosition();
 	    ll.pushInteger(pos.x).pushInteger(pos.y);
 	    bool res = ll.callFunction(2, 1).getTopBoolean();
 	    // remove boolean, table
@@ -330,12 +331,13 @@ bool SWE_scroll_up_event(LuaState & ll, const Window & win, const Point & pos)
     return false;
 }
 
-bool SWE_scroll_down_event(LuaState & ll, const Window & win, const Point & pos)
+bool SWE_scroll_down_event(LuaState & ll, const Window & win)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
 	if(ll.getFieldTableIndex("ScrollDownEvent", -1, false).isTopFunction())
 	{
+	    const Point & pos = Display::mouseCursorPosition();
 	    ll.pushInteger(pos.x).pushInteger(pos.y);
 	    bool res = ll.callFunction(2, 1).getTopBoolean();
 	    // remove boolean, table
@@ -421,29 +423,16 @@ void SWE_system_tick_event(LuaState & ll, const Window & win, u32 ms)
 }
 
 SWE_Window::SWE_Window(lua_State* L, Window* parent)
-    : Window(parent), ll(L)
+    : WindowToolTipArea(parent), ll(L)
 {
     resetState(FlagModality);
 }
 
 SWE_Window::SWE_Window(lua_State* L, const Point & pos, const Size & winsz, Window* parent)
-    : Window(pos, winsz, parent), ll(L)
+    : WindowToolTipArea(pos, winsz, parent), ll(L)
 {
     resetState(FlagModality);
     setVisible(true);
-}
-
-void SWE_Window::toolTipInit(const std::string & str)
-{
-    toolTipInit(str, FontRenderSystem(), Color::Black, Color::Wheat, Color::MidnightBlue);
-}
-
-void SWE_Window::toolTipInit(const std::string & str, const FontRender & frs, const Color & fncolor, const Color & bgcolor, const Color & rtcolor)
-{
-    Texture text = Display::renderText(frs, str, fncolor);
-    tooltip = Display::renderRect(rtcolor, bgcolor, text.size() + Size(6, 6));
-
-    Display::renderTexture(text, text.rect(), tooltip, Rect(Point(3, 3), text.size()));
 }
 
 Window* SWE_Window::get(LuaState & ll, int tableIndex, const char* funcName)
@@ -598,7 +587,7 @@ int SWE_window_set_modality(lua_State* L)
     if(win)
     {
 	bool flag = ll.toBooleanIndex(2);
-	win->setState(FlagModality, flag);
+	WindowProtect::setState(win, FlagModality, flag);
 	ll.pushBoolean(flag).setFieldTableIndex("modality", 1);
     }
     else
@@ -619,7 +608,7 @@ int SWE_window_set_keyhandle(lua_State* L)
     if(win)
     {
 	bool flag = ll.toBooleanIndex(2);
-	win->setState(FlagKeyHandle, flag);
+	WindowProtect::setState(win, FlagKeyHandle, flag);
 	ll.pushBoolean(flag).setFieldTableIndex("keyhandle", 1);
     }
     else
@@ -640,7 +629,7 @@ int SWE_window_set_mousetrack(lua_State* L)
     if(win)
     {
 	bool flag = ll.toBooleanIndex(2);
-	win->setState(FlagMouseTracking, flag);
+	WindowProtect::setState(win, FlagMouseTracking, flag);
     }
     else
     {
@@ -1040,7 +1029,7 @@ int SWE_window_set_tooltip(lua_State* L)
 	    ARGB colorFn = ll.toIntegerIndex(4);
 	    ARGB colorBg = ll.toIntegerIndex(5);
 	    ARGB colorRt = ll.toIntegerIndex(6);
-	    win->toolTipInit(text, *frs, Color(colorFn), Color(colorBg), Color(colorRt));
+	    win->renderToolTip(text, *frs, Color(colorFn), Color(colorBg), Color(colorRt));
 	}
 	else
 	{
@@ -1049,7 +1038,7 @@ int SWE_window_set_tooltip(lua_State* L)
     }
     else
     {
-	win->toolTipInit(text);
+	win->setToolTip(text);
     }
 
     return 0;

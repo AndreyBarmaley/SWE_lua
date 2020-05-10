@@ -43,8 +43,8 @@ void SWE_mouse_focus_event(LuaState &, const Window &);
 void SWE_mouse_leave_event(LuaState &, const Window &);
 bool SWE_key_press_event(LuaState &, const Window &, const KeySym &);
 bool SWE_key_release_event(LuaState &, const Window &, const KeySym &);
-bool SWE_scroll_up_event(LuaState &, const Window &, const Point &);
-bool SWE_scroll_down_event(LuaState &, const Window &, const Point &);
+bool SWE_scroll_up_event(LuaState &, const Window &);
+bool SWE_scroll_down_event(LuaState &, const Window &);
 bool SWE_system_user_event(LuaState &, const Window &, int, void*);
 void SWE_system_tick_event(LuaState &, const Window &, u32);
 void SWE_window_render(LuaState &, const Window &);
@@ -57,14 +57,10 @@ int SWE_window_set_keyhandle(lua_State* L);
 int SWE_window_point_inarea(lua_State* L);
 int SWE_window_render_texture(lua_State* L);
 
-class SWE_Window : public Window
+class SWE_Window : public WindowToolTipArea
 {
-    Texture	tooltip;
-
 protected:
     LuaState	ll;
-
-    const Texture* tooltipTexture(void) const override { return & tooltip; }
 
     void	windowCreateEvent(void) override { SWE_window_create_event(ll, *this); }
     void	textureInvalidEvent(void) override { SWE_texture_invalid_event(ll, *this); }
@@ -78,8 +74,8 @@ protected:
     void        mouseLeaveEvent(void) override { SWE_mouse_leave_event(ll, *this); }
     bool	keyPressEvent(const KeySym & ks) override { return SWE_key_press_event(ll, *this, ks); }
     bool	keyReleaseEvent(const KeySym & ks) override { return SWE_key_release_event(ll, *this, ks); }
-    bool        scrollUpEvent(const Point & pos) override { return SWE_scroll_up_event(ll, *this, pos); }
-    bool        scrollDownEvent(const Point & pos) override { return SWE_scroll_down_event(ll, *this, pos); }
+    bool        scrollUpEvent(void) override { return SWE_scroll_up_event(ll, *this); }
+    bool        scrollDownEvent(void) override { return SWE_scroll_down_event(ll, *this); }
     bool        userEvent(int code, void* data) override { return SWE_system_user_event(ll, *this, code, data); }
     void        tickEvent(u32 ms) override { SWE_system_tick_event(ll, *this, ms); }
 
@@ -88,9 +84,6 @@ public:
     SWE_Window(lua_State*, const Point &, const Size &, Window* parent);
 
     void        renderWindow(void) override { SWE_window_render(ll, *this); }
-
-    void        toolTipInit(const std::string &, const FontRender &, const Color & fn, const Color & bg, const Color & rt);
-    void        toolTipInit(const std::string &);
 
     static Window* get(LuaState &, int tableIndex, const char* funcName);
     static void registers(LuaState &);
