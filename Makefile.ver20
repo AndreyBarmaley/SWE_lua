@@ -13,7 +13,7 @@ SDL2_LIBS       := $(shell sdl2-config --libs)
 endif
 
 ENGINE_CFLAGS   := $(SDL2_CFLAGS)
-ENGINE_LIBS     := $(SDL2_LIBS)
+ENGINE_LIBS     := $(SDL2_LIBS) -lSDL2_gfx
 
 ifdef DISABLE_TTF
 ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DDISABLE_TTF

@@ -43,8 +43,7 @@ int SWE_key_tochar(lua_State* L)
     }
 
     int sym = ll.toIntegerIndex(1);
-    int mod = ll.toIntegerIndex(2);
-    int ch = KeySym(sym, mod).keychar();
+    int ch = KeySym(sym).keychar();
 
     if(0 < ch)
     {

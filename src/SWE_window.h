@@ -31,23 +31,23 @@ struct lua_State;
 int SWE_window_create(lua_State*);
 int SWE_window_destroy(lua_State*);
 
-void SWE_window_create_event(LuaState &, const Window &);
-void SWE_texture_invalid_event(LuaState &, const Window &);
-void SWE_display_resize_event(LuaState &, const Window &, const Size &, bool);
-bool SWE_mouse_press_event(LuaState &, const Window &, const ButtonEvent &);
-bool SWE_mouse_release_event(LuaState &, const Window &, const ButtonEvent &);
-bool SWE_mouse_motion_event(LuaState &, const Window &, const Point &, u32);
-void SWE_mouse_tracking_event(LuaState &, const Window &, const Point &, u32);
-bool SWE_mouse_click_event(LuaState &, const Window &, const ButtonsEvent &);
-void SWE_mouse_focus_event(LuaState &, const Window &);
-void SWE_mouse_leave_event(LuaState &, const Window &);
-bool SWE_key_press_event(LuaState &, const Window &, const KeySym &);
-bool SWE_key_release_event(LuaState &, const Window &, const KeySym &);
-bool SWE_scroll_up_event(LuaState &, const Window &);
-bool SWE_scroll_down_event(LuaState &, const Window &);
-bool SWE_system_user_event(LuaState &, const Window &, int, void*);
-void SWE_system_tick_event(LuaState &, const Window &, u32);
-void SWE_window_render(LuaState &, const Window &);
+void SWE_window_create_event(LuaState &, Window &);
+void SWE_texture_invalid_event(LuaState &, Window &);
+void SWE_display_resize_event(LuaState &, Window &, const Size &, bool);
+bool SWE_mouse_press_event(LuaState &, Window &, const ButtonEvent &);
+bool SWE_mouse_release_event(LuaState &, Window &, const ButtonEvent &);
+bool SWE_mouse_motion_event(LuaState &, Window &, const Point &, u32);
+void SWE_mouse_tracking_event(LuaState &, Window &, const Point &, u32);
+bool SWE_mouse_click_event(LuaState &, Window &, const ButtonsEvent &);
+void SWE_mouse_focus_event(LuaState &, Window &);
+void SWE_mouse_leave_event(LuaState &, Window &);
+bool SWE_key_press_event(LuaState &, Window &, const KeySym &);
+bool SWE_key_release_event(LuaState &, Window &, const KeySym &);
+bool SWE_scroll_up_event(LuaState &, Window &);
+bool SWE_scroll_down_event(LuaState &, Window &);
+bool SWE_system_user_event(LuaState &, Window &, int, void*);
+void SWE_system_tick_event(LuaState &, Window &, u32);
+void SWE_window_render(LuaState &, Window &);
 
 int SWE_window_set_visible(lua_State* L);
 int SWE_window_set_result(lua_State* L);
@@ -110,7 +110,7 @@ public:
     SWE_Polygon(lua_State*, const Points &, Window* parent);
 
     void        renderWindow(void) override;
-    void        renderClear(const Color &) const override;
+    void        renderClear(const Color &) override;
     bool        isAreaPoint(const Point &) const override;
 
     Points	getPoints(void) const;

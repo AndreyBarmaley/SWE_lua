@@ -32,7 +32,7 @@
 int SWE_polygon_create(lua_State*);
 int SWE_polygon_destroy(lua_State*);
 
-void SWE_window_render(LuaState & ll, const Window & win)
+void SWE_window_render(LuaState & ll, Window & win)
 {
     bool extrender = false;
 
@@ -65,7 +65,7 @@ void SWE_window_render(LuaState & ll, const Window & win)
     }
 }
 
-bool SWE_mouse_press_event(LuaState & ll, const Window & win, const ButtonEvent & be)
+bool SWE_mouse_press_event(LuaState & ll, Window & win, const ButtonEvent & be)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
@@ -88,7 +88,7 @@ bool SWE_mouse_press_event(LuaState & ll, const Window & win, const ButtonEvent 
     return false;
 }
 
-bool SWE_mouse_release_event(LuaState & ll, const Window & win, const ButtonEvent & be)
+bool SWE_mouse_release_event(LuaState & ll, Window & win, const ButtonEvent & be)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
@@ -111,7 +111,7 @@ bool SWE_mouse_release_event(LuaState & ll, const Window & win, const ButtonEven
     return false;
 }
 
-bool SWE_mouse_motion_event(LuaState & ll, const Window & win, const Point & pos, u32 buttons)
+bool SWE_mouse_motion_event(LuaState & ll, Window & win, const Point & pos, u32 buttons)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
@@ -134,7 +134,7 @@ bool SWE_mouse_motion_event(LuaState & ll, const Window & win, const Point & pos
     return false;
 }
 
-void SWE_mouse_tracking_event(LuaState & ll, const Window & win, const Point & pos, u32 buttons)
+void SWE_mouse_tracking_event(LuaState & ll, Window & win, const Point & pos, u32 buttons)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
@@ -152,7 +152,7 @@ void SWE_mouse_tracking_event(LuaState & ll, const Window & win, const Point & p
     }
 }
 
-bool SWE_mouse_click_event(LuaState & ll, const Window & win, const ButtonsEvent & be)
+bool SWE_mouse_click_event(LuaState & ll, Window & win, const ButtonsEvent & be)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
@@ -176,7 +176,7 @@ bool SWE_mouse_click_event(LuaState & ll, const Window & win, const ButtonsEvent
     return false;
 }
 
-void SWE_mouse_focus_event(LuaState & ll, const Window & win)
+void SWE_mouse_focus_event(LuaState & ll, Window & win)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
@@ -193,7 +193,7 @@ void SWE_mouse_focus_event(LuaState & ll, const Window & win)
     }
 }
 
-void SWE_mouse_leave_event(LuaState & ll, const Window & win)
+void SWE_mouse_leave_event(LuaState & ll, Window & win)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
@@ -210,7 +210,7 @@ void SWE_mouse_leave_event(LuaState & ll, const Window & win)
     }
 }
 
-void SWE_window_create_event(LuaState & ll, const Window & win)
+void SWE_window_create_event(LuaState & ll, Window & win)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
@@ -227,7 +227,7 @@ void SWE_window_create_event(LuaState & ll, const Window & win)
     }
 }
 
-void SWE_texture_invalid_event(LuaState & ll, const Window & win)
+void SWE_texture_invalid_event(LuaState & ll, Window & win)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
@@ -244,7 +244,7 @@ void SWE_texture_invalid_event(LuaState & ll, const Window & win)
     }
 }
 
-void SWE_display_resize_event(LuaState & ll, const Window & win, const Size & winsz, bool fromsdl)
+void SWE_display_resize_event(LuaState & ll, Window & win, const Size & winsz, bool fromsdl)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
@@ -261,13 +261,13 @@ void SWE_display_resize_event(LuaState & ll, const Window & win, const Size & wi
     }
 }
 
-bool SWE_key_press_event(LuaState & ll, const Window & win, const KeySym & key)
+bool SWE_key_press_event(LuaState & ll, Window & win, const KeySym & key)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
 	if(ll.getFieldTableIndex("KeyPressEvent", -1, false).isTopFunction())
 	{
-	    ll.pushInteger(key.keycode()).pushInteger(key.keymod()).pushInteger(key.scancode());
+	    ll.pushInteger(key.keycode()).pushInteger(key.keymod().mod).pushInteger(key.scancode());
 	    bool res = ll.callFunction(3, 1).getTopBoolean();
 	    // remove boolean, table
 	    ll.stackPop(2);
@@ -284,13 +284,13 @@ bool SWE_key_press_event(LuaState & ll, const Window & win, const KeySym & key)
     return false;
 }
 
-bool SWE_key_release_event(LuaState & ll, const Window & win, const KeySym & key)
+bool SWE_key_release_event(LuaState & ll, Window & win, const KeySym & key)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
 	if(ll.getFieldTableIndex("KeyReleaseEvent", -1, false).isTopFunction())
 	{
-	    ll.pushInteger(key.keycode()).pushInteger(key.keymod()).pushInteger(key.scancode());
+	    ll.pushInteger(key.keycode()).pushInteger(key.keymod().mod).pushInteger(key.scancode());
 	    bool res = ll.callFunction(3, 1).getTopBoolean();
 	    // remove boolean, table
 	    ll.stackPop(2);
@@ -307,7 +307,7 @@ bool SWE_key_release_event(LuaState & ll, const Window & win, const KeySym & key
     return false;
 }
 
-bool SWE_scroll_up_event(LuaState & ll, const Window & win)
+bool SWE_scroll_up_event(LuaState & ll, Window & win)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
@@ -331,7 +331,7 @@ bool SWE_scroll_up_event(LuaState & ll, const Window & win)
     return false;
 }
 
-bool SWE_scroll_down_event(LuaState & ll, const Window & win)
+bool SWE_scroll_down_event(LuaState & ll, Window & win)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
@@ -355,7 +355,7 @@ bool SWE_scroll_down_event(LuaState & ll, const Window & win)
     return false;
 }
 
-bool SWE_system_user_event(LuaState & ll, const Window & win, int code, void* data)
+bool SWE_system_user_event(LuaState & ll, Window & win, int code, void* data)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
@@ -404,7 +404,7 @@ bool SWE_system_user_event(LuaState & ll, const Window & win, int code, void* da
     return false;
 }
 
-void SWE_system_tick_event(LuaState & ll, const Window & win, u32 ms)
+void SWE_system_tick_event(LuaState & ll, Window & win, u32 ms)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
@@ -1604,7 +1604,7 @@ void SWE_Polygon::fillPoints(const Polygon & poly)
 	if(! (*it).second.checkOpen()) points.insert((*it).first - position());
 }
 
-void SWE_Polygon::renderClear(const Color & col) const
+void SWE_Polygon::renderClear(const Color & col)
 {
     for(auto it = points.begin(); it != points.end(); ++it)
 	renderPoint(col, *it);
