@@ -61,8 +61,11 @@ char* string_dup(const std::string & str)
 {
     size_t len = str.size();
     char*  res = (char*) malloc(len + 1);
-    std::copy(str.begin(), str.end(), res);
-    res[len] = 0;
+    if(res)
+    {
+	std::copy(str.begin(), str.end(), res);
+	res[len] = 0;
+    }
     return res;
 }
 
@@ -263,7 +266,7 @@ bool FFmpegContext::init(const JsonObject & params)
     {
 	if(*it == "format" || *it == "device" ||  *it == "debug") continue;
 	const std::string & key = *it;
-	int type = params.getType(key);
+	auto type = params.getType(key);
 
 	if(key == "video_input")
 	{
@@ -273,7 +276,7 @@ bool FFmpegContext::init(const JsonObject & params)
 	    DEBUG("av_dict_set: " << key << "=" << input);
 	}
         else
-	if(type == TypeInteger || type == TypeDouble)
+	if(type == JsonType::Integer || type == JsonType::Double)
 	{
 	    int val = params.getInteger(key);
 	    av_dict_set_int(& v4l2Params, key.c_str(), val, 0);

@@ -33,13 +33,13 @@
 int SWE_terminal_create(lua_State*);
 int SWE_terminal_destroy(lua_State*);
 
-SWE_Terminal::SWE_Terminal(lua_State* L, const FontRender & frs, Window & parent) : TermWindow(frs, parent), ll(L)
+SWE_Terminal::SWE_Terminal(lua_State* L, const FontRender & frs, Window & parent) : TermWindow(frs, & parent), ll(L)
 {
     resetState(FlagModality);
     setVisible(false);
 }
 
-SWE_Terminal::SWE_Terminal(lua_State* L, const FontRender & frs, int cols, int rows, Window & parent) : TermWindow(frs, parent), ll(L)
+SWE_Terminal::SWE_Terminal(lua_State* L, const FontRender & frs, int cols, int rows, Window & parent) : TermWindow(frs, & parent), ll(L)
 {
     resetState(FlagModality);
     setTermSize(TermSize(cols, rows));
@@ -49,6 +49,58 @@ SWE_Terminal::SWE_Terminal(lua_State* L, const FontRender & frs, int cols, int r
 TermWindow* SWE_Terminal::get(LuaState & ll, int tableIndex, const char* funcName)
 {
     return static_cast<TermWindow*>(SWE_Window::get(ll, tableIndex, funcName));
+}
+
+
+FBColors SWE_terminal_default_colors(LuaState & ll, const TermWindow & term)
+{
+    if(SWE_Scene::window_pushtop(ll, term))
+    {
+        if(ll.getFieldTableIndex("TerminalDefaultColors", -1, false).isTopFunction())
+        {
+            ll.callFunction(0, 2);
+	    ColorIndex colorFg = ll.toIntegerIndex(-1);
+	    ColorIndex colorBg = ll.toIntegerIndex(-2);
+
+            // remove results, table
+            ll.stackPop(3);
+            return FBColors(colorFg, colorBg);
+        }
+        else
+        {
+            ll.stackPop();
+        }
+
+        ll.stackPop();
+    }
+
+    return FBColors();
+}
+
+CharsetProperty SWE_terminal_default_property(LuaState & ll, const TermWindow & term)
+{
+    if(SWE_Scene::window_pushtop(ll, term))
+    {
+        if(ll.getFieldTableIndex("TerminalDefaultProperty", -1, false).isTopFunction())
+        {
+            ll.callFunction(0, 3);
+	    int render = ll.toIntegerIndex(-1);
+	    int style = ll.toIntegerIndex(-2);
+	    int hinting = ll.toIntegerIndex(-2);
+
+            // remove results, table
+            ll.stackPop(4);
+            return CharsetProperty(render, style, hinting);
+        }
+        else
+        {
+            ll.stackPop();
+        }
+
+        ll.stackPop();
+    }
+
+    return CharsetProperty();
 }
 
 /////////////////////////////////////// 
@@ -328,6 +380,34 @@ int SWE_terminal_set_colors(lua_State* L)
     return 0;
 }
 
+int SWE_terminal_set_property(lua_State* L)
+{
+    // params: swe_terminal, int render, int style, int hinting
+
+    LuaState ll(L);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+
+    if(term)
+    {
+	int params = ll.stackSize();
+
+	int render = ll.toIntegerIndex(2);
+	int style = 3 > params ? StyleNormal : ll.toIntegerIndex(3);
+	int hinting = 4 > params ? HintingNormal : ll.toIntegerIndex(4);
+
+	*term << set::property(render, style, hinting);
+
+	ll.pushValueIndex(1);
+	return 1;
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
+
+    return 0;
+}
+
 int SWE_terminal_set_wrap(lua_State* L)
 {
     // params: swe_terminal
@@ -365,6 +445,28 @@ int SWE_terminal_set_padding(lua_State* L)
 	int bottom = ll.toIntegerIndex(5);
 
 	*term << set::padding(left, right, top, bottom);
+
+	ll.pushValueIndex(1);
+	return 1;
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
+
+    return 0;
+}
+
+int SWE_terminal_reset_property(lua_State* L)
+{
+    // params: swe_terminal
+
+    LuaState ll(L);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+
+    if(term)
+    {
+	*term << reset::property();
 
 	ll.pushValueIndex(1);
 	return 1;
@@ -1057,11 +1159,13 @@ const struct luaL_Reg SWE_terminal_functions[] = {
     { "ResetFGColor",	SWE_terminal_reset_fgcolor },	// [swe_terminal], table terminal
     { "ResetBGColor",	SWE_terminal_reset_bgcolor },	// [swe_terminal], table terminal
     { "ResetColors",	SWE_terminal_reset_colors },	// [swe_terminal], table terminal
+    { "ResetProperty",	SWE_terminal_reset_property },	// [swe_terminal], table terminal
     { "ResetPadding",	SWE_terminal_reset_padding },	// [swe_terminal], table terminal
     { "ResetWrap",	SWE_terminal_reset_wrap },	// [swe_terminal], table terminal
     { "SetFGColor",	SWE_terminal_set_fgcolor },	// [swe_terminal], table terminal, color
     { "SetBGColor",	SWE_terminal_set_bgcolor },	// [swe_terminal], table terminal, color
     { "SetColors",	SWE_terminal_set_colors },	// [swe_terminal], table terminal, color, color
+    { "SetProperty",	SWE_terminal_set_property },	// [swe_terminal], table terminal, int render, int style, int hinting
     { "SetWrap",	SWE_terminal_set_wrap },	// [swe_terminal], table terminal
     { "SetPadding",	SWE_terminal_set_padding },	// [swe_terminal], table terminal, int left, int right, int top, int bottom
     { "SetFlush",	SWE_terminal_set_flush },	// [void], table terminal
@@ -1072,6 +1176,8 @@ const struct luaL_Reg SWE_terminal_functions[] = {
     { "DrawChar",	SWE_terminal_draw_char },	// [swe_terminal], table terminal, char, ..., char
     { "CharsetInfo",	SWE_terminal_charset_info },	// [table], table terminal
     // virtual
+    { "TerminalDefaultProperty",NULL },
+    { "TerminalDefaultColors",NULL },
     { "TextureInvalidEvent",NULL },
     { "WindowCreateEvent", NULL },
     { "WindowCloseEvent",  NULL },

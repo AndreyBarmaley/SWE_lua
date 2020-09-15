@@ -112,16 +112,16 @@ int SWE_Tools::pushJsonValue(LuaState & ll, const JsonValue* jv)
     {
 	switch(jv->getType())
 	{
-	    case JsonType::TypeNull:	ll.pushNil(); break;
-	    case JsonType::TypeInteger:	ll.pushInteger(jv->getInteger()); break;
-	    case JsonType::TypeDouble:	ll.pushNumber(jv->getDouble()); break;
-	    case JsonType::TypeString:	ll.pushString(jv->getString()); break;
-	    case JsonType::TypeBoolean:	ll.pushBoolean(jv->getBoolean()); break;
+	    case JsonType::Null:	ll.pushNil(); break;
+	    case JsonType::Integer:	ll.pushInteger(jv->getInteger()); break;
+	    case JsonType::Double:	ll.pushNumber(jv->getDouble()); break;
+	    case JsonType::String:	ll.pushString(jv->getString()); break;
+	    case JsonType::Boolean:	ll.pushBoolean(jv->getBoolean()); break;
 
-	    case JsonType::TypeArray:	return pushJsonArray(ll, static_cast<const JsonArray*>(jv));
-	    case JsonType::TypeObject:	return pushJsonObject(ll, static_cast<const JsonObject*>(jv));
+	    case JsonType::Array:	return pushJsonArray(ll, static_cast<const JsonArray*>(jv));
+	    case JsonType::Object:	return pushJsonObject(ll, static_cast<const JsonObject*>(jv));
 
-	    default: ERROR("unknown type: " << jv->getType()); return 0;
+	    default: ERROR("unknown type: " << static_cast<int>(jv->getType())); return 0;
 	}
     }
 

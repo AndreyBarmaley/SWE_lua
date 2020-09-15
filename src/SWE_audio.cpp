@@ -35,7 +35,7 @@ int SWE_mixer_volume(lua_State* L)
         return 0;
     }
 
-#ifdef DISABLE_AUDIO
+#ifdef SWE_DISABLE_AUDIO
     ERROR("not supported module: " << "swe.audio");
     ll.pushInteger(0);
 #else
@@ -51,7 +51,7 @@ int SWE_mixer_reset(lua_State* L)
 {
     // params: none
 
-#ifdef DISABLE_AUDIO
+#ifdef SWE_DISABLE_AUDIO
     ERROR("not supported module: " << "swe.audio");
 #else
     Music::reset();
@@ -64,7 +64,7 @@ int SWE_music_isplaying(lua_State* L)
     // params: none
     LuaState ll(L);
 
-#ifdef DISABLE_AUDIO
+#ifdef SWE_DISABLE_AUDIO
     ERROR("not supported module: " << "swe.audio");
     ll.pushBoolean(false);
 #else
@@ -79,7 +79,7 @@ int SWE_music_pause(lua_State* L)
 {
     // params: none
 
-#ifdef DISABLE_AUDIO
+#ifdef SWE_DISABLE_AUDIO
     ERROR("not supported module: " << "swe.audio");
 #else
     Music::pause();
@@ -91,7 +91,7 @@ int SWE_music_resume(lua_State* L)
 {
     // params: none
 
-#ifdef DISABLE_AUDIO
+#ifdef SWE_DISABLE_AUDIO
     ERROR("not supported module: " << "swe.audio");
 #else
     Music::resume();
@@ -108,7 +108,7 @@ int SWE_music_playbuf(lua_State* L)
 
     if(buf)
     {
-#ifdef DISABLE_AUDIO
+#ifdef SWE_DISABLE_AUDIO
 	ERROR("not supported module: " << "swe.audio");
         ll.pushBoolean(false);
 #else
@@ -152,7 +152,7 @@ int SWE_music_play(lua_State* L)
 
     if(Systems::isFile(filename))
     {
-#ifdef DISABLE_AUDIO
+#ifdef SWE_DISABLE_AUDIO
 	ERROR("not supported module: " << "swe.audio");
 	ll.pushBoolean(false);
 #else
@@ -175,7 +175,7 @@ int SWE_sound_isplaying(lua_State* L)
     // params: none
     LuaState ll(L);
 
-#ifdef DISABLE_AUDIO
+#ifdef SWE_DISABLE_AUDIO
     ERROR("not supported module: " << "swe.audio");
     ll.pushBoolean(false);
 #else
@@ -194,7 +194,7 @@ int SWE_sound_playbuf(lua_State* L)
 
     if(buf)
     {
-#ifdef DISABLE_AUDIO
+#ifdef SWE_DISABLE_AUDIO
 	ERROR("not supported module: " << "swe.audio");
         ll.pushBoolean(false);
 #else
@@ -238,7 +238,7 @@ int SWE_sound_play(lua_State* L)
 
     if(Systems::isFile(filename))
     {
-#ifdef DISABLE_AUDIO
+#ifdef SWE_DISABLE_AUDIO
 	ERROR("not supported module: " << "swe.audio");
 	ll.pushBoolean(false);
 #else

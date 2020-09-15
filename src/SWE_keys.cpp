@@ -84,9 +84,8 @@ void SWE_Key::registers(LuaState & ll)
     ll.setFunctionsTableIndex(SWE_keys_functions, -1);
 
     // SWE.Key: insert values
-    auto keys = Key::allKeys();
-    for(auto it = keys.begin(); it != keys.end(); ++it)
-        ll.pushInteger((*it).key).setFieldTableIndex((*it).name, -2);
+    for(auto & kv : Key::allKeys())
+        ll.pushInteger(kv.key).setFieldTableIndex(kv.name, -2);
 
     // SWE.Key: set metatable: __index
     ll.pushTable(0, 1).pushFunction(SWE_key_index).setFieldTableIndex("__index", -2);

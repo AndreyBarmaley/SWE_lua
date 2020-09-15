@@ -449,11 +449,11 @@ int SWE_binarybuf_getbyte(lua_State* L)
     if(buf)
     {
 	int offset1 = ll.toIntegerIndex(2);
-	int offset2 = ll.isNumberIndex(3) ? ll.toIntegerIndex(3) : 0;
+	int offset2 = ll.isNumberIndex(3) ? ll.toIntegerIndex(3) : -1;
 
 	if(0 <= offset2)
 	{
-	    if(offset2 < buf->size() && 0 <= offset1 && offset1 < offset2)
+	    if(offset2 < buf->size() && 0 <= offset1 && offset1 <= offset2)
 	    {
 		for(int offset = offset1; offset <= offset2; ++offset)
 		    ll.pushInteger(buf->operator[](offset));
@@ -462,7 +462,7 @@ int SWE_binarybuf_getbyte(lua_State* L)
 	    }
 	    else
 	    {
-    		ERROR("out of range");
+    		ERROR("out of range " << buf->size() << ", " << offset1 << ", " << offset2);
 		ll.pushInteger(0);
 	    }
 	}
@@ -474,7 +474,7 @@ int SWE_binarybuf_getbyte(lua_State* L)
 	    }
 	    else
 	    {
-    		ERROR("out of range");
+    		ERROR("out of range " << buf->size() << offset1);
 		ll.pushInteger(0);
 	    }
 

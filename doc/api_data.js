@@ -3800,6 +3800,27 @@ define({ "api": [
             "group": "Parameter",
             "type": "number",
             "optional": false,
+            "field": "RenderSolid",
+            "description": "<p>font render: solid</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "RenderBlended",
+            "description": "<p>font render: blended</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "RenderShaded",
+            "description": "<p>font render: shaded</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
             "field": "StyleNormal",
             "description": "<p>font style: normal</p>"
           },
@@ -9713,6 +9734,42 @@ define({ "api": [
     "groupTitle": "SWE_Terminal"
   },
   {
+    "type": "terminal func: reset property: render/style/hinting",
+    "url": "SWE.Terminal.ResetProperty(self)",
+    "title": "SWE.Terminal.ResetProperty",
+    "group": "SWE_Terminal",
+    "name": "ResetProperty",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
     "type": "terminal func: reset wrap mode",
     "url": "SWE.Terminal.ResetWrap(self)",
     "title": "SWE.Terminal.ResetWrap",
@@ -9964,6 +10021,63 @@ define({ "api": [
             "optional": false,
             "field": "bottom",
             "description": "<p>bottom padding</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: set property render/style/hinting default",
+    "url": "SWE.Terminal.SetProperty(self,render,style,hinting)",
+    "title": "SWE.Terminal.SetProperty",
+    "group": "SWE_Terminal",
+    "name": "SetProperty",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "render",
+            "description": "<p>SWE.Property constants</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "style",
+            "description": "<p>SWE.Property constants</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "hinting",
+            "description": "<p>SWE.Property constants</p>"
           }
         ]
       }
@@ -10795,6 +10909,52 @@ define({ "api": [
         "type": "json"
       }
     ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Virtual"
+  },
+  {
+    "type": "terminal default: fg/bg colors",
+    "url": "SWE.Terminal.TerminalDefaultColors()",
+    "title": "SWE.Terminal.TerminalDefaultColors",
+    "group": "SWE_Terminal_Virtual",
+    "name": "TerminalDefaultColors",
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "list",
+            "optional": false,
+            "field": "result",
+            "description": "<p>default colors, (fbcolor, bgcolor)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Virtual"
+  },
+  {
+    "type": "terminal default: property render/style/hinting",
+    "url": "SWE.Terminal.TerminalDefaultProperty()",
+    "title": "SWE.Terminal.TerminalDefaultProperty",
+    "group": "SWE_Terminal_Virtual",
+    "name": "TerminalDefaultProperty",
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "list",
+            "optional": false,
+            "field": "result",
+            "description": "<p>default property, (render, style, hinting), see SWE.Property</p>"
+          }
+        ]
+      }
+    },
     "version": "0.0.0",
     "filename": "./api/apidoc_terminal.js",
     "groupTitle": "SWE_Terminal_Virtual"

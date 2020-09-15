@@ -2,9 +2,9 @@
 #
 
 TARGET		:= SWE_lua
-LIBENGINE	:= ../$(LIBSWEDIR)/libswe.a
-LIBSWE		:= ../src/SWE.a
-LIBS		:= $(LIBENGINE) $(LIBS)
+LIBSWE		:= ../$(LIBSWEDIR)/libswe.a
+LIBLUASWE	:= ../src/luaSWE.a
+LIBS		:= $(LIBSWE) $(LIBS)
 CFLAGS		:= $(CFLAGS) -I../$(LIBSWEDIR)
 
 RES		:= SWE_lua.res
@@ -12,7 +12,7 @@ ICOFILE		:= ../swe_lua.ico
 
 all: $(TARGET)$(EXT)
 
-$(TARGET)$(EXT): $(patsubst %.cpp, %.o, $(wildcard ./*.cpp)) $(LIBENGINE) $(LIBSWE) $(RESICON)
+$(TARGET)$(EXT): $(patsubst %.cpp, %.o, $(wildcard ./*.cpp)) $(LIBSWE) $(LIBLUASWE) $(RESICON)
 	$(CXX) $(LDFLAGS) $^ $(LIBS) -o $@
 
 $(RES): $(ICOFILE)

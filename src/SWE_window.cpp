@@ -425,13 +425,13 @@ void SWE_system_tick_event(LuaState & ll, Window & win, u32 ms)
 SWE_Window::SWE_Window(lua_State* L, Window* parent)
     : WindowToolTipArea(parent), ll(L)
 {
-    resetState(FlagModality);
+    setState(FlagModality, ! parent);
 }
 
 SWE_Window::SWE_Window(lua_State* L, const Point & pos, const Size & winsz, Window* parent)
     : WindowToolTipArea(pos, winsz, parent), ll(L)
 {
-    resetState(FlagModality);
+    setState(FlagModality, ! parent);
     setVisible(true);
 }
 

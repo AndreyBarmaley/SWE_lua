@@ -1,7 +1,7 @@
 # makefile
 #
 
-TARGET		:= SWE
+TARGET		:= luaSWE
 LIBENGINE	:= ../$(LIBSWEDIR)/libswe.a
 LIBS		:= $(LIBENGINE) $(LIBS)
 CFLAGS		:= $(CFLAGS) -I../$(LIBSWEDIR)

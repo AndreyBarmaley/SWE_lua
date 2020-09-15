@@ -43,7 +43,7 @@
 #include "SWE_translation.h"
 #include "SWE_unicodestring.h"
 
-#define SWE_LUA_VERSION 20200407
+#define SWE_LUA_VERSION 20200901
 #define SWE_LUA_LICENSE "GPL3"
 
 int SWE_window_create(lua_State*);
@@ -110,9 +110,7 @@ int SWE_init(lua_State* L)
 
 	// push to stack
 	if(SWE_Scene::window_pushtop(ll, *win))
-	{
-		return 1;
-	}
+	    return 1;
 
 	ERROR("display is loss");
 	return 0;
@@ -790,7 +788,7 @@ int SWE_display_keyboard(lua_State* L)
     // params: bool
     LuaState ll(L);
 
-#ifndef OLDENGINE
+#ifndef SWE_SDL12
     bool show = ll.toBooleanIndex(1);
     if(show)
     {

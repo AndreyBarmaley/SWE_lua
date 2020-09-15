@@ -30,7 +30,7 @@ struct lua_State;
 int SWE_streamnet_create(lua_State*);
 int SWE_streamnet_destroy(lua_State*);
 
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
 struct StreamNetwork
 {
     StreamNetwork() {}

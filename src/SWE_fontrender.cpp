@@ -456,6 +456,9 @@ void SWE_FontRender::registers(LuaState & ll)
     
     // SWE.Font constants
     ll.pushTable("SWE.Font");
+    ll.pushInteger(RenderSolid).setFieldTableIndex("RenderSolid", -2);
+    ll.pushInteger(RenderBlended).setFieldTableIndex("RenderBlended", -2);
+    ll.pushInteger(RenderShaded).setFieldTableIndex("RenderShaded", -2);
     ll.pushInteger(StyleNormal).setFieldTableIndex("StyleNormal", -2);
     ll.pushInteger(StyleBold).setFieldTableIndex("StyleBold", -2);
     ll.pushInteger(StyleItalic).setFieldTableIndex("StyleItalic", -2);

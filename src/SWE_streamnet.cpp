@@ -51,7 +51,7 @@ SWE_StreamNet* SWE_StreamNet::get(LuaState & ll, int tableIndex, const char* fun
 /////////////////////////////////////////////////////////////////////
 int SWE_streamnet_recv_byte(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
 	return 0;
 #else
@@ -77,7 +77,7 @@ int SWE_streamnet_recv_byte(lua_State* L)
 
 int SWE_streamnet_recv_be16(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -103,7 +103,7 @@ int SWE_streamnet_recv_be16(lua_State* L)
 
 int SWE_streamnet_recv_be32(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -129,7 +129,7 @@ int SWE_streamnet_recv_be32(lua_State* L)
 
 int SWE_streamnet_recv_be64(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -155,7 +155,7 @@ int SWE_streamnet_recv_be64(lua_State* L)
 
 int SWE_streamnet_recv_le16(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -181,7 +181,7 @@ int SWE_streamnet_recv_le16(lua_State* L)
 
 int SWE_streamnet_recv_le32(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -207,7 +207,7 @@ int SWE_streamnet_recv_le32(lua_State* L)
 
 int SWE_streamnet_recv_le64(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -233,7 +233,7 @@ int SWE_streamnet_recv_le64(lua_State* L)
 
 int SWE_streamnet_recv_bytes(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -264,7 +264,7 @@ int SWE_streamnet_recv_bytes(lua_State* L)
 
 int SWE_streamnet_recv_string(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -317,7 +317,7 @@ int SWE_streamnet_recv_string(lua_State* L)
 
 int SWE_streamnet_send_bytes(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -342,7 +342,7 @@ int SWE_streamnet_send_bytes(lua_State* L)
 
 int SWE_streamnet_send_string(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -366,7 +366,7 @@ int SWE_streamnet_send_string(lua_State* L)
 
 int SWE_streamnet_send_byte(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -390,7 +390,7 @@ int SWE_streamnet_send_byte(lua_State* L)
 
 int SWE_streamnet_send_be16(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -414,7 +414,7 @@ int SWE_streamnet_send_be16(lua_State* L)
 
 int SWE_streamnet_send_be32(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -438,7 +438,7 @@ int SWE_streamnet_send_be32(lua_State* L)
 
 int SWE_streamnet_send_be64(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -462,7 +462,7 @@ int SWE_streamnet_send_be64(lua_State* L)
 
 int SWE_streamnet_send_le16(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -486,7 +486,7 @@ int SWE_streamnet_send_le16(lua_State* L)
 
 int SWE_streamnet_send_le32(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -510,7 +510,7 @@ int SWE_streamnet_send_le32(lua_State* L)
 
 int SWE_streamnet_send_le64(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -534,7 +534,7 @@ int SWE_streamnet_send_le64(lua_State* L)
 
 int SWE_streamnet_wait_string(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -566,7 +566,7 @@ int SWE_streamnet_wait_string(lua_State* L)
 
 int SWE_streamnet_connect(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -597,7 +597,7 @@ int SWE_streamnet_connect(lua_State* L)
 
 int SWE_streamnet_data_ready(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -619,7 +619,7 @@ int SWE_streamnet_data_ready(lua_State* L)
 
 int SWE_streamnet_listen(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -649,7 +649,7 @@ int SWE_streamnet_listen(lua_State* L)
 
 int SWE_streamnet_wait_accept(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -702,7 +702,7 @@ int SWE_streamnet_wait_accept(lua_State* L)
 
 int SWE_streamnet_disable(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -727,7 +727,7 @@ int SWE_streamnet_disable(lua_State* L)
 
 int SWE_streamnet_close(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -750,7 +750,7 @@ int SWE_streamnet_close(lua_State* L)
 
 int SWE_streamnet_to_json(lua_State* L)
 {   
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else
@@ -880,7 +880,7 @@ int SWE_streamnet_destroy(lua_State* L)
 
 int SWE_streamnet_local_addresses(lua_State* L)
 {
-#ifdef DISABLE_NETWORK
+#ifdef SWE_DISABLE_NETWORK
         ERROR("not supported module: " << "swe.streamnet");
         return 0;
 #else

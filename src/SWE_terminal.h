@@ -30,10 +30,13 @@ struct lua_State;
 int SWE_terminal_create(lua_State*);
 int SWE_terminal_destroy(lua_State*);
 
+FBColors	SWE_terminal_default_colors(LuaState &, const TermWindow &);
+CharsetProperty SWE_terminal_default_property(LuaState &, const TermWindow &);
+
 class SWE_Terminal : public TermWindow
 {
 protected:
-    LuaState    ll;
+    mutable LuaState ll;
 
     void        windowCreateEvent(void) override { SWE_window_create_event(ll, *this); }
     void        textureInvalidEvent(void) override { SWE_texture_invalid_event(ll, *this); }
@@ -51,6 +54,9 @@ protected:
     bool        scrollDownEvent(void) override { return SWE_scroll_down_event(ll, *this); }
     bool        userEvent(int code, void* data) override { return SWE_system_user_event(ll, *this, code, data); }
     void        tickEvent(u32 ms) override { SWE_system_tick_event(ll, *this, ms); }
+
+    CharsetProperty	defaultProperty(void) const override { return SWE_terminal_default_property(ll, *this); }
+    FBColors		defaultColors(void) const override { return SWE_terminal_default_colors(ll, *this); }
 
 public:
     SWE_Terminal(lua_State*, const FontRender &, Window &);
