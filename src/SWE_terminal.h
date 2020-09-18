@@ -31,7 +31,7 @@ int SWE_terminal_create(lua_State*);
 int SWE_terminal_destroy(lua_State*);
 
 FBColors	SWE_terminal_default_colors(LuaState &, const TermWindow &);
-CharsetProperty SWE_terminal_default_property(LuaState &, const TermWindow &);
+CharRender SWE_terminal_default_property(LuaState &, const TermWindow &);
 
 class SWE_Terminal : public TermWindow
 {
@@ -40,7 +40,6 @@ protected:
 
     void        windowCreateEvent(void) override { SWE_window_create_event(ll, *this); }
     void        textureInvalidEvent(void) override { SWE_texture_invalid_event(ll, *this); }
-    void        displayResizeEvent(const Size & sz, bool sdl) override { SWE_display_resize_event(ll, *this, sz, sdl); }
     bool        mousePressEvent(const ButtonEvent & be) override { return SWE_mouse_press_event(ll, *this, be); }
     bool        mouseReleaseEvent(const ButtonEvent & be) override { return SWE_mouse_release_event(ll, *this, be); }
     bool        mouseMotionEvent(const Point & pos, u32 buttons) override { return SWE_mouse_motion_event(ll, *this, pos, buttons); }
@@ -55,8 +54,8 @@ protected:
     bool        userEvent(int code, void* data) override { return SWE_system_user_event(ll, *this, code, data); }
     void        tickEvent(u32 ms) override { SWE_system_tick_event(ll, *this, ms); }
 
-    CharsetProperty	defaultProperty(void) const override { return SWE_terminal_default_property(ll, *this); }
-    FBColors		defaultColors(void) const override { return SWE_terminal_default_colors(ll, *this); }
+    CharRender	defaultProperty(void) const override { return SWE_terminal_default_property(ll, *this); }
+    FBColors	defaultColors(void) const override { return SWE_terminal_default_colors(ll, *this); }
 
 public:
     SWE_Terminal(lua_State*, const FontRender &, Window &);

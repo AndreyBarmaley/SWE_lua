@@ -244,13 +244,13 @@ void SWE_texture_invalid_event(LuaState & ll, Window & win)
     }
 }
 
-void SWE_display_resize_event(LuaState & ll, Window & win, const Size & winsz, bool fromsdl)
+void SWE_display_resize_event(LuaState & ll, Window & win, const Size & winsz)
 {
     if(SWE_Scene::window_pushtop(ll, win))
     {
 	if(ll.getFieldTableIndex("DisplayResizeEvent", -1, false).isTopFunction())
 	{
-	    ll.pushInteger(winsz.w).pushInteger(winsz.h).pushBoolean(fromsdl).callFunction(3, 0);
+	    ll.pushInteger(winsz.w).pushInteger(winsz.h).callFunction(2, 0);
 	}
 	else
 	{

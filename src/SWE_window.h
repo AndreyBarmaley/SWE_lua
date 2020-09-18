@@ -33,7 +33,7 @@ int SWE_window_destroy(lua_State*);
 
 void SWE_window_create_event(LuaState &, Window &);
 void SWE_texture_invalid_event(LuaState &, Window &);
-void SWE_display_resize_event(LuaState &, Window &, const Size &, bool);
+void SWE_display_resize_event(LuaState &, Window &, const Size &);
 bool SWE_mouse_press_event(LuaState &, Window &, const ButtonEvent &);
 bool SWE_mouse_release_event(LuaState &, Window &, const ButtonEvent &);
 bool SWE_mouse_motion_event(LuaState &, Window &, const Point &, u32);
@@ -64,7 +64,7 @@ protected:
 
     void	windowCreateEvent(void) override { SWE_window_create_event(ll, *this); }
     void	textureInvalidEvent(void) override { SWE_texture_invalid_event(ll, *this); }
-    void	displayResizeEvent(const Size & sz, bool sdl) override { SWE_display_resize_event(ll, *this, sz, sdl); }
+    void	displayResizeEvent(const Size & sz) override { SWE_display_resize_event(ll, *this, sz); }
     bool	mousePressEvent(const ButtonEvent & be) override { return SWE_mouse_press_event(ll, *this, be); }
     bool	mouseReleaseEvent(const ButtonEvent & be) override { return SWE_mouse_release_event(ll, *this, be); }
     bool	mouseMotionEvent(const Point & pos, u32 buttons) override { return SWE_mouse_motion_event(ll, *this, pos, buttons); }

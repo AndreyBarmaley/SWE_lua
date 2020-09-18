@@ -3,7 +3,7 @@
 
 DEBUG := 1
 
-ifdef OLDENGINE
+ifdef SWE_SDL12
 SDLVER := ver12
 else
 SDLVER := ver20
@@ -30,12 +30,12 @@ LIBSWEDIR := ../../engine
 include Makefile.$(SDLVER)
 
 ifdef DEBUG
-CFLAGS          := $(CFLAGS) -std=c++11 -O0 -g -Wall -Werror -Wno-sign-compare
+CFLAGS          := $(CFLAGS) -std=c++14 -O0 -g -Wall -Werror -Wno-sign-compare
 else
-CFLAGS          := $(CFLAGS) -std=c++11 -O2 -Wall -Wno-sign-compare
+CFLAGS          := $(CFLAGS) -std=c++14 -O2 -Wall -Wno-sign-compare
 endif
 
-CFLAGS          := $(CFLAGS) $(ENGINE_CFLAGS) -DBUILD_DEBUG_MESSAGES -DWITH_LUA -DWITH_JSON
+CFLAGS          := $(CFLAGS) $(ENGINE_CFLAGS) -DSWE_DEBUG_MESSAGES -DSWE_WITH_LUA -DSWE_WITH_JSON
 LIBS            := $(LIBS) $(ENGINE_LIBS) -lz
 
 LUA_VERSION	:= $(shell pkg-config lua --modversion)
@@ -95,8 +95,8 @@ all:
 ifdef LUASRC
 	$(MAKE) -C $(LUASRC) $(LUADST)
 endif
-	$(MAKE) -C $(LIBSWEDIR)
-	$(MAKE) -C src SWE.a
+	$(MAKE) -C $(LIBSWEDIR) SWE_WITH_JSON=1
+	$(MAKE) -C src luaSWE.a
 	$(MAKE) -C main
 	cp -f main/$(TARGET)_lua$(EXT) .
 ifdef STRIP

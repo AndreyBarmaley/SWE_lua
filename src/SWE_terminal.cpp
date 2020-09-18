@@ -77,7 +77,7 @@ FBColors SWE_terminal_default_colors(LuaState & ll, const TermWindow & term)
     return FBColors();
 }
 
-CharsetProperty SWE_terminal_default_property(LuaState & ll, const TermWindow & term)
+CharRender SWE_terminal_default_property(LuaState & ll, const TermWindow & term)
 {
     if(SWE_Scene::window_pushtop(ll, term))
     {
@@ -90,7 +90,7 @@ CharsetProperty SWE_terminal_default_property(LuaState & ll, const TermWindow & 
 
             // remove results, table
             ll.stackPop(4);
-            return CharsetProperty(render, style, hinting);
+            return CharRender(render, style, hinting);
         }
         else
         {
@@ -100,7 +100,7 @@ CharsetProperty SWE_terminal_default_property(LuaState & ll, const TermWindow & 
         ll.stackPop();
     }
 
-    return CharsetProperty();
+    return CharRender();
 }
 
 /////////////////////////////////////// 
@@ -266,7 +266,7 @@ int SWE_terminal_fill_property(lua_State* L)
 	int cols = 5 > params ? 1 : ll.toIntegerIndex(5);
 	int rows = 6 > params ? 1 : ll.toIntegerIndex(6);
 
-	*term << fill::property(CharsetProperty(blended, style, hinting), TermSize(cols, rows));
+	*term << fill::property(CharRender(blended, style, hinting), TermSize(cols, rows));
 
 	ll.pushValueIndex(1);
 	return 1;
@@ -430,6 +430,117 @@ int SWE_terminal_set_wrap(lua_State* L)
     return 0;
 }
 
+int SWE_terminal_set_blink(lua_State* L)
+{
+    // params: swe_terminal
+
+    LuaState ll(L);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+
+    if(term)
+    {
+	*term << set::blink();
+
+	ll.pushValueIndex(1);
+	return 1;
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
+
+    return 0;
+}
+
+int SWE_terminal_set_invert(lua_State* L)
+{
+    // params: swe_terminal
+
+    LuaState ll(L);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+
+    if(term)
+    {
+	*term << set::invert();
+
+	ll.pushValueIndex(1);
+	return 1;
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
+
+    return 0;
+}
+
+int SWE_terminal_set_flipvert(lua_State* L)
+{
+    // params: swe_terminal
+
+    LuaState ll(L);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+
+    if(term)
+    {
+	*term << set::flipvert();
+
+	ll.pushValueIndex(1);
+	return 1;
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
+
+    return 0;
+}
+
+int SWE_terminal_set_fliphorz(lua_State* L)
+{
+    // params: swe_terminal
+
+    LuaState ll(L);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+
+    if(term)
+    {
+	*term << set::fliphorz();
+
+	ll.pushValueIndex(1);
+	return 1;
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
+
+    return 0;
+}
+
+int SWE_terminal_set_alpha(lua_State* L)
+{
+    // params: swe_terminal, int alpha
+
+    LuaState ll(L);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+
+    if(term)
+    {
+	int val = ll.toIntegerIndex(1);
+	*term << set::alpha(val);
+
+	ll.pushValueIndex(1);
+	return 1;
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
+
+    return 0;
+}
+
 int SWE_terminal_set_padding(lua_State* L)
 {
     // params: swe_terminal, left, right, top, bottom
@@ -577,6 +688,94 @@ int SWE_terminal_reset_wrap(lua_State* L)
     if(term)
     {
 	*term << reset::wrap();
+
+	ll.pushValueIndex(1);
+	return 1;
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
+
+    return 0;
+}
+
+int SWE_terminal_reset_blink(lua_State* L)
+{
+    // params: swe_terminal
+
+    LuaState ll(L);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+
+    if(term)
+    {
+	*term << reset::blink();
+
+	ll.pushValueIndex(1);
+	return 1;
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
+
+    return 0;
+}
+
+int SWE_terminal_reset_invert(lua_State* L)
+{
+    // params: swe_terminal
+
+    LuaState ll(L);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+
+    if(term)
+    {
+	*term << reset::invert();
+
+	ll.pushValueIndex(1);
+	return 1;
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
+
+    return 0;
+}
+
+int SWE_terminal_reset_flip(lua_State* L)
+{
+    // params: swe_terminal
+
+    LuaState ll(L);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+
+    if(term)
+    {
+	*term << reset::flip();
+
+	ll.pushValueIndex(1);
+	return 1;
+    }
+    else
+    {
+	ERROR("userdata empty");
+    }
+
+    return 0;
+}
+
+int SWE_terminal_reset_alpha(lua_State* L)
+{
+    // params: swe_terminal
+
+    LuaState ll(L);
+    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
+
+    if(term)
+    {
+	*term << reset::alpha();
 
 	ll.pushValueIndex(1);
 	return 1;
@@ -1108,8 +1307,8 @@ int SWE_terminal_charset_info(lua_State* L)
 	{
 	    ll.pushTable();
 
-	    const UnicodeColor & uc = tc->charset();
-	    const CharsetProperty & cp = tc->property();
+	    const UnicodeColor & uc = tc->unicodeColor();
+	    const CharRender & cp = tc->property();
 
 	    ll.pushString(String::hex(uc.unicode(), 4)).setFieldTableIndex("unicode", -2);
 	    ll.pushString(uc.fgcolor().toString()).setFieldTableIndex("fgcolor", -2);
@@ -1162,12 +1361,21 @@ const struct luaL_Reg SWE_terminal_functions[] = {
     { "ResetProperty",	SWE_terminal_reset_property },	// [swe_terminal], table terminal
     { "ResetPadding",	SWE_terminal_reset_padding },	// [swe_terminal], table terminal
     { "ResetWrap",	SWE_terminal_reset_wrap },	// [swe_terminal], table terminal
+    { "ResetBlink",	SWE_terminal_reset_blink },	// [swe_terminal], table terminal
+    { "ResetInvert",	SWE_terminal_reset_invert },	// [swe_terminal], table terminal
+    { "ResetFlip",	SWE_terminal_reset_flip },	// [swe_terminal], table terminal
+    { "ResetAlpha",	SWE_terminal_reset_alpha },	// [swe_terminal], table terminal
     { "SetFGColor",	SWE_terminal_set_fgcolor },	// [swe_terminal], table terminal, color
     { "SetBGColor",	SWE_terminal_set_bgcolor },	// [swe_terminal], table terminal, color
     { "SetColors",	SWE_terminal_set_colors },	// [swe_terminal], table terminal, color, color
     { "SetProperty",	SWE_terminal_set_property },	// [swe_terminal], table terminal, int render, int style, int hinting
     { "SetWrap",	SWE_terminal_set_wrap },	// [swe_terminal], table terminal
     { "SetPadding",	SWE_terminal_set_padding },	// [swe_terminal], table terminal, int left, int right, int top, int bottom
+    { "SetBlink",	SWE_terminal_set_blink },	// [swe_terminal], table terminal
+    { "SetInvert",	SWE_terminal_set_invert },	// [swe_terminal], table terminal
+    { "SetAlpha",	SWE_terminal_set_alpha },	// [swe_terminal], table terminal, int alpha
+    { "SetFlipVertical",SWE_terminal_set_flipvert },	// [swe_terminal], table terminal
+    { "SetFlipHorizontal",SWE_terminal_set_fliphorz },	// [swe_terminal], table terminal
     { "SetFlush",	SWE_terminal_set_flush },	// [void], table terminal
     { "DrawHLine",	SWE_terminal_draw_hline },	// [swe_terminal], table terminal, int length, int char, fgcolor, bgcolor
     { "DrawVLine",	SWE_terminal_draw_vline },	// [swe_terminal], table terminal, int length, int char, fgcolor, bgcolor

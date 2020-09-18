@@ -1,4 +1,4 @@
-ifndef DISABLE_AUDIO
+ifndef SWE_DISABLE_AUDIO
 #LIBS := $(LIBS) -lSDL -lmad -lvorbisfile -lvorbis -logg
 endif
 
@@ -13,6 +13,6 @@ CXX	:= arm-mingw32ce-g++
 WINDRES	:= arm-mingw32ce-windres
 STRIP	:= arm-mingw32ce-strip
 EXT	:= _wince.exe
-CFLAGS	:= $(CFLAGS) -DOLDENGINE -DWINCE -static
+CFLAGS	:= $(CFLAGS) -DSWE_SDL12 -DWINCE -static
 LIBS	:= -Wl,-Bstatic $(LIBS) -lmmtimer
 LDFLAGS	:= -static $(LDFLAGS) -Wl,--gc-sections

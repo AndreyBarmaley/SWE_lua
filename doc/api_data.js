@@ -9590,11 +9590,83 @@ define({ "api": [
     "groupTitle": "SWE_Terminal"
   },
   {
+    "type": "terminal func: reset alpha mode",
+    "url": "SWE.Terminal.ResetAlpha(self)",
+    "title": "SWE.Terminal.ResetAlpha",
+    "group": "SWE_Terminal",
+    "name": "ResetAlpha",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
     "type": "terminal func: reset default bg color to transparent",
     "url": "SWE.Terminal.ResetBGColor(self)",
     "title": "SWE.Terminal.ResetBGColor",
     "group": "SWE_Terminal",
     "name": "ResetBGColor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: reset blink mode",
+    "url": "SWE.Terminal.ResetBlink(self)",
+    "title": "SWE.Terminal.ResetBlink",
+    "group": "SWE_Terminal",
+    "name": "ResetBlink",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -9667,6 +9739,78 @@ define({ "api": [
     "title": "SWE.Terminal.ResetFGColor",
     "group": "SWE_Terminal",
     "name": "ResetFGColor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: reset flip mode",
+    "url": "SWE.Terminal.ResetFlip(self)",
+    "title": "SWE.Terminal.ResetFlip",
+    "group": "SWE_Terminal",
+    "name": "ResetFlip",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: reset invert mode",
+    "url": "SWE.Terminal.ResetInvert(self)",
+    "title": "SWE.Terminal.ResetInvert",
+    "group": "SWE_Terminal",
+    "name": "ResetInvert",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -9806,6 +9950,49 @@ define({ "api": [
     "groupTitle": "SWE_Terminal"
   },
   {
+    "type": "terminal func: set alpha mode",
+    "url": "SWE.Terminal.SetAlpha(self,alpha)",
+    "title": "SWE.Terminal.SetAlpha",
+    "group": "SWE_Terminal",
+    "name": "SetAlpha",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "alpha",
+            "description": "<p>alpha value</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
     "type": "terminal func: set bg color default",
     "url": "SWE.Terminal.SetBGColor(self,color)",
     "title": "SWE.Terminal.SetBGColor",
@@ -9827,6 +10014,42 @@ define({ "api": [
             "optional": false,
             "field": "color",
             "description": "<p>SWE.Color</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: set blink mode",
+    "url": "SWE.Terminal.SetBlink(self)",
+    "title": "SWE.Terminal.SetBlink",
+    "group": "SWE_Terminal",
+    "name": "SetBlink",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
           }
         ]
       }
@@ -9942,12 +10165,120 @@ define({ "api": [
     "groupTitle": "SWE_Terminal"
   },
   {
+    "type": "terminal func: set flip horizontal mode",
+    "url": "SWE.Terminal.SetFlipHorizontal(self)",
+    "title": "SWE.Terminal.SetFlipHorizontal",
+    "group": "SWE_Terminal",
+    "name": "SetFlipHorizontal",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: set flip vertical mode",
+    "url": "SWE.Terminal.SetFlipVertical(self)",
+    "title": "SWE.Terminal.SetFlipVertical",
+    "group": "SWE_Terminal",
+    "name": "SetFlipVertical",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
     "type": "terminal func: set flush",
     "url": "SWE.Terminal.SetFlush(self)",
     "title": "SWE.Terminal.SetFlush",
     "group": "SWE_Terminal",
     "name": "SetFlush",
     "description": "<p>commit all changes to display</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.Terminal object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>this object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal"
+  },
+  {
+    "type": "terminal func: set invert mode",
+    "url": "SWE.Terminal.SetInvert(self)",
+    "title": "SWE.Terminal.SetInvert",
+    "group": "SWE_Terminal",
+    "name": "SetInvert",
     "parameter": {
       "fields": {
         "Parameter": [

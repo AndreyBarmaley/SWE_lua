@@ -1,4 +1,4 @@
-ifndef DISABLE_AUDIO
+ifndef SWE_DISABLE_AUDIO
 LIBS	:= $(LIBS) -lSDL2 -lmad -lvorbisfile -lvorbis -logg
 endif
 

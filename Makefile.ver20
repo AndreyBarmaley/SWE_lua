@@ -15,29 +15,29 @@ endif
 ENGINE_CFLAGS   := $(SDL2_CFLAGS)
 ENGINE_LIBS     := $(SDL2_LIBS)
 
-ifdef DISABLE_TTF
-ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DDISABLE_TTF
+ifdef SWE_DISABLE_TTF
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DSWE_DISABLE_TTF
 else
 ENGINE_CFLAGS   := $(ENGINE_CFLAGS) $(shell pkg-config SDL2_ttf --cflags)
 ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config SDL2_ttf --libs)
 endif
 
-ifdef DISABLE_IMAGE
-ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DDISABLE_IMAGE
+ifdef SWE_DISABLE_IMAGE
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DSWE_DISABLE_IMAGE
 else
 ENGINE_CFLAGS   := $(ENGINE_CFLAGS) $(shell pkg-config SDL2_image --cflags)
 ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config SDL2_image --libs)
 endif
 
-ifdef DISABLE_NETWORK
-ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DDISABLE_NETWORK
+ifdef SWE_DISABLE_NETWORK
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DSWE_DISABLE_NETWORK
 else
 ENGINE_CFLAGS   := $(ENGINE_CFLAGS) $(shell pkg-config SDL2_net --cflags)
 ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config SDL2_net --libs)
 endif
 
-ifdef DISABLE_AUDIO
-ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DDISABLE_AUDIO
+ifdef SWE_DISABLE_AUDIO
+ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DSWE_DISABLE_AUDIO
 else
 ENGINE_CFLAGS   := $(ENGINE_CFLAGS) $(shell pkg-config SDL2_mixer --cflags)
 ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config SDL2_mixer --libs)
@@ -53,4 +53,4 @@ ENGINE_CFLAGS   := $(ENGINE_CFLAGS) -DWITH_VIDEOCAM_FIREWARE $(shell pkg-config 
 ENGINE_LIBS     := $(ENGINE_LIBS) $(shell pkg-config --libs libraw1394 libavc1394 libiec61883 libdv libmpeg2 libmpeg2convert)
 endif
 
-CFLAGS 		:= $(CFLAGS) -UOLDENGINE
+CFLAGS 		:= $(CFLAGS) -USWE_SDL12

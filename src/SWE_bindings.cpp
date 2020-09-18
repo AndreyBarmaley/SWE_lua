@@ -43,7 +43,7 @@
 #include "SWE_translation.h"
 #include "SWE_unicodestring.h"
 
-#define SWE_LUA_VERSION 20200901
+#define SWE_LUA_VERSION 20200906
 #define SWE_LUA_LICENSE "GPL3"
 
 int SWE_window_create(lua_State*);
@@ -167,7 +167,7 @@ int SWE_display_size(lua_State* L)
     const Size & size = Display::size();
     ll.pushInteger(size.w);
     ll.pushInteger(size.h);
-    ll.pushBoolean(Display::fullscreen());
+    ll.pushBoolean(Display::isFullscreenWindow());
 
     return 3;
 }
