@@ -587,7 +587,7 @@ int SWE_window_set_modality(lua_State* L)
     if(win)
     {
 	bool flag = ll.toBooleanIndex(2);
-	WindowProtect::setState(win, FlagModality, flag);
+	win->setModality(flag);
 	ll.pushBoolean(flag).setFieldTableIndex("modality", 1);
     }
     else
@@ -608,7 +608,7 @@ int SWE_window_set_keyhandle(lua_State* L)
     if(win)
     {
 	bool flag = ll.toBooleanIndex(2);
-	WindowProtect::setState(win, FlagKeyHandle, flag);
+	win->setKeyHandle(flag);
 	ll.pushBoolean(flag).setFieldTableIndex("keyhandle", 1);
     }
     else
@@ -629,7 +629,7 @@ int SWE_window_set_mousetrack(lua_State* L)
     if(win)
     {
 	bool flag = ll.toBooleanIndex(2);
-	WindowProtect::setState(win, FlagMouseTracking, flag);
+	win->setMouseTrack(flag);
     }
     else
     {
@@ -884,8 +884,8 @@ int SWE_window_render_texture(lua_State* L)
 
 int SWE_window_render_text(lua_State* L)
 {
-    // params: swe_window, swe_fontrender, string, color, dstx, dsty, int halign, int valign, boolean horizontal
-    // params: swe_window, swe_fontrender, string, color, point dst, int halign, int valign, boolean horizontal
+    // params: swe_window, swe_fontrender, string, color, dstx, dsty, int halign, int valign, boolean horizontal, int render, int style, int hinting
+    // params: swe_window, swe_fontrender, string, color, point dst, int halign, int valign, boolean horizontal, int render, int style, int hinting
 
     LuaState ll(L);
 
@@ -898,20 +898,30 @@ int SWE_window_render_text(lua_State* L)
 	std::string text = SWE_Tools::convertEncoding(ll, ll.toStringIndex(3));
 	ARGB argb = ll.toIntegerIndex(4);
 	Point dst;
-	int halign = AlignLeft;
-	int valign = AlignTop;
+	auto halign = AlignLeft;
+	auto valign = AlignTop;
 	bool horizontal = true;
+        auto render = RenderDefault;
+        int  style = StyleDefault;
+        auto hinting = HintingDefault;
 
 	if(ll.isTableIndex(5))
 	{
 	    dst = SWE_Point::get(ll, 5, __FUNCTION__);
 
 	    if(5 < params)
-		halign = ll.toIntegerIndex(6);
+		halign = static_cast<AlignType>(ll.toIntegerIndex(6));
 	    if(6 < params)
-		valign = ll.toIntegerIndex(7);
+		valign = static_cast<AlignType>(ll.toIntegerIndex(7));
 	    if(7 < params)
 		horizontal = ll.toBooleanIndex(8);
+
+            if(8 < params)
+                render = static_cast<CharRender>(ll.toIntegerIndex(9));
+            if(9 < params)
+                style = ll.toIntegerIndex(10);
+            if(10 < params)
+                hinting = static_cast<CharHinting>(ll.toBooleanIndex(11));
 	}
 	else
 	{
@@ -919,14 +929,21 @@ int SWE_window_render_text(lua_State* L)
 	    dst.y = ll.toIntegerIndex(6);
 
 	    if(6 < params)
-		halign = ll.toIntegerIndex(7);
+		halign = static_cast<AlignType>(ll.toIntegerIndex(7));
 	    if(7 < params)
-		valign = ll.toIntegerIndex(8);
+		valign = static_cast<AlignType>(ll.toIntegerIndex(8));
 	    if(8 < params)
 		horizontal = ll.toBooleanIndex(9);
+
+            if(9 < params)
+                render = static_cast<CharRender>(ll.toIntegerIndex(10));
+            if(10 < params)
+                style = ll.toIntegerIndex(11);
+            if(11 < params)
+                hinting = static_cast<CharHinting>(ll.toBooleanIndex(12));
 	}
 
-	Rect area = win->renderText(*frs, text, Color(argb), dst, halign, valign, horizontal);
+	Rect area = win->renderText(*frs, text, Color(argb), dst, halign, valign, horizontal, render, style, hinting);
 
 	ll.pushInteger(area.x).pushInteger(area.y).pushInteger(area.w).pushInteger(area.h);
 	return 4;
@@ -1299,7 +1316,7 @@ const struct luaL_Reg SWE_window_functions[] = {
     { "RenderCyrcle",   SWE_window_render_cyrcle },    // [void], table window, enum: color, point, int, bool
     { "RenderPoint",    SWE_window_render_point },     // [void], table window, enum: color, point
     { "RenderTexture",  SWE_window_render_texture },   // [void]. table window, table texture, rect, point
-    { "RenderText",     SWE_window_render_text },      // [rect coords], table window, table fontrender, string, color, point
+    { "RenderText",     SWE_window_render_text },      // [rect coords], table window, table fontrender, string, color, point, orientation, render, style, hinting
     { "PointInArea",	SWE_window_point_inarea },     // [bool], table window, int, int
     { "GetChildrens",	SWE_window_childrens },        // [table], table window
     { "ToJson",		SWE_window_to_json },          // [string], table window

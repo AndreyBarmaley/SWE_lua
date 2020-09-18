@@ -103,6 +103,9 @@ ifdef STRIP
 	$(STRIP) $(TARGET)_lua$(EXT)
 endif
 
+docs:
+	apidoc -o docs
+
 clean:
 ifdef LUASRC
 	$(MAKE) -C $(LUASRC) clean

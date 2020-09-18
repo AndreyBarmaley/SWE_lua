@@ -31,7 +31,7 @@ int SWE_terminal_create(lua_State*);
 int SWE_terminal_destroy(lua_State*);
 
 FBColors	SWE_terminal_default_colors(LuaState &, const TermWindow &);
-CharRender SWE_terminal_default_property(LuaState &, const TermWindow &);
+CharProperty    SWE_terminal_default_property(LuaState &, const TermWindow &);
 
 class SWE_Terminal : public TermWindow
 {
@@ -54,7 +54,7 @@ protected:
     bool        userEvent(int code, void* data) override { return SWE_system_user_event(ll, *this, code, data); }
     void        tickEvent(u32 ms) override { SWE_system_tick_event(ll, *this, ms); }
 
-    CharRender	defaultProperty(void) const override { return SWE_terminal_default_property(ll, *this); }
+    CharProperty defaultProperty(void) const override { return SWE_terminal_default_property(ll, *this); }
     FBColors	defaultColors(void) const override { return SWE_terminal_default_colors(ll, *this); }
 
 public:

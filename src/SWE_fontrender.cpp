@@ -175,7 +175,7 @@ const struct luaL_Reg SWE_fontrender_functions[] = {
 
 int SWE_fontrender_create_ttf(lua_State* L)
 {
-    // SWE.FontRender(self, string, int, boolean, int, int)
+    // SWE.FontRender(self, string, int fsz, int render, int style, int hinting)
     LuaState ll(L);
     int params = ll.stackSize();
 
@@ -221,9 +221,9 @@ int SWE_fontrender_create_ttf(lua_State* L)
 	DEBUG(font);
 
 	int fontsz = ll.toIntegerIndex(3);
-	bool blended = 4 > params ? false : ll.toBooleanIndex(4);
+	auto blended = static_cast<CharRender>(4 > params ? RenderBlended : ll.toIntegerIndex(4));
 	int style = 5 > params ? StyleNormal : ll.toIntegerIndex(5);
-	int hinting = 6 > params ? HintingNormal : ll.toIntegerIndex(6);
+	auto hinting = static_cast<CharHinting>(6 > params ? HintingNormal : ll.toIntegerIndex(6));
 
 	// SWE_FontRender: font, size, blend, style, hinting
 	const FontRender* frs = new FontRenderTTF(font, fontsz, blended, style, hinting);
@@ -234,7 +234,7 @@ int SWE_fontrender_create_ttf(lua_State* L)
 	    ll.pushString("__type").pushString("swe.fontrender").setTableIndex(-3);
 	    ll.pushString("font").pushString(font).setTableIndex(-3);
 	    ll.pushString("size").pushInteger(fontsz).setTableIndex(-3);
-	    ll.pushString("blended").pushBoolean(blended).setTableIndex(-3);
+	    ll.pushString("blended").pushInteger(blended).setTableIndex(-3);
 	    ll.pushString("style").pushInteger(style).setTableIndex(-3);
 	    ll.pushString("hinting").pushInteger(hinting).setTableIndex(-3);
 	}

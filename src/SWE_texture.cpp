@@ -318,8 +318,8 @@ int SWE_texture_render_texture(lua_State* L)
 
 int SWE_texture_render_text(lua_State* L)
 {
-    // params: swe_texture, swe_fontrender, string, color, dstx, dsty, int halign, int valign, boolean horizontal
-    // params: swe_texture, swe_fontrender, string, color, point dst, int halign, int valign, boolean horizontal
+    // params: swe_texture, swe_fontrender, string, color, dstx, dsty, int halign, int valign, boolean horizontal, int render, int style, int hinting
+    // params: swe_texture, swe_fontrender, string, color, point dst, int halign, int valign, boolean horizontal, int render, int style, int hinting
 
     LuaState ll(L);
 
@@ -332,20 +332,30 @@ int SWE_texture_render_text(lua_State* L)
 	std::string text = SWE_Tools::convertEncoding(ll, ll.toStringIndex(3));
 	ARGB argb = ll.toIntegerIndex(4);
 	Point dst;
-	int halign = AlignLeft;
-	int valign = AlignTop;
+	auto halign = AlignLeft;
+	auto valign = AlignTop;
 	bool horizontal = true;
+	auto render = RenderDefault;
+	int  style = StyleDefault;
+	auto hinting = HintingDefault;
 
 	if(ll.isTableIndex(5))
 	{
     	    dst = SWE_Point::get(ll, 5, __FUNCTION__);
 
     	    if(5 < params)
-		halign = ll.toIntegerIndex(6);
+		halign = static_cast<AlignType>(ll.toIntegerIndex(6));
     	    if(6 < params)
-		valign = ll.toIntegerIndex(7);
+		valign = static_cast<AlignType>(ll.toIntegerIndex(7));
     	    if(7 < params)
 		horizontal = ll.toBooleanIndex(8);
+
+    	    if(8 < params)
+		render = static_cast<CharRender>(ll.toIntegerIndex(9));
+    	    if(9 < params)
+		style = ll.toIntegerIndex(10);
+    	    if(10 < params)
+		hinting = static_cast<CharHinting>(ll.toBooleanIndex(11));
 	}
 	else
 	{
@@ -353,14 +363,21 @@ int SWE_texture_render_text(lua_State* L)
     	    dst.y = ll.toIntegerIndex(6);
 
     	    if(6 < params)
-		halign = ll.toIntegerIndex(7);
+		halign = static_cast<AlignType>(ll.toIntegerIndex(7));
     	    if(7 < params)
-		valign = ll.toIntegerIndex(8);
+		valign = static_cast<AlignType>(ll.toIntegerIndex(8));
     	    if(8 < params)
 		horizontal = ll.toBooleanIndex(9);
+
+    	    if(9 < params)
+		render = static_cast<CharRender>(ll.toIntegerIndex(10));
+    	    if(10 < params)
+		style = ll.toIntegerIndex(11);
+    	    if(111 < params)
+		hinting = static_cast<CharHinting>(ll.toBooleanIndex(12));
 	}
 
-	Rect area = Display::renderText(*frs, text, Color(argb), *tx, dst, halign, valign, horizontal);
+	Rect area = Display::renderText(*frs, text, Color(argb), *tx, dst, halign, valign, horizontal, render, style, hinting);
 
 	ll.pushInteger(area.x).pushInteger(area.y).pushInteger(area.w).pushInteger(area.h);
 	return 4;
@@ -407,7 +424,7 @@ const struct luaL_Reg SWE_texture_functions[] = {
     { "RenderCyrcle",   SWE_texture_render_cyrcle },    // [void], table texture, enum: color, point, int, bool
     { "RenderPoint",    SWE_texture_render_point },     // [void], table texture, enum: color, point
     { "RenderTexture",  SWE_texture_render_texture },   // [void], table texture, table texture, rect, rect
-    { "RenderText",     SWE_texture_render_text },      // [rect coords], table texture, table fontrender, color, point
+    { "RenderText",     SWE_texture_render_text },      // [rect coords], table texture, table fontrender, color, point, halign, valign, horizontal, render, style, hinting
     { "ToJson",         SWE_texture_to_json },          // [void], table texture
     { NULL, NULL }
 };

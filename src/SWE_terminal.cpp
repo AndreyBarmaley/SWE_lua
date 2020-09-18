@@ -77,20 +77,20 @@ FBColors SWE_terminal_default_colors(LuaState & ll, const TermWindow & term)
     return FBColors();
 }
 
-CharRender SWE_terminal_default_property(LuaState & ll, const TermWindow & term)
+CharProperty SWE_terminal_default_property(LuaState & ll, const TermWindow & term)
 {
     if(SWE_Scene::window_pushtop(ll, term))
     {
         if(ll.getFieldTableIndex("TerminalDefaultProperty", -1, false).isTopFunction())
         {
             ll.callFunction(0, 3);
-	    int render = ll.toIntegerIndex(-1);
+	    auto render = static_cast<CharRender>(ll.toIntegerIndex(-1));
 	    int style = ll.toIntegerIndex(-2);
-	    int hinting = ll.toIntegerIndex(-2);
+	    auto hinting = static_cast<CharHinting>(ll.toIntegerIndex(-2));
 
             // remove results, table
             ll.stackPop(4);
-            return CharRender(render, style, hinting);
+            return CharProperty(render, style, hinting);
         }
         else
         {
@@ -100,7 +100,7 @@ CharRender SWE_terminal_default_property(LuaState & ll, const TermWindow & term)
         ll.stackPop();
     }
 
-    return CharRender();
+    return CharProperty();
 }
 
 /////////////////////////////////////// 
@@ -109,9 +109,7 @@ int SWE_terminal_set_termsize(lua_State* L)
     // params: swe_terminal, cols, rows
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int cols = ll.toIntegerIndex(2);
 	int rows = ll.toIntegerIndex(3);
@@ -169,9 +167,7 @@ int SWE_terminal_fill_fgcolor(lua_State* L)
     // params: swe_terminal, color, cols, rows
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 
@@ -197,9 +193,7 @@ int SWE_terminal_fill_bgcolor(lua_State* L)
     // params: swe_terminal, color, cols, rows
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 
@@ -225,9 +219,7 @@ int SWE_terminal_fill_colors(lua_State* L)
     // params: swe_terminal, color, color, cols, rows
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 
@@ -254,19 +246,17 @@ int SWE_terminal_fill_property(lua_State* L)
     // params: swe_terminal, blended, style, hinting, cols, rows
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 
-	int blended = ll.toIntegerIndex(2);
+	auto blended = static_cast<CharRender>(ll.toIntegerIndex(2));
 	int style = ll.toIntegerIndex(3);
-	int hinting = ll.toIntegerIndex(4);
+	auto hinting = static_cast<CharHinting>(ll.toIntegerIndex(4));
 	int cols = 5 > params ? 1 : ll.toIntegerIndex(5);
 	int rows = 6 > params ? 1 : ll.toIntegerIndex(6);
 
-	*term << fill::property(CharRender(blended, style, hinting), TermSize(cols, rows));
+	*term << fill::property(CharProperty(blended, style, hinting), TermSize(cols, rows));
 
 	ll.pushValueIndex(1);
 	return 1;
@@ -284,9 +274,7 @@ int SWE_terminal_fill_charset(lua_State* L)
     // params: swe_terminal, charset, cols, rows
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 
@@ -312,9 +300,7 @@ int SWE_terminal_set_fgcolor(lua_State* L)
     // params: swe_terminal, color
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	ARGB colorFg = ll.toIntegerIndex(2);
 	*term << set::fgcolor(Color(colorFg).toColorIndex());
@@ -335,9 +321,7 @@ int SWE_terminal_set_bgcolor(lua_State* L)
     // params: swe_terminal, color
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	ARGB colorBg = ll.toIntegerIndex(2);
 	*term << set::bgcolor(Color(colorBg).toColorIndex());
@@ -358,9 +342,7 @@ int SWE_terminal_set_colors(lua_State* L)
     // params: swe_terminal, color, color
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 
@@ -385,15 +367,13 @@ int SWE_terminal_set_property(lua_State* L)
     // params: swe_terminal, int render, int style, int hinting
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 
-	int render = ll.toIntegerIndex(2);
+	auto render = static_cast<CharRender>(ll.toIntegerIndex(2));
 	int style = 3 > params ? StyleNormal : ll.toIntegerIndex(3);
-	int hinting = 4 > params ? HintingNormal : ll.toIntegerIndex(4);
+	auto hinting = static_cast<CharHinting>(4 > params ? HintingNormal : ll.toIntegerIndex(4));
 
 	*term << set::property(render, style, hinting);
 
@@ -413,9 +393,7 @@ int SWE_terminal_set_wrap(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << set::wrap();
 
@@ -435,9 +413,7 @@ int SWE_terminal_set_blink(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << set::blink();
 
@@ -457,9 +433,7 @@ int SWE_terminal_set_invert(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << set::invert();
 
@@ -479,9 +453,7 @@ int SWE_terminal_set_flipvert(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << set::flipvert();
 
@@ -501,9 +473,7 @@ int SWE_terminal_set_fliphorz(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << set::fliphorz();
 
@@ -523,9 +493,7 @@ int SWE_terminal_set_alpha(lua_State* L)
     // params: swe_terminal, int alpha
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int val = ll.toIntegerIndex(1);
 	*term << set::alpha(val);
@@ -546,9 +514,7 @@ int SWE_terminal_set_padding(lua_State* L)
     // params: swe_terminal, left, right, top, bottom
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int left   = ll.toIntegerIndex(2);
 	int right  = ll.toIntegerIndex(3);
@@ -573,9 +539,7 @@ int SWE_terminal_reset_property(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << reset::property();
 
@@ -595,9 +559,7 @@ int SWE_terminal_reset_colors(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << reset::colors();
 
@@ -617,9 +579,7 @@ int SWE_terminal_reset_fgcolor(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << reset::fgcolor();
 
@@ -639,9 +599,7 @@ int SWE_terminal_reset_bgcolor(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << reset::bgcolor();
 
@@ -661,9 +619,7 @@ int SWE_terminal_reset_padding(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << reset::padding();
 
@@ -683,9 +639,7 @@ int SWE_terminal_reset_wrap(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << reset::wrap();
 
@@ -705,9 +659,7 @@ int SWE_terminal_reset_blink(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << reset::blink();
 
@@ -727,9 +679,7 @@ int SWE_terminal_reset_invert(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << reset::invert();
 
@@ -749,9 +699,7 @@ int SWE_terminal_reset_flip(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << reset::flip();
 
@@ -771,9 +719,7 @@ int SWE_terminal_reset_alpha(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << reset::alpha();
 
@@ -793,9 +739,7 @@ int SWE_terminal_cursor_position(lua_State* L)
     // params: swe_terminal, posx, posy
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 
@@ -828,9 +772,7 @@ int SWE_terminal_cursor_topleft(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << cursor::set(0, 0);
 
@@ -850,9 +792,7 @@ int SWE_terminal_cursor_topright(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << cursor::set(term->cols() - 1, 0);
 
@@ -872,9 +812,7 @@ int SWE_terminal_cursor_bottomleft(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << cursor::set(0, term->rows() - 1);
 
@@ -894,9 +832,7 @@ int SWE_terminal_cursor_bottomright(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << cursor::set(term->cols() - 1, term->rows() - 1);
 
@@ -916,9 +852,7 @@ int SWE_terminal_cursor_moveup(lua_State* L)
     // params: swe_terminal, count
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 	int counts = 2 > params ? 1 : ll.toIntegerIndex(2);
@@ -940,9 +874,7 @@ int SWE_terminal_cursor_movedown(lua_State* L)
     // params: swe_terminal, count
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 	int counts = 2 > params ? 1 : ll.toIntegerIndex(2);
@@ -964,9 +896,7 @@ int SWE_terminal_cursor_moveleft(lua_State* L)
     // params: swe_terminal, count
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 	int counts = 2 > params ? 1 : ll.toIntegerIndex(2);
@@ -988,9 +918,7 @@ int SWE_terminal_cursor_moveright(lua_State* L)
     // params: swe_terminal, count
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 	int counts = 2 > params ? 1 : ll.toIntegerIndex(2);
@@ -1012,9 +940,7 @@ int SWE_terminal_cursor_movefirst(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << cursor::move(MoveFirst);
 
@@ -1034,9 +960,7 @@ int SWE_terminal_cursor_movelast(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << cursor::move(MoveLast);
 
@@ -1056,9 +980,7 @@ int SWE_terminal_set_flush(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	*term << set::flush();
     }
@@ -1075,9 +997,7 @@ int SWE_terminal_draw_hline(lua_State* L)
     // params: swe_terminal, length, line
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 	int length = ll.toIntegerIndex(2);
@@ -1119,9 +1039,7 @@ int SWE_terminal_draw_vline(lua_State* L)
     // params: swe_terminal, length, line
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 	int length = ll.toIntegerIndex(2);
@@ -1163,14 +1081,12 @@ int SWE_terminal_draw_rect(lua_State* L)
     // params: swe_terminal, rtw, rth, line
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 	int rtw = 2 > params ? term->cols() : ll.toIntegerIndex(2);
 	int rth = 3 > params ? term->rows() : ll.toIntegerIndex(3);
-	line_t line = LineThin;
+	LineType line = LineThin;
 
 	if(3 < params)
 	{
@@ -1181,7 +1097,7 @@ int SWE_terminal_draw_rect(lua_State* L)
 		case LineThin:
 		case LineBold:
 		case LineDouble:
-		    line = static_cast<line_t>(type);
+		    line = static_cast<LineType>(type);
 		    break;
 
 		default:
@@ -1209,9 +1125,7 @@ int SWE_terminal_draw_text(lua_State* L)
     // params: swe_terminal, text, .. text
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 
@@ -1257,9 +1171,7 @@ int SWE_terminal_draw_char(lua_State* L)
     // params: swe_terminal, char, .. char
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
 	int params = ll.stackSize();
 
@@ -1298,17 +1210,14 @@ int SWE_terminal_charset_info(lua_State* L)
     // params: swe_terminal
 
     LuaState ll(L);
-    auto term = SWE_Terminal::get(ll, 1, __FUNCTION__);
-
-    if(term)
+    if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
-	const TermCharset* tc = term->charset();
-	if(tc)
+	if(const TermCharset* tc = term->charset())
 	{
 	    ll.pushTable();
 
 	    const UnicodeColor & uc = tc->unicodeColor();
-	    const CharRender & cp = tc->property();
+	    const CharProperty & cp = tc->property();
 
 	    ll.pushString(String::hex(uc.unicode(), 4)).setFieldTableIndex("unicode", -2);
 	    ll.pushString(uc.fgcolor().toString()).setFieldTableIndex("fgcolor", -2);
@@ -1487,7 +1396,7 @@ int SWE_char_ltee(lua_State* L)
 	case LineThin:
 	case LineBold:
 	case LineDouble:
-	    ll.pushInteger(acs::ltee(static_cast<line_t>(type)));
+	    ll.pushInteger(acs::ltee(static_cast<LineType>(type)));
 	    return 1;
 
 	default:
@@ -1510,7 +1419,7 @@ int SWE_char_rtee(lua_State* L)
 	case LineThin:
 	case LineBold:
 	case LineDouble:
-	    ll.pushInteger(acs::rtee(static_cast<line_t>(type)));
+	    ll.pushInteger(acs::rtee(static_cast<LineType>(type)));
 	    return 1;
 
 	default:
@@ -1533,7 +1442,7 @@ int SWE_char_ttee(lua_State* L)
 	case LineThin:
 	case LineBold:
 	case LineDouble:
-	    ll.pushInteger(acs::ttee(static_cast<line_t>(type)));
+	    ll.pushInteger(acs::ttee(static_cast<LineType>(type)));
 	    return 1;
 
 	default:
@@ -1556,7 +1465,7 @@ int SWE_char_btee(lua_State* L)
 	case LineThin:
 	case LineBold:
 	case LineDouble:
-	    ll.pushInteger(acs::btee(static_cast<line_t>(type)));
+	    ll.pushInteger(acs::btee(static_cast<LineType>(type)));
 	    return 1;
 
 	default:
@@ -1579,7 +1488,7 @@ int SWE_char_ulcorner(lua_State* L)
 	case LineThin:
 	case LineBold:
 	case LineDouble:
-	    ll.pushInteger(acs::ulcorner(static_cast<line_t>(type)));
+	    ll.pushInteger(acs::ulcorner(static_cast<LineType>(type)));
 	    return 1;
 
 	default:
@@ -1602,7 +1511,7 @@ int SWE_char_urcorner(lua_State* L)
 	case LineThin:
 	case LineBold:
 	case LineDouble:
-	    ll.pushInteger(acs::urcorner(static_cast<line_t>(type)));
+	    ll.pushInteger(acs::urcorner(static_cast<LineType>(type)));
 	    return 1;
 
 	default:
@@ -1625,7 +1534,7 @@ int SWE_char_llcorner(lua_State* L)
 	case LineThin:
 	case LineBold:
 	case LineDouble:
-	    ll.pushInteger(acs::llcorner(static_cast<line_t>(type)));
+	    ll.pushInteger(acs::llcorner(static_cast<LineType>(type)));
 	    return 1;
 
 	default:
@@ -1648,7 +1557,7 @@ int SWE_char_lrcorner(lua_State* L)
 	case LineThin:
 	case LineBold:
 	case LineDouble:
-	    ll.pushInteger(acs::lrcorner(static_cast<line_t>(type)));
+	    ll.pushInteger(acs::lrcorner(static_cast<LineType>(type)));
 	    return 1;
 
 	default:
@@ -1671,7 +1580,7 @@ int SWE_char_hline(lua_State* L)
 	case LineThin:
 	case LineBold:
 	case LineDouble:
-	    ll.pushInteger(acs::hline(static_cast<line_t>(type)));
+	    ll.pushInteger(acs::hline(static_cast<LineType>(type)));
 	    return 1;
 
 	default:
@@ -1694,7 +1603,7 @@ int SWE_char_vline(lua_State* L)
 	case LineThin:
 	case LineBold:
 	case LineDouble:
-	    ll.pushInteger(acs::vline(static_cast<line_t>(type)));
+	    ll.pushInteger(acs::vline(static_cast<LineType>(type)));
 	    return 1;
 
 	default:
@@ -1717,7 +1626,7 @@ int SWE_char_plus(lua_State* L)
 	case LineThin:
 	case LineBold:
 	case LineDouble:
-	    ll.pushInteger(acs::plus(static_cast<line_t>(type)));
+	    ll.pushInteger(acs::plus(static_cast<LineType>(type)));
 	    return 1;
 
 	default:
