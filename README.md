@@ -7,4 +7,4 @@ SDL Window Engine: Lua bindings
 == Tutorials ==
 
 * [[Tutorial1: Hello World!]] - Simple window with label
-https://github.com/AndreyBarmaley/SWE_lua/wiki/Tutorial1:-Hello-World!
+https://github.com/AndreyBarmaley/SWE_lua/wiki/Tutorial1:-Hello-World
