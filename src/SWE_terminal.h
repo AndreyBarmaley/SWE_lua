@@ -52,7 +52,7 @@ protected:
     bool        scrollUpEvent(void) override { return SWE_scroll_up_event(ll, *this); }
     bool        scrollDownEvent(void) override { return SWE_scroll_down_event(ll, *this); }
     bool        userEvent(int code, void* data) override { return SWE_system_user_event(ll, *this, code, data); }
-    void        tickEvent(u32 ms) override { SWE_system_tick_event(ll, *this, ms); }
+    void        tickEvent(u32 ms) override { TermWindow::tickEvent(ms); SWE_system_tick_event(ll, *this, ms); }
 
     CharProperty defaultProperty(void) const override { return SWE_terminal_default_property(ll, *this); }
     FBColors	defaultColors(void) const override { return SWE_terminal_default_colors(ll, *this); }

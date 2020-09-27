@@ -1371,6 +1371,7 @@ int SWE_window_create(lua_State* L)
     ll.setMetaTableIndex(-2);
 
     const std::string hexid = String::hex((*ptr)->id());
+    const std::string parid = parent ? String::hex(parent->id()) : "0";
 
     // add values
     ll.pushString("__type").pushString("swe.window").setTableIndex(-3);
@@ -1382,6 +1383,7 @@ int SWE_window_create(lua_State* L)
     ll.pushString("modality").pushBoolean(false).setTableIndex(-3);
     ll.pushString("keyhandle").pushBoolean(false).setTableIndex(-3);
     ll.pushString("hexid").pushString(hexid).setTableIndex(-3);
+    ll.pushString("parent").pushString(parid).setTableIndex(-3);
 
     // set functions
     ll.setFunctionsTableIndex(SWE_window_functions, -1);
@@ -1736,6 +1738,7 @@ int SWE_polygon_create(lua_State* L)
     ll.setMetaTableIndex(-2);
 
     const std::string hexid = String::hex((*ptr)->id());
+    const std::string parid = parent ? String::hex(parent->id()) : "0";
 
     ll.pushString("__type").pushString("swe.polygon").setTableIndex(-3);
     ll.pushString("posx").pushInteger((*ptr)->position().x).setTableIndex(-3);
@@ -1746,6 +1749,7 @@ int SWE_polygon_create(lua_State* L)
     ll.pushString("modality").pushBoolean(false).setTableIndex(-3);
     ll.pushString("keyhandle").pushBoolean(false).setTableIndex(-3);
     ll.pushString("hexid").pushString(hexid).setTableIndex(-3);
+    ll.pushString("parent").pushString(parid).setTableIndex(-3);
 
     // set functions
     ll.setFunctionsTableIndex(SWE_polygon_functions, -1);

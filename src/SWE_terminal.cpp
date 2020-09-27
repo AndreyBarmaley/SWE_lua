@@ -495,7 +495,7 @@ int SWE_terminal_set_alpha(lua_State* L)
     LuaState ll(L);
     if(auto term = SWE_Terminal::get(ll, 1, __FUNCTION__))
     {
-	int val = ll.toIntegerIndex(1);
+	int val = ll.toIntegerIndex(2);
 	*term << set::alpha(val);
 
 	ll.pushValueIndex(1);
@@ -1216,15 +1216,18 @@ int SWE_terminal_charset_info(lua_State* L)
 	{
 	    ll.pushTable();
 
-	    const UnicodeColor & uc = tc->unicodeColor();
 	    const CharProperty & cp = tc->property();
 
-	    ll.pushString(String::hex(uc.unicode(), 4)).setFieldTableIndex("unicode", -2);
-	    ll.pushString(uc.fgcolor().toString()).setFieldTableIndex("fgcolor", -2);
-	    ll.pushString(uc.bgcolor().toString()).setFieldTableIndex("bgcolor", -2);
+	    ll.pushString(String::hex(tc->unicode(), 4)).setFieldTableIndex("unicode", -2);
+	    ll.pushString(tc->colors().fgcolor().toString()).setFieldTableIndex("fgcolor", -2);
+	    ll.pushString(tc->colors().bgcolor().toString()).setFieldTableIndex("bgcolor", -2);
 	    ll.pushInteger(cp.render()).setFieldTableIndex("blended", -2);
 	    ll.pushInteger(cp.style()).setFieldTableIndex("style", -2);
 	    ll.pushInteger(cp.hinting()).setFieldTableIndex("hinting", -2);
+	    ll.pushBoolean(tc->blinked()).setFieldTableIndex("blinked", -2);
+	    ll.pushBoolean(tc->inverted()).setFieldTableIndex("inverted", -2);
+	    ll.pushInteger(tc->flip()).setFieldTableIndex("flip", -2);
+	    ll.pushInteger(tc->alpha()).setFieldTableIndex("alpha", -2);
 
 	    return 1;
 	}
@@ -1356,6 +1359,7 @@ int SWE_terminal_create(lua_State* L)
     ll.setMetaTableIndex(-2);
 
     const std::string hexid = String::hex((*ptr)->id());
+    const std::string parid = parent ? String::hex(parent->id()) : "0";
 
     ll.pushString("__type").pushString("swe.terminal").setTableIndex(-3);
     ll.pushString("visible").pushBoolean((*ptr)->isVisible()).setTableIndex(-3);
@@ -1368,6 +1372,7 @@ int SWE_terminal_create(lua_State* L)
     ll.pushString("cols").pushInteger(cols).setTableIndex(-3);
     ll.pushString("rows").pushInteger(rows).setTableIndex(-3);
     ll.pushString("hexid").pushString(hexid).setTableIndex(-3);
+    ll.pushString("parent").pushString(parid).setTableIndex(-3);
 
     // set functions
     ll.setFunctionsTableIndex(SWE_terminal_functions, -1);
@@ -1661,14 +1666,17 @@ void SWE_Terminal::registers(LuaState & ll)
 
     // SWE.Property constants
     ll.pushTable("SWE.Property");
+    ll.pushInteger(RenderDefault).setFieldTableIndex("RenderDefault", -2);
     ll.pushInteger(RenderSolid).setFieldTableIndex("RenderSolid", -2);
     ll.pushInteger(RenderBlended).setFieldTableIndex("RenderBlended", -2);
     ll.pushInteger(RenderShaded).setFieldTableIndex("RenderShaded", -2);
+    ll.pushInteger(StyleDefault).setFieldTableIndex("StyleDefault", -2);
     ll.pushInteger(StyleNormal).setFieldTableIndex("StyleNormal", -2);
     ll.pushInteger(StyleBold).setFieldTableIndex("StyleBold", -2);
     ll.pushInteger(StyleItalic).setFieldTableIndex("StyleItalic", -2);
     ll.pushInteger(StyleUnderLine).setFieldTableIndex("StyleUnderLine", -2);
     ll.pushInteger(StyleStrikeThrough).setFieldTableIndex("StyleStrikeThrough", -2);
+    ll.pushInteger(HintingDefault).setFieldTableIndex("HintingDefault", -2);
     ll.pushInteger(HintingNormal).setFieldTableIndex("HintingNormal", -2);
     ll.pushInteger(HintingLight).setFieldTableIndex("HintingLight", -2);
     ll.pushInteger(HintingMono).setFieldTableIndex("HintingMono", -2);

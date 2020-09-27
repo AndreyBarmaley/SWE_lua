@@ -43,12 +43,12 @@
 #include "SWE_translation.h"
 #include "SWE_unicodestring.h"
 
-#define SWE_LUA_VERSION 20200906
+#define SWE_LUA_VERSION 20200910
 #define SWE_LUA_LICENSE "GPL3"
 
 int SWE_window_create(lua_State*);
 
-int SWE_init2(lua_State* L)
+int SWE_win_init2(lua_State* L)
 {
     // params: string title, bool landscape
     LuaState ll(L);
@@ -76,9 +76,11 @@ int SWE_init2(lua_State* L)
     {
 	const Size & dsz = Display::size();
 	ll.stackClear();
-	ll.pushTable().pushInteger(0).pushInteger(0).pushInteger(dsz.w).pushInteger(dsz.h).pushNil();
 
+        // self, x, y, w, h, parent
+	ll.pushTable().pushInteger(0).pushInteger(0).pushInteger(dsz.w).pushInteger(dsz.h).pushNil();
 	SWE_window_create(L);
+
 	return 1;
     }
 
@@ -86,13 +88,13 @@ int SWE_init2(lua_State* L)
     return 0;
 }
 
-int SWE_init(lua_State* L)
+int SWE_win_init(lua_State* L)
 {
     // params: string title, int width, int height, bool fullscreen
     LuaState ll(L);
 
     if(ll.isBooleanIndex(2))
-	return SWE_init2(L);
+	return SWE_win_init2(L);
 
     int params = ll.stackSize();
     std::string title = ll.toStringIndex(1);
@@ -123,13 +125,45 @@ int SWE_init(lua_State* L)
     {
 	const Size & dsz = Display::size();
 	ll.stackClear();
-	ll.pushTable().pushInteger(0).pushInteger(0).pushInteger(dsz.w).pushInteger(dsz.h).pushNil();
 
+        // self, x, y, w, h, parent
+	ll.pushTable().pushInteger(0).pushInteger(0).pushInteger(dsz.w).pushInteger(dsz.h).pushNil();
 	SWE_window_create(L);
+
 	return 1;
     }
 
     ERROR("display init failed");
+    return 0;
+}
+
+int SWE_term_init(lua_State* L)
+{
+    // params: string title, table swe_fontrender, int cols, int rows
+    LuaState ll(L);
+
+    std::string title = ll.toStringIndex(1);
+    SWE_FontRender* frs = SWE_FontRender::get(ll, 2, __FUNCTION__);
+    int cols = ll.toIntegerIndex(3);
+    int rows = ll.toIntegerIndex(4);
+
+    if(frs)
+    {
+        auto winsz = frs->size() * Size(cols, rows);
+
+        if(Display::init(title, winsz, false))
+        {
+	    //ll.stackClear();
+
+            // self, fontrender, cols, rows, table parent
+	    ll.pushTable().pushValueIndex(2).pushInteger(cols).pushInteger(rows).pushNil();
+	    SWE_terminal_create(L);
+
+	    return 1;
+        }
+    }
+
+    ERROR("terminal init failed");
     return 0;
 }
 
@@ -815,7 +849,8 @@ int SWE_display_handleevents(lua_State* L)
 
 // library interface
 const struct luaL_Reg SWE_functions[] = {
-    { "DisplayInit", SWE_init },	// [table swe_window], string title, int width, int height
+    { "DisplayInit", SWE_win_init },	// [table swe_window], string title, int width, int height
+    { "TerminalInit", SWE_term_init },	// [table swe_terminal], string title, table swe_fontrender, int cols, int rows
     { "Dump", SWE_dump }, 		// [void], void or object
     { "Debug", SWE_debug },		// [void], params
     { "Print", SWE_print },		// [void], params

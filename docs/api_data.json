@@ -111,7 +111,7 @@
             "type": "string",
             "optional": false,
             "field": "title",
-            "description": "<p>display window title</p>"
+            "description": "<p>display title</p>"
           },
           {
             "group": "Parameter",
@@ -160,7 +160,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "local win = SWE.DisplayInit(\"SWE Text\",640,480)\n-- see also SWE.DisplayWindow\n\nlocal result = SWE.MainLoop(win)",
+        "content": "local win = SWE.DisplayInit(\"SWE Window\",640,480)\n-- see also SWE.DisplayWindow\n\nlocal result = SWE.MainLoop(win)",
         "type": "json"
       },
       {
@@ -467,7 +467,7 @@
   },
   {
     "type": "concate filesystem names",
-    "url": "SWE.SystemConcatePath(item,item,..item)",
+    "url": "SWE.SystemConcatePath(item1,item2,itemN)",
     "title": "SWE.SystemConcatePath",
     "group": "SWE",
     "name": "SystemConcatePath",
@@ -478,7 +478,21 @@
             "group": "Parameter",
             "type": "string",
             "optional": false,
-            "field": "item",
+            "field": "item1",
+            "description": "<p>name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "item2",
+            "description": "<p>name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "itemN",
             "description": "<p>name</p>"
           }
         ]
@@ -744,7 +758,7 @@
   },
   {
     "type": "run command, get result outputs",
-    "url": "SWE.SystemRunCommand(cmd,param,param,..param)",
+    "url": "SWE.SystemRunCommand(cmd,param1,param2,paramN)",
     "title": "SWE.SystemRunCommand",
     "group": "SWE",
     "name": "SystemRunCommand",
@@ -756,14 +770,28 @@
             "type": "string",
             "optional": false,
             "field": "cmd",
-            "description": "<p>command</p>"
+            "description": "<p>command binary</p>"
           },
           {
             "group": "Parameter",
             "type": "string",
             "optional": false,
-            "field": "param",
-            "description": "<p>parameters</p>"
+            "field": "param1",
+            "description": "<p>command arguments</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "param2",
+            "description": "<p>command arguments</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "paramN",
+            "description": "<p>command arguments</p>"
           }
         ]
       }
@@ -870,6 +898,70 @@
         ]
       }
     },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
+    "type": "create display terminal object",
+    "url": "SWE.TerminalInit(title,frs,cols,rows)",
+    "title": "SWE.TerminalInit",
+    "group": "SWE",
+    "name": "TerminalInit",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "title",
+            "description": "<p>display title</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "table",
+            "optional": false,
+            "field": "frs",
+            "description": "<p>font render, (SWE.FontRender object)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "cols",
+            "description": "<p>terminal size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "rows",
+            "description": "<p>terminal size</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "result",
+            "description": "<p>terminal object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local frs = SWE.FontRender.System()\nlocal term = SWE.TerminalInit(\"SWE Terminal\",frs,80,25)\n\n-- render terminal\nfunction term.RenderWindow()\n    term:CursorPosition(0, 0):FillColors(SWE.Color.Silver, SWE.Color.Black, term.cols, term.rows)\n    term:CursorPosition(0, 0):FillProperty(frs.blended, frs.style, frs.hinting, term.cols, term.rows)\n    term:CursorPosition(0, 0):FillCharset(0x33, term.cols, term.rows)\n    term:CursorPosition(0, 0):DrawRect(term.cols, term.rows, SWE.Line.Thin)\n    term:SetFlush()\n    return true\nend\n\n-- dump SWE.Terminal\nSWE.Dump(term)\n\nlocal result = SWE.MainLoop(term)",
+        "type": "json"
+      }
+    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_swe.js",
     "groupTitle": "SWE"
@@ -14991,6 +15083,34 @@
     "version": "0.0.0",
     "filename": "./api/apidoc_window.js",
     "groupTitle": "SWE_Window_Virtual"
+  },
+  {
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "optional": false,
+            "field": "varname1",
+            "description": "<p>No type.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "varname2",
+            "description": "<p>With type.</p>"
+          }
+        ]
+      }
+    },
+    "type": "",
+    "url": "",
+    "version": "0.0.0",
+    "filename": "./doc_/main.js",
+    "group": "_opt_svn_my_projects_SDL_projects_luaSWE_doc__main_js",
+    "groupTitle": "_opt_svn_my_projects_SDL_projects_luaSWE_doc__main_js",
+    "name": ""
   },
   {
     "success": {

@@ -456,14 +456,17 @@ void SWE_FontRender::registers(LuaState & ll)
     
     // SWE.Font constants
     ll.pushTable("SWE.Font");
+    ll.pushInteger(RenderDefault).setFieldTableIndex("RenderDefault", -2);
     ll.pushInteger(RenderSolid).setFieldTableIndex("RenderSolid", -2);
     ll.pushInteger(RenderBlended).setFieldTableIndex("RenderBlended", -2);
     ll.pushInteger(RenderShaded).setFieldTableIndex("RenderShaded", -2);
+    ll.pushInteger(StyleDefault).setFieldTableIndex("StyleDefault", -2);
     ll.pushInteger(StyleNormal).setFieldTableIndex("StyleNormal", -2);
     ll.pushInteger(StyleBold).setFieldTableIndex("StyleBold", -2);
     ll.pushInteger(StyleItalic).setFieldTableIndex("StyleItalic", -2);
     ll.pushInteger(StyleUnderLine).setFieldTableIndex("StyleUnderLine", -2);
     ll.pushInteger(StyleStrikeThrough).setFieldTableIndex("StyleStrikeThrough", -2);
+    ll.pushInteger(HintingDefault).setFieldTableIndex("HintingDefault", -2);
     ll.pushInteger(HintingNormal).setFieldTableIndex("HintingNormal", -2);
     ll.pushInteger(HintingLight).setFieldTableIndex("HintingLight", -2);
     ll.pushInteger(HintingMono).setFieldTableIndex("HintingMono", -2);
