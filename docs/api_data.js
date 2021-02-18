@@ -10632,35 +10632,15 @@ define({ "api": [
     "groupTitle": "SWE_Terminal"
   },
   {
-    "type": "terminal event: win size changed",
-    "url": "SWE.Terminal.DisplayResizeEvent(width,height)",
-    "title": "SWE.Terminal.DisplayResizeEvent",
+    "type": "terminal event: resize terminal font",
+    "url": "SWE.Terminal.FontResizeEvent()",
+    "title": "SWE.Terminal.FontResizeEvent",
     "group": "SWE_Terminal_Events",
-    "name": "DisplayResizeEvent",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "width",
-            "description": "<p>window size</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "height",
-            "description": "<p>window size</p>"
-          }
-        ]
-      }
-    },
+    "name": "FontResizeEvent",
     "examples": [
       {
         "title": "usage",
-        "content": "    win.DisplayResizeEvent = function(w,h)\n\tprint(\"new win size\",w,h)\n    end",
+        "content": "term.FontResizeEvent = function()\n    print(\"font resized\")\nend",
         "type": "json"
       }
     ],
@@ -11247,6 +11227,23 @@ define({ "api": [
       {
         "title": "usage",
         "content": "    win.SystemUserEvent = function(code,data)\n\tprint(\"code:\",code,type(data))\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE_Terminal_Events"
+  },
+  {
+    "type": "terminal event: resize terminal window",
+    "url": "SWE.Terminal.TerminalResizeEvent()",
+    "title": "SWE.Terminal.TerminalResizeEvent",
+    "group": "SWE_Terminal_Events",
+    "name": "TerminalResizeEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "term.TerminalResizeEvent = function()\n    print(\"term resized\")\nend",
         "type": "json"
       }
     ],
@@ -12123,10 +12120,23 @@ define({ "api": [
         ]
       }
     },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "object",
+            "optional": false,
+            "field": "result",
+            "description": "<p>SWE.Rect text position</p>"
+          }
+        ]
+      }
+    },
     "examples": [
       {
         "title": "usage",
-        "content": "local frs = SWE.FontRender(\"dejavusans.ttf\", 24)\nlocal image1 = SWE.Texture.Image(\"logo.png\")\nimage1:RenderText(frs,SWE.Color.Red,\"APPROVED\",image1.width/2,image1.height/2,SWE.Align.Center,SWE.Align.Center)",
+        "content": "local frs = SWE.FontRender(\"dejavusans.ttf\", 24)\nlocal image1 = SWE.Texture.Image(\"logo.png\")\nlocal pos = image1:RenderText(frs,SWE.Color.Red,\"APPROVED\",image1.width/2,image1.height/2,SWE.Align.Center,SWE.Align.Center)\nprint(\"texture position:\",pos)",
         "type": "json"
       }
     ],
@@ -14008,6 +14018,19 @@ define({ "api": [
         ]
       }
     },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "result",
+            "description": "<p>SWE.Rect text position</p>"
+          }
+        ]
+      }
+    },
     "version": "0.0.0",
     "filename": "./api/apidoc_window.js",
     "groupTitle": "SWE_Window"
@@ -15107,37 +15130,9 @@ define({ "api": [
     "type": "",
     "url": "",
     "version": "0.0.0",
-    "filename": "./doc_/main.js",
-    "group": "_opt_svn_my_projects_SDL_projects_luaSWE_doc__main_js",
-    "groupTitle": "_opt_svn_my_projects_SDL_projects_luaSWE_doc__main_js",
-    "name": ""
-  },
-  {
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "optional": false,
-            "field": "varname1",
-            "description": "<p>No type.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "varname2",
-            "description": "<p>With type.</p>"
-          }
-        ]
-      }
-    },
-    "type": "",
-    "url": "",
-    "version": "0.0.0",
-    "filename": "./docs/main.js",
-    "group": "_opt_svn_my_projects_SDL_projects_luaSWE_docs_main_js",
-    "groupTitle": "_opt_svn_my_projects_SDL_projects_luaSWE_docs_main_js",
+    "filename": "./doc/main.js",
+    "group": "_opt_svn_my_projects_SDL_engine_lua_doc_main_js",
+    "groupTitle": "_opt_svn_my_projects_SDL_engine_lua_doc_main_js",
     "name": ""
   }
 ] });
