@@ -13,7 +13,6 @@ SDL Window Engine: Lua bindings
 * [[Tutorial8: Digital Clock]](https://github.com/AndreyBarmaley/SWE_lua/wiki/Tutorial8:-Digital-Clock) - Digital clock example
 * [[Tutorial9: FTP server]](https://github.com/AndreyBarmaley/SWE_lua/wiki/Tutorial8:-Networking,-FTP-server) - Networking, FTP server example
 
-SWE_Lua API bindings [[documentation]] (https://andreybarmaley.github.io/SWE_lua)
-
+SWE_Lua API bindings [[documentation]](https://andreybarmaley.github.io/SWE_lua)
 Source moved to [[SWE]](https://github.com/AndreyBarmaley/sdl-window-engine)
 
