@@ -13576,6 +13576,42 @@
     "groupTitle": "SWE_Window"
   },
   {
+    "type": "window is visible",
+    "url": "SWE.Window.IsVisible()",
+    "title": "SWE.Window.IsVisible",
+    "group": "SWE_Window",
+    "name": "IsVisible",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Window",
+            "optional": false,
+            "field": "self",
+            "description": "<p>window object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if visible</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window"
+  },
+  {
     "type": "point in window area",
     "url": "SWE.Window.PointInArea(self,ptx,pty)(self,point)",
     "title": "SWE.Window.PointInArea",
@@ -15130,9 +15166,9 @@
     "type": "",
     "url": "",
     "version": "0.0.0",
-    "filename": "./doc/main.js",
-    "group": "_opt_svn_my_projects_SDL_engine_lua_doc_main_js",
-    "groupTitle": "_opt_svn_my_projects_SDL_engine_lua_doc_main_js",
+    "filename": "./docs/main.js",
+    "group": "_opt_svn_my_projects_SDL_engine_lua_docs_main_js",
+    "groupTitle": "_opt_svn_my_projects_SDL_engine_lua_docs_main_js",
     "name": ""
   }
 ]
