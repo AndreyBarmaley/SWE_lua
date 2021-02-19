@@ -277,6 +277,29 @@ define({ "api": [
     "groupTitle": "SWE"
   },
   {
+    "type": "get api version",
+    "url": "SWE.GetVersion()",
+    "title": "SWE.GetVersion",
+    "group": "SWE",
+    "name": "GetVersion",
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "integer",
+            "optional": false,
+            "field": "result",
+            "description": "<p>version</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
     "type": "parse json string",
     "url": "SWE.JsonParse(json)",
     "title": "SWE.JsonParse",
@@ -315,6 +338,42 @@ define({ "api": [
         "type": "json"
       }
     ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
+    "type": "register directory for lua modules",
+    "url": "SWE.LuaRegisterDirectory(directory)",
+    "title": "SWE.LuaRegisterDirectory",
+    "group": "SWE",
+    "name": "LuaRegisterDirectory",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "path",
+            "description": "<p>directory</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>result: success</p>"
+          }
+        ]
+      }
+    },
     "version": "0.0.0",
     "filename": "./api/apidoc_swe.js",
     "groupTitle": "SWE"
@@ -438,6 +497,49 @@ define({ "api": [
         ]
       }
     },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
+    "type": "register directory for ext resources",
+    "url": "SWE.ResourcesRegisterDirectory(directory)",
+    "title": "SWE.ResourcesRegisterDirectory",
+    "group": "SWE",
+    "name": "ResourcesRegisterDirectory",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "path",
+            "description": "<p>directory</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>result: success</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "-- data/images/image1.png\n\n-- get texture variant 1\nlocal tx1 = SWE.Texture.Image(\"data/images/image1.png\")\n\n-- get texture variant 2\nSWE.ResourcesRegisterDirectory(\"data\")\nlocal tx2 = SWE.Texture.Image(\"images/image1.png\")\n\n-- get texture variant 3\nSWE.ResourcesRegisterDirectory(SWE.SystemConcatePath(\"data\", \"images\"))\nlocal tx3 = SWE.Texture.Image(\"image1.png\")",
+        "type": "json"
+      }
+    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_swe.js",
     "groupTitle": "SWE"
@@ -5914,6 +6016,78 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "./api/apidoc_rect.js",
     "groupTitle": "SWE_Rect"
+  },
+  {
+    "type": "scene: move window to top layer",
+    "url": "SWE.Scene.MoveTop(win)",
+    "title": "SWE.Scene.MoveTop",
+    "group": "SWE_Scene",
+    "name": "MoveTop",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Window",
+            "optional": false,
+            "field": "win",
+            "description": "<p>window object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success operation</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Scene"
+  },
+  {
+    "type": "scene: remove window",
+    "url": "SWE.Scene.Remove(win)",
+    "title": "SWE.Scene.Remove",
+    "group": "SWE_Scene",
+    "name": "Remove",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Window",
+            "optional": false,
+            "field": "win",
+            "description": "<p>window object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>success operation</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Scene"
   },
   {
     "type": "get signal string",
