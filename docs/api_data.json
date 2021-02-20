@@ -99,7 +99,7 @@
   },
   {
     "type": "create display window object",
-    "url": "SWE.DisplayInit(title,width,height,fullscreen)(title,landscape)",
+    "url": "SWE.DisplayInit(title,width,height,fullscreen)(title,landscape)(table)",
     "title": "SWE.DisplayInit",
     "group": "SWE",
     "name": "DisplayInit",
@@ -140,6 +140,13 @@
             "optional": false,
             "field": "landscape",
             "description": "<p>init landscape of portrait mode (mobile os)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "table",
+            "optional": false,
+            "field": "params",
+            "description": "<p>params: { &quot;title&quot;:string, &quot;window&quot;:size, &quot;render&quot;:size, &quot;fullscreen&quot;:bool, &quot;accel&quot;:bool, &quot;resized&quot;:bool }</p>"
           }
         ]
       }
@@ -277,6 +284,49 @@
     "groupTitle": "SWE"
   },
   {
+    "type": "find filename from resource dirs",
+    "url": "SWE.FindResource(resource)",
+    "title": "SWE.FindResource",
+    "group": "SWE",
+    "name": "FindResource",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "resource",
+            "description": "<p>file name</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "string",
+            "optional": false,
+            "field": "result",
+            "description": "<p>full path or nil</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "-- data/images/image1.png\n\nSWE.RegisterResourceDirectory(SWE.SystemConcatePath(\"data\", \"images\"))\nlocal filename = SWE.FindResource(\"image1.png\")\nprint(filename)",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
     "type": "get api version",
     "url": "SWE.GetVersion()",
     "title": "SWE.GetVersion",
@@ -338,42 +388,6 @@
         "type": "json"
       }
     ],
-    "version": "0.0.0",
-    "filename": "./api/apidoc_swe.js",
-    "groupTitle": "SWE"
-  },
-  {
-    "type": "register directory for lua modules",
-    "url": "SWE.LuaRegisterDirectory(directory)",
-    "title": "SWE.LuaRegisterDirectory",
-    "group": "SWE",
-    "name": "LuaRegisterDirectory",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "path",
-            "description": "<p>directory</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "boolean",
-            "optional": false,
-            "field": "result",
-            "description": "<p>result: success</p>"
-          }
-        ]
-      }
-    },
     "version": "0.0.0",
     "filename": "./api/apidoc_swe.js",
     "groupTitle": "SWE"
@@ -466,6 +480,85 @@
     "groupTitle": "SWE"
   },
   {
+    "type": "register directory for lua modules",
+    "url": "SWE.RegisterLuaDirectory(directory)",
+    "title": "SWE.RegisterLuaDirectory",
+    "group": "SWE",
+    "name": "RegisterLuaDirectory",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "path",
+            "description": "<p>directory</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>result: success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
+    "type": "register directory for ext resources",
+    "url": "SWE.RegisterResourceDirectory(directory)",
+    "title": "SWE.RegisterResourceDirectory",
+    "group": "SWE",
+    "name": "RegisterResourceDirectory",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "path",
+            "description": "<p>directory</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>result: success</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "-- data/images/image1.png\n-- data/font.ttf\n-- data/sound.wav\n\n-- variant 1\nlocal tx1 = SWE.Texture.Image(\"data/images/image1.png\")\nlocal frs = SWE.FontRender(\"data/font.ttf\", 14, SWE.Font.RenderSolid)\nSWE.SoundPlay(\"data/sound.wav\")\n\n-- variant 2\nSWE.RegisterResourceDirectory(\"data\")\nlocal tx2 = SWE.Texture.Image(\"images/image1.png\")\nlocal frs = SWE.FontRender(\"font.ttf\", 14, SWE.Font.RenderSolid)\nSWE.SoundPlay(\"sound.wav\")\n\n-- variant 3\nSWE.RegisterResourceDirectory(SWE.SystemConcatePath(\"data\", \"images\"))\nlocal tx3 = SWE.Texture.Image(\"image1.png\")",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
     "type": "display scene render to screenshot",
     "url": "SWE.RenderScreenshot(filename)",
     "title": "SWE.RenderScreenshot",
@@ -497,49 +590,6 @@
         ]
       }
     },
-    "version": "0.0.0",
-    "filename": "./api/apidoc_swe.js",
-    "groupTitle": "SWE"
-  },
-  {
-    "type": "register directory for ext resources",
-    "url": "SWE.ResourcesRegisterDirectory(directory)",
-    "title": "SWE.ResourcesRegisterDirectory",
-    "group": "SWE",
-    "name": "ResourcesRegisterDirectory",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "path",
-            "description": "<p>directory</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Return": [
-          {
-            "group": "Return",
-            "type": "boolean",
-            "optional": false,
-            "field": "result",
-            "description": "<p>result: success</p>"
-          }
-        ]
-      }
-    },
-    "examples": [
-      {
-        "title": "usage",
-        "content": "-- data/images/image1.png\n\n-- get texture variant 1\nlocal tx1 = SWE.Texture.Image(\"data/images/image1.png\")\n\n-- get texture variant 2\nSWE.ResourcesRegisterDirectory(\"data\")\nlocal tx2 = SWE.Texture.Image(\"images/image1.png\")\n\n-- get texture variant 3\nSWE.ResourcesRegisterDirectory(SWE.SystemConcatePath(\"data\", \"images\"))\nlocal tx3 = SWE.Texture.Image(\"image1.png\")",
-        "type": "json"
-      }
-    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_swe.js",
     "groupTitle": "SWE"
@@ -5281,7 +5331,7 @@
   },
   {
     "type": "point constructor",
-    "url": "SWE.Point(posx,posy)",
+    "url": "SWE.Point(posx,posy)SWE.Point(string)",
     "title": "SWE.Point",
     "group": "SWE_Point",
     "name": "Constructor",
@@ -5301,6 +5351,13 @@
             "optional": false,
             "field": "posy",
             "description": "<p>position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "string",
+            "description": "<p>parse string (delimiter: any non digital)</p>"
           }
         ]
       }
@@ -5678,7 +5735,7 @@
   },
   {
     "type": "rect constructor",
-    "url": "SWE.Rect(posx,posy,width,height)",
+    "url": "SWE.Rect(posx,posy,width,height)SWE.Rect(string)",
     "title": "SWE.Rect",
     "group": "SWE_Rect",
     "name": "Constructor",
@@ -5712,6 +5769,13 @@
             "optional": false,
             "field": "height",
             "description": "<p>size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "string",
+            "description": "<p>parse string (delimiter: any non digital)</p>"
           }
         ]
       }
@@ -6206,7 +6270,7 @@
   },
   {
     "type": "size constructor",
-    "url": "SWE.Size(width,height)",
+    "url": "SWE.Size(width,height)SWE.Size(string)",
     "title": "SWE.Size",
     "group": "SWE_Size",
     "name": "Constructor",
@@ -6226,6 +6290,13 @@
             "optional": false,
             "field": "height",
             "description": "<p>size value</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "string",
+            "description": "<p>parse string (delimiter: any non digital)</p>"
           }
         ]
       }
