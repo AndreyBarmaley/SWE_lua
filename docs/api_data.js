@@ -5911,7 +5911,7 @@ define({ "api": [
   },
   {
     "type": "check point in rect",
-    "url": "SWE.Rect.PointInRect(self,point)",
+    "url": "SWE.Rect.PointInRect(self,point)SWE.Rect.PointInRect(self,px,py)",
     "title": "SWE.Rect.PointInRect",
     "group": "SWE_Rect",
     "name": "PointInRect",
@@ -5931,6 +5931,20 @@ define({ "api": [
             "optional": false,
             "field": "point",
             "description": "<p>point object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "px",
+            "description": "<p>point value</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "py",
+            "description": "<p>point value</p>"
           }
         ]
       }
@@ -8016,6 +8030,36 @@ define({ "api": [
         ]
       }
     },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
+    "type": "return local addresses",
+    "url": "SWE.StreamNet.LocalAddresses()",
+    "title": "SWE.StreamNet.LocalAddresses",
+    "group": "SWE_StreamNet",
+    "name": "LocalAddresses",
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "table",
+            "optional": false,
+            "field": "result",
+            "description": "<p>local addresses list</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local addrs = SWE.StreamNet.LocalAddresses()\nfor i=1,#addrs do\n    print(\"ip address\" .. addrs[i])\nend",
+        "type": "json"
+      }
+    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_streamnet.js",
     "groupTitle": "SWE_StreamNet"
@@ -11980,6 +12024,120 @@ define({ "api": [
     "groupTitle": "SWE_Texture"
   },
   {
+    "type": "texture crop to texture",
+    "url": "SWE.Texture.CropImage(self,cx,cy,cw,ch)SWE.Texture.CropImage(self,rect)",
+    "title": "SWE.Texture.CropImage",
+    "group": "SWE_Texture",
+    "name": "CropImage",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Texture",
+            "optional": false,
+            "field": "self",
+            "description": "<p>texture object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "cx",
+            "description": "<p>crop area</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "cy",
+            "description": "<p>crop area</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "cw",
+            "description": "<p>crop area</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "ch",
+            "description": "<p>crop area</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Rect",
+            "optional": false,
+            "field": "rect",
+            "description": "<p>crop area</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Texture",
+            "optional": false,
+            "field": "result",
+            "description": "<p>texture object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_texture.js",
+    "groupTitle": "SWE_Texture"
+  },
+  {
+    "type": "texture flip",
+    "url": "SWE.Texture.FlipImage(self,flip)",
+    "title": "SWE.Texture.FlipImage",
+    "group": "SWE_Texture",
+    "name": "FlipImage",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Texture",
+            "optional": false,
+            "field": "self",
+            "description": "<p>texture object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "flip",
+            "description": "<p>possible value: SWE.Texture.FlipVertical or SWE.Texture.FlipHorizontal or combined</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Texture",
+            "optional": false,
+            "field": "result",
+            "description": "<p>texture object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_texture.js",
+    "groupTitle": "SWE_Texture"
+  },
+  {
     "type": "texture clear",
     "url": "SWE.Texture.RenderClear(self,color)",
     "title": "SWE.Texture.RenderClear",
@@ -13852,6 +14010,36 @@ define({ "api": [
         ]
       }
     },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window"
+  },
+  {
+    "type": "window mark will be destroyed",
+    "url": "SWE.Window.MarkDestroyed(self)",
+    "title": "SWE.Window.MarkDestroyed",
+    "group": "SWE_Window",
+    "name": "MarkDestroyed",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Window",
+            "optional": false,
+            "field": "self",
+            "description": "<p>window object</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "-- create window area(30,30,200,100) on display scene\nlocal win2 = SWE.Window(30,30,200,100)\n\n....\nwin2:MarkDestroyed()\n\n-- equivalent to:\nwin2 = nil\ncollectgarbage()",
+        "type": "json"
+      }
+    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_window.js",
     "groupTitle": "SWE_Window"
