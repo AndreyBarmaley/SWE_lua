@@ -1,6 +1,6 @@
 define({
   "name": "Lua SWE",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Lua SWE bindings",
   "title": "Lua SWE Inteface",
   "sampleUrl": false,
@@ -8,7 +8,7 @@ define({
   "apidoc": "0.3.0",
   "generator": {
     "name": "apidoc",
-    "time": "2021-02-28T15:03:30.491Z",
+    "time": "2021-03-04T06:23:05.984Z",
     "url": "http://apidocjs.com",
     "version": "0.17.7"
   }
