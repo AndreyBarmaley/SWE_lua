@@ -76,7 +76,7 @@
   },
   {
     "type": "handle events intervals",
-    "url": "SWE.DisplayVideoModes(interval)",
+    "url": "SWE.DisplayHandleEvents(interval)",
     "title": "SWE.DisplayHandleEvents",
     "group": "SWE",
     "name": "DisplayHandleEvents",
@@ -85,7 +85,7 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "numberl",
+            "type": "number",
             "optional": false,
             "field": "interval",
             "description": "<p>handle events loop for interval (ms)</p>"
@@ -14711,7 +14711,7 @@
   },
   {
     "type": "window render texture",
-    "url": "SWE.Window.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty)(self,texture,src_rt,dst_pt)(self,texture,dstx,dsty)(self,texture,dst_pt)",
+    "url": "SWE.Window.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty,flip)(self,texture,src_rt,dst_pt,flip)(self,texture,dstx,dsty,flip)(self,texture,dst_pt,flip)",
     "title": "SWE.Window.RenderTexture",
     "group": "SWE_Window",
     "name": "RenderTexture",
@@ -14787,6 +14787,13 @@
             "optional": false,
             "field": "dst_pt",
             "description": "<p>dst point object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "flip",
+            "description": "<p>possible value: SWE.Texture.FlipVertical or SWE.Texture.FlipHorizontal or combined</p>"
           }
         ]
       }
@@ -15615,6 +15622,29 @@
         "type": "json"
       }
     ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE_Window_Events"
+  },
+  {
+    "type": "window event: system render event",
+    "url": "SWE.Window.SystemRenderEvent(ms)",
+    "title": "SWE.Window.SystemRenderEvent",
+    "group": "SWE_Window_Events",
+    "name": "SystemRenderEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "ms",
+            "description": "<p>render work milliseconds</p>"
+          }
+        ]
+      }
+    },
     "version": "0.0.0",
     "filename": "./api/apidoc_window.js",
     "groupTitle": "SWE_Window_Events"
