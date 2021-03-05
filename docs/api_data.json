@@ -1019,6 +1019,29 @@
     "groupTitle": "SWE"
   },
   {
+    "type": "get system counter",
+    "url": "SWE.SystemTick()",
+    "title": "SWE.SystemTick",
+    "group": "SWE",
+    "name": "SystemTick",
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "integer",
+            "optional": false,
+            "field": "counter",
+            "description": "<p>constantly counter (milliseconds) from the starting</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
     "type": "convert table object to json string",
     "url": "SWE.TableToJson(table)",
     "title": "SWE.TableToJson",
@@ -14711,7 +14734,7 @@
   },
   {
     "type": "window render texture",
-    "url": "SWE.Window.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty,flip)(self,texture,src_rt,dst_pt,flip)(self,texture,dstx,dsty,flip)(self,texture,dst_pt,flip)",
+    "url": "SWE.Window.RenderTexture(self,texture,srcx,srcy,srcw,srch,dstx,dsty,flip)(self,texture,srcrt,dstpt,flip)(self,texture,dstx,dsty,flip)(self,texture,dstpt,flip)",
     "title": "SWE.Window.RenderTexture",
     "group": "SWE_Window",
     "name": "RenderTexture",
@@ -14778,15 +14801,15 @@
             "group": "Parameter",
             "type": "SWE.Rect",
             "optional": false,
-            "field": "src_rt",
-            "description": "<p>src rect object</p>"
+            "field": "srcrt",
+            "description": "<p>SWE.Rect object or table</p>"
           },
           {
             "group": "Parameter",
             "type": "SWE.Point",
             "optional": false,
-            "field": "dst_pt",
-            "description": "<p>dst point object</p>"
+            "field": "dstpt",
+            "description": "<p>SWE.Point object or table</p>"
           },
           {
             "group": "Parameter",
@@ -15627,7 +15650,7 @@
     "groupTitle": "SWE_Window_Events"
   },
   {
-    "type": "window event: system render event",
+    "type": "window event: render compete event",
     "url": "SWE.Window.SystemRenderEvent(ms)",
     "title": "SWE.Window.SystemRenderEvent",
     "group": "SWE_Window_Events",
