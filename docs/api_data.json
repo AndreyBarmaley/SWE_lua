@@ -337,7 +337,7 @@
         "Return": [
           {
             "group": "Return",
-            "type": "integer",
+            "type": "number",
             "optional": false,
             "field": "result",
             "description": "<p>version</p>"
@@ -1029,7 +1029,7 @@
         "Return": [
           {
             "group": "Return",
-            "type": "integer",
+            "type": "number",
             "optional": false,
             "field": "counter",
             "description": "<p>constantly counter (milliseconds) from the starting</p>"
@@ -13273,7 +13273,7 @@
   },
   {
     "type": "translation: same as dngettext",
-    "url": "SWE.Translation.DNGetText(domain,text,plural,number)",
+    "url": "SWE.Translation.DNGetText(domain,text,plural,count)",
     "title": "SWE.Translation.DNGetText",
     "group": "SWE_Translation",
     "name": "DNGetText",
@@ -13303,10 +13303,10 @@
           },
           {
             "group": "Parameter",
-            "type": "integer",
+            "type": "number",
             "optional": false,
-            "field": "number",
-            "description": "<p>translation plural number</p>"
+            "field": "count",
+            "description": "<p>translation plural count</p>"
           }
         ]
       }
@@ -13373,7 +13373,7 @@
   },
   {
     "type": "translation: same as ngettext",
-    "url": "SWE.Translation.NGetText(text,plural,number)",
+    "url": "SWE.Translation.NGetText(text,plural,count)",
     "title": "SWE.Translation.NGetText",
     "group": "SWE_Translation",
     "name": "NGetText",
@@ -13396,10 +13396,10 @@
           },
           {
             "group": "Parameter",
-            "type": "integer",
+            "type": "number",
             "optional": false,
-            "field": "number",
-            "description": "<p>translation plural number</p>"
+            "field": "count",
+            "description": "<p>translation plural count</p>"
           }
         ]
       }
@@ -13475,7 +13475,7 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "integer",
+            "type": "number",
             "optional": false,
             "field": "context",
             "description": "<p>translation strip context symbol</p>"
