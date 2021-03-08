@@ -64,6 +64,36 @@ define({ "api": [
     "groupTitle": "SWE"
   },
   {
+    "type": "logging debug message (split with space)",
+    "url": "SWE.Debug(val1,val2,..valn)",
+    "title": "SWE.Debug",
+    "group": "SWE",
+    "name": "Debug",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "val1",
+            "description": "<p>value1</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "val2",
+            "description": "<p>value2</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
     "type": "set display scene dirty mode",
     "url": "SWE.DisplayDirty()",
     "title": "SWE.DisplayDirty",
@@ -284,6 +314,73 @@ define({ "api": [
     "groupTitle": "SWE"
   },
   {
+    "type": "dump lua object to console",
+    "url": "SWE.Dump(val1,val2,..valn)",
+    "title": "SWE.Dump",
+    "group": "SWE",
+    "name": "Dump",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "val1",
+            "description": "<p>value1</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "val2",
+            "description": "<p>value2</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "table",
+            "optional": false,
+            "field": "valn",
+            "description": "<p>valuen</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
+    "type": "logging error message (split with space)",
+    "url": "SWE.Error(val1,val2,..valn)",
+    "title": "SWE.Error",
+    "group": "SWE",
+    "name": "Error",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "val1",
+            "description": "<p>value1</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "val2",
+            "description": "<p>value2</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
     "type": "find filename from resource dirs",
     "url": "SWE.FindResource(resource)",
     "title": "SWE.FindResource",
@@ -431,6 +528,36 @@ define({ "api": [
         "type": "json"
       }
     ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
+    "type": "logging simple message (split with comma)",
+    "url": "SWE.Print(val1,val2,..valn)",
+    "title": "SWE.Print",
+    "group": "SWE",
+    "name": "Print",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "val1",
+            "description": "<p>value1</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "val2",
+            "description": "<p>value2</p>"
+          }
+        ]
+      }
+    },
     "version": "0.0.0",
     "filename": "./api/apidoc_swe.js",
     "groupTitle": "SWE"
