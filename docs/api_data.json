@@ -1775,7 +1775,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "    local buf = SWE.BinaryBuf(\"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\")\n    local zip = buf:ZlibCompress()\n    local base64 = zip:Base64Encode()\n    print(base64)\n\n    local size1 = buf.size\n    local size2 = #buf\n    if size1 == size2 then\n\tprint(\"equivalent\")\n    end\n\n    -- start index is zero!\n    local byte1 = buf:GetByte(5)\n    local byte2 = buf[5]\n    if byte1 == byte2 then\n\tprint(\"equivalent\")\n    end",
+        "content": "    local buf = SWE.BinaryBuf(\"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\")\n    local zip = buf:ZlibCompress()\n    local base64 = zip:Base64Encode()\n    print(base64)\n\n    local size1 = buf.size\n    local size2 = #buf\n    if size1 == size2 then\n\tprint(\"equivalent\")\n    end\n\n    -- C style offset\n    local byte1 = buf:GetByte(5)\n    -- Lua style offset\n    local byte2 = buf[4]\n    if byte1 == byte2 then\n\tprint(\"equivalent\")\n    end",
         "type": "json"
       },
       {
@@ -1887,7 +1887,7 @@
     "examples": [
       {
         "title": "usage",
-        "content": "    local buf = SWE.BinaryBuf(\"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\")\n    -- start index is zero!\n    local byte1 = buf:GetByte(5)\n    local byte2 = buf[5]\n    if byte1 == byte2 then\n\tprint(\"equivalent\")\n    end",
+        "content": "    local buf = SWE.BinaryBuf(\"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\")\n    -- C style offset\n    local byte1 = buf:GetByte(5)\n    -- Lua style offset\n    local byte2 = buf[4]\n    if byte1 == byte2 then\n\tprint(\"equals\")\n    end",
         "type": "json"
       }
     ],
@@ -2324,6 +2324,13 @@
         ]
       }
     },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local buf = SWE.BinaryBuf(\"0123456789\")\n-- C style offset\nbuf:SetByte(0, 0x31, 0x32, 0x33)",
+        "type": "json"
+      }
+    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_binarybuf.js",
     "groupTitle": "SWE_BinaryBuf"
@@ -8342,6 +8349,29 @@
     "groupTitle": "SWE_StreamNet"
   },
   {
+    "type": "return network supported",
+    "url": "SWE.StreamNet.IsSupported()",
+    "title": "SWE.StreamNet.IsSupported",
+    "group": "SWE_StreamNet",
+    "name": "IsSupported",
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if supported</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_streamnet.js",
+    "groupTitle": "SWE_StreamNet"
+  },
+  {
     "type": "streamnet listen port",
     "url": "SWE.StreamNet.Listen(self,port)",
     "title": "SWE.StreamNet.Listen",
@@ -13757,7 +13787,7 @@
     "groupTitle": "SWE_UnicodeString"
   },
   {
-    "type": "get char value",
+    "type": "get byte value",
     "url": "SWE.UnicodeString.GetChar(self,offset)",
     "title": "SWE.UnicodeString.GetChar",
     "group": "SWE_UnicodeString",
@@ -13795,6 +13825,13 @@
         ]
       }
     },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local ucs = SWE.UnicodeString(\"123456\")\n-- C style offset\nlocal byte1 = ucs:GetChar(0)\n-- Lua style offset\nlocal byte2 = ucs[1]\nif byte1 == byte2 then\n    print(\"equals\")\nend",
+        "type": "json"
+      }
+    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_unicodestring.js",
     "groupTitle": "SWE_UnicodeString"
@@ -13971,7 +14008,7 @@
     "groupTitle": "SWE_UnicodeString"
   },
   {
-    "type": "set char value",
+    "type": "set byte value",
     "url": "SWE.UnicodeString.SetChar(self,offset,value...value)",
     "title": "SWE.UnicodeString.SetChar",
     "group": "SWE_UnicodeString",
@@ -14016,6 +14053,13 @@
         ]
       }
     },
+    "examples": [
+      {
+        "title": "usage",
+        "content": "local ucs = SWE.UnicodeString(\"123456\")\n-- C style offset\nucs:SetChar(0, 0x33, 0x33)",
+        "type": "json"
+      }
+    ],
     "version": "0.0.0",
     "filename": "./api/apidoc_unicodestring.js",
     "groupTitle": "SWE_UnicodeString"
