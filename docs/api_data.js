@@ -264,7 +264,7 @@ define({ "api": [
         "Return": [
           {
             "group": "Return",
-            "type": "list",
+            "type": "table",
             "optional": false,
             "field": "result",
             "description": "<p>modes list</p>"
@@ -275,7 +275,7 @@ define({ "api": [
     "examples": [
       {
         "title": "usage",
-        "content": "    local modes = { SWE.DisplayVideoModes() }\n    for i=1,#modes do\n\tprint(\"videomodes:\", modes[i].width, modes[i].height)\n    end",
+        "content": "    local modes = SWE.DisplayVideoModes(true)\n    for i=1,#modes do\n\tprint(\"videomodes:\", modes[i].width, modes[i].height)\n    end",
         "type": "json"
       }
     ],
@@ -4130,7 +4130,7 @@ define({ "api": [
       },
       {
         "title": "ext table fields (read only)",
-        "content": "| font    | string  |\n| size    | number  |\n| blended | number  |\n| style   | number  |\n| hinting | number  |\n\n| fixedWidth | number | for fixed font return SymbolAdvance(0x20)\n| lineHeight | number | skip line height",
+        "content": "| font       | string |\n| size       | number |\n| blended    | number |\n| style      | number |\n| hinting    | number |\n| fixedWidth | number | for fixed font return SymbolAdvance(0x20)\n| lineHeight | number | skip line height",
         "type": "json"
       }
     ],
@@ -4139,7 +4139,7 @@ define({ "api": [
     "groupTitle": "SWE_FontRender"
   },
   {
-    "type": "list: split string width",
+    "type": "split string width",
     "url": "SWE.FontRender.SplitStringWidth(self,content,width)",
     "title": "SWE.FontRender.SplitStringWidth",
     "group": "SWE_FontRender",
@@ -4176,10 +4176,60 @@ define({ "api": [
         "Return": [
           {
             "group": "Return",
-            "type": "list",
+            "type": "table",
             "optional": false,
             "field": "result",
             "description": "<p>string list result</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_fontrender.js",
+    "groupTitle": "SWE_FontRender"
+  },
+  {
+    "type": "get render size",
+    "url": "SWE.FontRender.StringSize(self,content,horizontal)",
+    "title": "SWE.FontRender.StringSize",
+    "group": "SWE_FontRender",
+    "name": "StringSize",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.FontRender",
+            "optional": false,
+            "field": "self",
+            "description": "<p>fontrender object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "content",
+            "description": "<p>string content</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "boolean",
+            "optional": false,
+            "field": "horizontal",
+            "description": "<p>render is horizontal</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Size",
+            "optional": false,
+            "field": "result",
+            "description": "<p>render size</p>"
           }
         ]
       }
@@ -4259,6 +4309,56 @@ define({ "api": [
             "optional": false,
             "field": "result",
             "description": "<p>json string</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_fontrender.js",
+    "groupTitle": "SWE_FontRender"
+  },
+  {
+    "type": "get render size",
+    "url": "SWE.FontRender.UnicodeStringSize(self,content,horizontal)",
+    "title": "SWE.FontRender.UnicodeStringSize",
+    "group": "SWE_FontRender",
+    "name": "UnicodeStringSize",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.FontRender",
+            "optional": false,
+            "field": "self",
+            "description": "<p>fontrender object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "content",
+            "description": "<p>unicode content</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "boolean",
+            "optional": false,
+            "field": "horizontal",
+            "description": "<p>render is horizontal</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Size",
+            "optional": false,
+            "field": "result",
+            "description": "<p>render size</p>"
           }
         ]
       }
@@ -9306,7 +9406,7 @@ define({ "api": [
       },
       {
         "title": "ext table fields (read only)",
-        "content": "| posx      | number  | window position\n| posy      | number  | window position\n| width     | number  | window size\n| height    | number  | window size\n| cols      | number  | terminal size\n| rows      | number  | terminal size\n| visible   | boolean | window is visible (defalut false)\n| modality  | boolean | window is modality (defalut false)\n| keyhangle | boolean | window is global key handle (defalut false)",
+        "content": "| posx      | number  | window position\n| posy      | number  | window position\n| width     | number  | window size\n| height    | number  | window size\n| cols      | number  | terminal size\n| rows      | number  | terminal size\n| visible   | boolean | window is visible (defalut false)\n| modality  | boolean | window is modality (defalut false)\n| keyhangle | boolean | window is global key handle (defalut false)\n| parent    | table   | SWE.Window object",
         "type": "json"
       }
     ],
@@ -14260,7 +14360,7 @@ define({ "api": [
   },
   {
     "type": "window constructor",
-    "url": "SWE.Window(posx,posy,width,height,parent)",
+    "url": "SWE.Window(posx,posy,width,height,parent)SWE.Window(point,size,parent)",
     "title": "SWE.Window",
     "group": "SWE_Window",
     "name": "Constructor",
@@ -14297,6 +14397,20 @@ define({ "api": [
           },
           {
             "group": "Parameter",
+            "type": "SWE.Point",
+            "optional": false,
+            "field": "point",
+            "description": "<p>window position</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Size",
+            "optional": false,
+            "field": "size",
+            "description": "<p>window size</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "SWE.Window",
             "optional": false,
             "field": "parent",
@@ -14321,12 +14435,12 @@ define({ "api": [
     "examples": [
       {
         "title": "usage",
-        "content": "-- create window area(30,30,200,100) on display scene\nlocal win2 = SWE.Window(30,30,200,100)",
+        "content": "-- create window area(30,30,200,100) on display scene\nlocal win2 = SWE.Window(30,30,200,100)\nlocal win3 = SWE.Window({10,10},{60,40}, win2)",
         "type": "json"
       },
       {
         "title": "ext table fields (read only)",
-        "content": "| posx      | number  | window position\n| posy      | number  | window position\n| width     | number  | window size\n| height    | number  | window size\n| visible   | boolean | window is visible (defalut false)\n| modality  | boolean | window is modality (defalut false)\n| keyhangle | boolean | window is global key handle (defalut false)",
+        "content": "| posx      | number  | window position\n| posy      | number  | window position\n| width     | number  | window size\n| height    | number  | window size\n| visible   | boolean | window is visible (defalut false)\n| modality  | boolean | window is modality (defalut false)\n| keyhangle | boolean | window is global key handle (defalut false)\n| parent    | table   | SWE.Window object",
         "type": "json"
       }
     ],
@@ -15387,7 +15501,7 @@ define({ "api": [
   },
   {
     "type": "window event: key event",
-    "url": "SWE.Window.KeyReleaseEvent(keycode)",
+    "url": "SWE.Window.KeyReleaseEvent(keycode,keymod,scancode)",
     "title": "SWE.Window.KeyReleaseEvent",
     "group": "SWE_Window_Events",
     "name": "KeyReleaseEvent",
@@ -15400,6 +15514,20 @@ define({ "api": [
             "optional": false,
             "field": "keycode",
             "description": "<p>SWE.Key constant</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "keymod",
+            "description": "<p>key mod SDL_Keymod</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "scancode",
+            "description": "<p>key scancode</p>"
           }
         ]
       }
@@ -15420,7 +15548,7 @@ define({ "api": [
     "examples": [
       {
         "title": "usage",
-        "content": "    win.KeyReleaseEvent = function(k)\n\tif k == SWE.Key.ESCAPE then\n\t    win:SetVisible(false)\n\t    print(\"hide window\")\n\tend\n\treturn true\n    end",
+        "content": "    win.KeyReleaseEvent = function(k,m,s)\n\tif k == SWE.Key.ESCAPE then\n\t    win:SetVisible(false)\n\t    print(\"hide window\")\n\tend\n\treturn true\n    end",
         "type": "json"
       }
     ],
