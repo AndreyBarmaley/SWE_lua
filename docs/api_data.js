@@ -13783,7 +13783,7 @@ define({ "api": [
   },
   {
     "type": "unicoderegex constructor",
-    "url": "SWE.UnicodeRegex(),(inputstr),(length,value)",
+    "url": "SWE.UnicodeRegex(pattern)",
     "title": "SWE.UnicodeRegex",
     "group": "SWE_UnicodeRegex",
     "name": "Constructor",
@@ -13794,22 +13794,8 @@ define({ "api": [
             "group": "Parameter",
             "type": "string",
             "optional": false,
-            "field": "inputstr",
-            "description": "<p>string data</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "length",
-            "description": "<p>length data</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "value",
-            "description": "<p>default value</p>"
+            "field": "pattern",
+            "description": "<p>regex format</p>"
           }
         ]
       }
