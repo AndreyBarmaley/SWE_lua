@@ -13752,6 +13752,241 @@ define({ "api": [
     "groupTitle": "SWE_Translation"
   },
   {
+    "type": "regex assign",
+    "url": "SWE.UnicodeRegex.Assign(self,str)",
+    "title": "SWE.UnicodeRegex.Assign",
+    "group": "SWE_UnicodeRegex",
+    "name": "Assign",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeRegex",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.UnicodeRegex obj</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "str",
+            "description": "<p>pattern</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidocs_unicoderegex.js",
+    "groupTitle": "SWE_UnicodeRegex"
+  },
+  {
+    "type": "unicoderegex constructor",
+    "url": "SWE.UnicodeRegex(),(inputstr),(length,value)",
+    "title": "SWE.UnicodeRegex",
+    "group": "SWE_UnicodeRegex",
+    "name": "Constructor",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "inputstr",
+            "description": "<p>string data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "length",
+            "description": "<p>length data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "value",
+            "description": "<p>default value</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.UnicodeRegex",
+            "optional": false,
+            "field": "result",
+            "description": "<p>unicoderegex data</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "usage Search",
+        "content": "local ureg = SWE.UnicodeRegex(\"([a-z]+)\\\\.([a-z]+)\")\nlocal fnames = {\"foo.txt\", \"bar.txt\", \"baz.dat\", \"zoidberg\"}\n\nfor i = 1, #fnames do\n    print(ureg2:Match(fnames[i]))\nend\n\n-- output result:\n-- 0       7       foo     txt\n-- 0       7       bar     txt\n-- 0       7       baz     dat\n-- nil",
+        "type": "json"
+      },
+      {
+        "title": "usage FindAll",
+        "content": "local ustr = SWE.UnicodeString(\"Quick brown fox.\")\nlocal ureg = SWE.UnicodeRegex(\"[^\\\\s]+\")\n\nlocal t = ureg:FindAll(ustr)\n\n-- table content:\n-- | 0 | 5 | 6 | 5 | 12 | 4 |\n\nfor i = 1,#t,2 do\n    print(ustr:SubString(t[i], t[i+1]):ToUtf8String())\nend\n\n-- output result:\n-- Quick\n-- brown\n-- fox.",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidocs_unicoderegex.js",
+    "groupTitle": "SWE_UnicodeRegex"
+  },
+  {
+    "type": "regex find all",
+    "url": "SWE.UnicodeRegex.FindAll(self,ustr)",
+    "title": "SWE.UnicodeRegex.FindAll",
+    "group": "SWE_UnicodeRegex",
+    "name": "FindAll",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeRegex",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.UnicodeRegex obj</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "ustr",
+            "description": "<p>SWE.UnicodeString content</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "table",
+            "optional": false,
+            "field": "result",
+            "description": "<p>search result pairs, (offset, length, offset, length, ...offset, length)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidocs_unicoderegex.js",
+    "groupTitle": "SWE_UnicodeRegex"
+  },
+  {
+    "type": "regex match",
+    "url": "SWE.UnicodeRegex.Match(self,ustr,init)",
+    "title": "SWE.UnicodeRegex.Match",
+    "group": "SWE_UnicodeRegex",
+    "name": "Match",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeRegex",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.UnicodeRegex obj</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "ustr",
+            "description": "<p>SWE.UnicodeString content</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "init",
+            "description": "<p>offset (first: 0, last: -1)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "list",
+            "optional": false,
+            "field": "result",
+            "description": "<p>search result, same as std::regex_match (offset, length, match, match, ...match)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidocs_unicoderegex.js",
+    "groupTitle": "SWE_UnicodeRegex"
+  },
+  {
+    "type": "regex search",
+    "url": "SWE.UnicodeRegex.Search(self,ustr,init)",
+    "title": "SWE.UnicodeRegex.Search",
+    "group": "SWE_UnicodeRegex",
+    "name": "Search",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeRegex",
+            "optional": false,
+            "field": "self",
+            "description": "<p>SWE.UnicodeRegex obj</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "ustr",
+            "description": "<p>SWE.UnicodeString content</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "init",
+            "description": "<p>offset (first: 0, last: -1)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "list",
+            "optional": false,
+            "field": "result",
+            "description": "<p>search result, same as std::regex_search (offset, length, match, match, ...match)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidocs_unicoderegex.js",
+    "groupTitle": "SWE_UnicodeRegex"
+  },
+  {
     "type": "unicodestring clear",
     "url": "SWE.UnicodeString.Clear(self)",
     "title": "SWE.UnicodeString.Clear",
@@ -14160,6 +14395,56 @@ define({ "api": [
         "type": "json"
       }
     ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_unicodestring.js",
+    "groupTitle": "SWE_UnicodeString"
+  },
+  {
+    "type": "get sub string",
+    "url": "SWE.UnicodeString.SubString(self,offset,len)",
+    "title": "SWE.UnicodeString.SubString",
+    "group": "SWE_UnicodeString",
+    "name": "SubString",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "self",
+            "description": "<p>unicodestring raw data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "len",
+            "description": "<p>length</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "result",
+            "description": "<p>unicodestring obj</p>"
+          }
+        ]
+      }
+    },
     "version": "0.0.0",
     "filename": "./api/apidoc_unicodestring.js",
     "groupTitle": "SWE_UnicodeString"
