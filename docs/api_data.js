@@ -1565,7 +1565,7 @@ define({ "api": [
             "type": "SWE.BinaryBuf",
             "optional": false,
             "field": "result",
-            "description": "<p>bynarybuf raw data</p>"
+            "description": "<p>return self</p>"
           }
         ]
       }
@@ -1644,7 +1644,7 @@ define({ "api": [
             "type": "string",
             "optional": false,
             "field": "result",
-            "description": "<p>base64 data</p>"
+            "description": "<p>base64 string</p>"
           }
         ]
       }
@@ -1678,7 +1678,7 @@ define({ "api": [
   },
   {
     "type": "compare bytes",
-    "url": "SWE.BinaryBuf.CompareBytes(self,offset,value...value)",
+    "url": "SWE.BinaryBuf.CompareBytes(self,offset,value...value)(self,buf,offset)",
     "title": "SWE.BinaryBuf.CompareBytes",
     "group": "SWE_BinaryBuf",
     "name": "CompareBytes",
@@ -1701,6 +1701,13 @@ define({ "api": [
           },
           {
             "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "buf",
+            "description": "<p>binarybuf raw data</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "number",
             "optional": false,
             "field": "value",
@@ -1717,7 +1724,7 @@ define({ "api": [
             "type": "boolean",
             "optional": false,
             "field": "result",
-            "description": "<p>success</p>"
+            "description": "<p>true if success</p>"
           }
         ]
       }
@@ -1829,7 +1836,57 @@ define({ "api": [
             "type": "SWE.BinaryBuf",
             "optional": false,
             "field": "result",
-            "description": "<p>bynarybuf raw data</p>"
+            "description": "<p>return self</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_binarybuf.js",
+    "groupTitle": "SWE_BinaryBuf"
+  },
+  {
+    "type": "find string",
+    "url": "SWE.BinaryBuf.Find(self,buf,offset)",
+    "title": "SWE.BinaryBuf.Find",
+    "group": "SWE_BinaryBuf",
+    "name": "Find",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "self",
+            "description": "<p>binarybuf raw data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.BinaryBuf",
+            "optional": false,
+            "field": "buf",
+            "description": "<p>binarybuf value</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset data</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>found position or -1</p>"
           }
         ]
       }
@@ -1936,7 +1993,7 @@ define({ "api": [
             "type": "SWE.BinaryBuf",
             "optional": false,
             "field": "result",
-            "description": "<p>bynarybuf raw data</p>"
+            "description": "<p>return binarybuf</p>"
           }
         ]
       }
@@ -2050,7 +2107,7 @@ define({ "api": [
             "type": "boolean",
             "optional": false,
             "field": "result",
-            "description": "<p>success</p>"
+            "description": "<p>true if success</p>"
           }
         ]
       }
@@ -2100,7 +2157,7 @@ define({ "api": [
             "type": "boolean",
             "optional": false,
             "field": "result",
-            "description": "<p>success</p>"
+            "description": "<p>true if success</p>"
           }
         ]
       }
@@ -2219,7 +2276,7 @@ define({ "api": [
             "type": "SWE.BinaryBuf",
             "optional": false,
             "field": "result",
-            "description": "<p>bynarybuf raw data</p>"
+            "description": "<p>return self</p>"
           }
         ]
       }
@@ -2269,7 +2326,7 @@ define({ "api": [
             "type": "boolean",
             "optional": false,
             "field": "result",
-            "description": "<p>write success</p>"
+            "description": "<p>true if success</p>"
           }
         ]
       }
@@ -2319,7 +2376,7 @@ define({ "api": [
             "type": "boolean",
             "optional": false,
             "field": "result",
-            "description": "<p>success</p>"
+            "description": "<p>true if success</p>"
           }
         ]
       }
@@ -2383,7 +2440,7 @@ define({ "api": [
             "type": "boolean",
             "optional": false,
             "field": "result",
-            "description": "<p>success</p>"
+            "description": "<p>true if success</p>"
           }
         ]
       }
@@ -4503,11 +4560,335 @@ define({ "api": [
     "groupTitle": "SWE_Font"
   },
   {
-    "type": "get color string",
-    "url": "SWE.Key.ToString(key)",
-    "title": "SWE.Key.ToChar",
+    "type": "is any alt",
+    "url": "SWE.Key.IsAlt(mod)",
+    "title": "SWE.Key.IsAlt",
     "group": "SWE_Key",
-    "name": "ToChar",
+    "name": "IsAlt",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "mod",
+            "description": "<p>key modifiers</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_key.js",
+    "groupTitle": "SWE_Key"
+  },
+  {
+    "type": "is any ctrl",
+    "url": "SWE.Key.IsCtrl(mod)",
+    "title": "SWE.Key.IsCtrl",
+    "group": "SWE_Key",
+    "name": "IsCtrl",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "mod",
+            "description": "<p>key modifiers</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_key.js",
+    "groupTitle": "SWE_Key"
+  },
+  {
+    "type": "is left alt",
+    "url": "SWE.Key.IsLeftAlt(mod)",
+    "title": "SWE.Key.IsLeftAlt",
+    "group": "SWE_Key",
+    "name": "IsLeftAlt",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "mod",
+            "description": "<p>key modifiers</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_key.js",
+    "groupTitle": "SWE_Key"
+  },
+  {
+    "type": "is left ctrl",
+    "url": "SWE.Key.IsLeftCtrl(mod)",
+    "title": "SWE.Key.IsLeftCtrl",
+    "group": "SWE_Key",
+    "name": "IsLeftCtrl",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "mod",
+            "description": "<p>key modifiers</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_key.js",
+    "groupTitle": "SWE_Key"
+  },
+  {
+    "type": "is left shift",
+    "url": "SWE.Key.IsLeftShift(mod)",
+    "title": "SWE.Key.IsLeftShift",
+    "group": "SWE_Key",
+    "name": "IsLeftShift",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "mod",
+            "description": "<p>key modifiers</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_key.js",
+    "groupTitle": "SWE_Key"
+  },
+  {
+    "type": "is right alt",
+    "url": "SWE.Key.IsRightAlt(mod)",
+    "title": "SWE.Key.IsRightAlt",
+    "group": "SWE_Key",
+    "name": "IsRightAlt",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "mod",
+            "description": "<p>key modifiers</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_key.js",
+    "groupTitle": "SWE_Key"
+  },
+  {
+    "type": "is right ctrl",
+    "url": "SWE.Key.IsRightCtrl(mod)",
+    "title": "SWE.Key.IsRightCtrl",
+    "group": "SWE_Key",
+    "name": "IsRightCtrl",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "mod",
+            "description": "<p>key modifiers</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_key.js",
+    "groupTitle": "SWE_Key"
+  },
+  {
+    "type": "is right shift",
+    "url": "SWE.Key.IsRightShift(mod)",
+    "title": "SWE.Key.IsRightShift",
+    "group": "SWE_Key",
+    "name": "IsRightShift",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "mod",
+            "description": "<p>key modifiers</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_key.js",
+    "groupTitle": "SWE_Key"
+  },
+  {
+    "type": "is any shift",
+    "url": "SWE.Key.IsShifted(mod)",
+    "title": "SWE.Key.IsShifted",
+    "group": "SWE_Key",
+    "name": "IsShifted",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "mod",
+            "description": "<p>key modifiers</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "boolean",
+            "optional": false,
+            "field": "result",
+            "description": "<p>true if success</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_key.js",
+    "groupTitle": "SWE_Key"
+  },
+  {
+    "type": "get key char",
+    "url": "SWE.Key.ToKeyChar(key,mod)",
+    "title": "SWE.Key.ToKeyChar",
+    "group": "SWE_Key",
+    "name": "ToKeyChar",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -4517,6 +4898,13 @@ define({ "api": [
             "optional": false,
             "field": "key",
             "description": "<p>key enum</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "mod",
+            "description": "<p>key modifiers</p>"
           }
         ]
       }
@@ -4528,7 +4916,7 @@ define({ "api": [
             "group": "Return",
             "type": "number",
             "optional": false,
-            "field": "char",
+            "field": "result",
             "description": "<p>key charset</p>"
           }
         ]
@@ -4539,7 +4927,7 @@ define({ "api": [
     "groupTitle": "SWE_Key"
   },
   {
-    "type": "get color string",
+    "type": "get key string",
     "url": "SWE.Key.ToString(key)",
     "title": "SWE.Key.ToString",
     "group": "SWE_Key",
@@ -14098,7 +14486,64 @@ define({ "api": [
             "type": "SWE.UnicodeString",
             "optional": false,
             "field": "result",
-            "description": "<p>bynarybuf raw data</p>"
+            "description": "<p>return self</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_unicodestring.js",
+    "groupTitle": "SWE_UnicodeString"
+  },
+  {
+    "type": "find string",
+    "url": "SWE.UnicodeString.Find(self,str,offset)(self,ustr,offset)",
+    "title": "SWE.UnicodeString.Find",
+    "group": "SWE_UnicodeString",
+    "name": "Find",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "self",
+            "description": "<p>unicodestring raw data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "str",
+            "description": "<p>string value</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.UnicodeString",
+            "optional": false,
+            "field": "ustr",
+            "description": "<p>unicodestring value</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset data</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "number",
+            "optional": false,
+            "field": "result",
+            "description": "<p>found position or -1</p>"
           }
         ]
       }
@@ -14219,7 +14664,7 @@ define({ "api": [
             "type": "boolean",
             "optional": false,
             "field": "result",
-            "description": "<p>success</p>"
+            "description": "<p>true if success</p>"
           }
         ]
       }
@@ -14269,7 +14714,7 @@ define({ "api": [
             "type": "boolean",
             "optional": false,
             "field": "result",
-            "description": "<p>success</p>"
+            "description": "<p>true if success</p>"
           }
         ]
       }
@@ -14319,7 +14764,7 @@ define({ "api": [
             "type": "SWE.UnicodeString",
             "optional": false,
             "field": "result",
-            "description": "<p>bynarybuf raw data</p>"
+            "description": "<p>return self</p>"
           }
         ]
       }
@@ -14369,7 +14814,7 @@ define({ "api": [
             "type": "boolean",
             "optional": false,
             "field": "result",
-            "description": "<p>success</p>"
+            "description": "<p>true if success</p>"
           }
         ]
       }
@@ -14426,7 +14871,7 @@ define({ "api": [
             "type": "SWE.UnicodeString",
             "optional": false,
             "field": "result",
-            "description": "<p>unicodestring obj</p>"
+            "description": "<p>unicode substring</p>"
           }
         ]
       }
