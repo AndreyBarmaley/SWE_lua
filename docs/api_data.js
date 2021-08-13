@@ -8450,6 +8450,23 @@ define({ "api": [
     "groupTitle": "SWE.StreamNet"
   },
   {
+    "type": "terminal event: display focus gain",
+    "url": "SWE.Terminal.DisplayFocusEvent(gain)",
+    "title": "SWE.Terminal.DisplayFocusEvent",
+    "group": "SWE.Terminal.Events",
+    "name": "DisplayFocusEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "win.DisplayFocusEvent = function(gain)\n    print(\"display focus:\", gain)\nend",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE.Terminal.Events"
+  },
+  {
     "type": "terminal event: resize terminal font",
     "url": "SWE.Terminal.FontResizeEvent()",
     "title": "SWE.Terminal.FontResizeEvent",
@@ -9070,6 +9087,23 @@ define({ "api": [
     "groupTitle": "SWE.Terminal.Events"
   },
   {
+    "type": "terminal event: text input",
+    "url": "SWE.Terminal.TextInputEvent(text)",
+    "title": "SWE.Terminal.TextInputEvent",
+    "group": "SWE.Terminal.Events",
+    "name": "TextInputEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "win.TextInputEvent = function(text)\n    print(\"text input:\", text)\n    return true\nend",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE.Terminal.Events"
+  },
+  {
     "type": "terminal event: invalid texture",
     "url": "SWE.Terminal.TextureInvalidEvent()",
     "title": "SWE.Terminal.TextureInvalidEvent",
@@ -9114,6 +9148,57 @@ define({ "api": [
       {
         "title": "usage",
         "content": "    win.WindowCreateEvent = function()\n\tprint(\"win created\")\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE.Terminal.Events"
+  },
+  {
+    "type": "terminal event: window move",
+    "url": "SWE.Terminal.WindowMoveEvent(posx,",
+    "title": "posy) SWE.Terminal.WindowMoveEvent",
+    "group": "SWE.Terminal.Events",
+    "name": "WindowMoveEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "win.WindowMoveEvent = function(posx, posy)\n    print(\"win moved:\", posx, posy)\nend",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE.Terminal.Events"
+  },
+  {
+    "type": "terminal event: window resize",
+    "url": "SWE.Terminal.WindowResizeEvent(width,",
+    "title": "height) SWE.Terminal.WindowResizeEvent",
+    "group": "SWE.Terminal.Events",
+    "name": "WindowResizeEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "win.WindowResizeEvent = function(width, height)\n    print(\"win resized:\", width, height)\nend",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE.Terminal.Events"
+  },
+  {
+    "type": "terminal event: window visible changed",
+    "url": "SWE.Terminal.WindowVisibleEvent(visible)",
+    "title": "SWE.Terminal.WindowVisibleEvent",
+    "group": "SWE.Terminal.Events",
+    "name": "WindowVisibleEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "win.WindowVisibleEvent = function(visible)\n    print(\"win visible:\", visible)\nend",
         "type": "json"
       }
     ],
@@ -9189,6 +9274,29 @@ define({ "api": [
             "optional": false,
             "field": "result",
             "description": "<p>default property, (render, style, hinting), see SWE.Property</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE.Terminal.Virtual"
+  },
+  {
+    "type": "terminal min size",
+    "url": "SWE.Terminal.TerminalMinimalSize()",
+    "title": "SWE.Terminal.TerminalMinimalSize",
+    "group": "SWE.Terminal.Virtual",
+    "name": "TerminalMinimalSize",
+    "success": {
+      "fields": {
+        "Return": [
+          {
+            "group": "Return",
+            "type": "SWE.Size",
+            "optional": false,
+            "field": "result",
+            "description": "<p>minimal terminal size</p>"
           }
         ]
       }
@@ -11487,8 +11595,38 @@ define({ "api": [
     "groupTitle": "SWE.Terminal"
   },
   {
+    "type": "terminal set font",
+    "url": "SWE.Terminal.SetTermFont(self,font)",
+    "title": "SWE.Terminal.SetTermFont",
+    "group": "SWE.Terminal",
+    "name": "SetTermFont",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "self",
+            "description": "<p>terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.FontRender",
+            "optional": false,
+            "field": "font",
+            "description": "<p>fontrender object</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./api/apidoc_terminal.js",
+    "groupTitle": "SWE.Terminal"
+  },
+  {
     "type": "terminal set pos",
-    "url": "SWE.Terminal.SetTermPos(self,cols,rows)",
+    "url": "SWE.Terminal.SetTermPos(self,term,cols,rows)",
     "title": "SWE.Terminal.SetTermPos",
     "group": "SWE.Terminal",
     "name": "SetTermPos",
@@ -11500,6 +11638,13 @@ define({ "api": [
             "type": "SWE.Terminal",
             "optional": false,
             "field": "self",
+            "description": "<p>terminal object</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "SWE.Terminal",
+            "optional": false,
+            "field": "term",
             "description": "<p>terminal object</p>"
           },
           {
@@ -13871,6 +14016,23 @@ define({ "api": [
     "groupTitle": "SWE.VideoCam"
   },
   {
+    "type": "window event: display focus gain",
+    "url": "SWE.Window.DisplayFocusEvent(gain)",
+    "title": "SWE.Window.DisplayFocusEvent",
+    "group": "SWE.Window.Events",
+    "name": "DisplayFocusEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.DisplayFocusEvent = function(gain)\n\tprint(\"display focus:\", gain)\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE.Window.Events"
+  },
+  {
     "type": "window event: win size changed",
     "url": "SWE.Window.DisplayResizeEvent(width,height)",
     "title": "SWE.Window.DisplayResizeEvent",
@@ -14517,6 +14679,23 @@ define({ "api": [
     "groupTitle": "SWE.Window.Events"
   },
   {
+    "type": "window event: text input",
+    "url": "SWE.Window.TextInputEvent(text)",
+    "title": "SWE.Window.TextInputEvent",
+    "group": "SWE.Window.Events",
+    "name": "TextInputEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.TextInputEvent = function(text)\n\tprint(\"text input:\", text)\n\treturn true\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE.Window.Events"
+  },
+  {
     "type": "window event: invalid texture",
     "url": "SWE.Window.TextureInvalidEvent()",
     "title": "SWE.Window.TextureInvalidEvent",
@@ -14561,6 +14740,57 @@ define({ "api": [
       {
         "title": "usage",
         "content": "    win.WindowCreateEvent = function()\n\tprint(\"win created\")\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE.Window.Events"
+  },
+  {
+    "type": "window event: window move",
+    "url": "SWE.Window.WindowMoveEvent(posx,",
+    "title": "posy) SWE.Window.WindowMoveEvent",
+    "group": "SWE.Window.Events",
+    "name": "WindowMoveEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.WindowMoveEvent = function(posx, posy)\n\tprint(\"win moved:\", posx, posy)\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE.Window.Events"
+  },
+  {
+    "type": "window event: window resize",
+    "url": "SWE.Window.WindowResizeEvent(width,",
+    "title": "height) SWE.Window.WindowResizeEvent",
+    "group": "SWE.Window.Events",
+    "name": "WindowResizeEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.WindowResizeEvent = function(width, height)\n\tprint(\"win resized:\", width, height)\n    end",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_window.js",
+    "groupTitle": "SWE.Window.Events"
+  },
+  {
+    "type": "window event: window visible changed",
+    "url": "SWE.Window.WindowVisibleEvent(visible)",
+    "title": "SWE.Window.WindowVisibleEvent",
+    "group": "SWE.Window.Events",
+    "name": "WindowVisibleEvent",
+    "examples": [
+      {
+        "title": "usage",
+        "content": "    win.WindowVisibleEvent = function(visible)\n\tprint(\"win visible:\", visible)\n    end",
         "type": "json"
       }
     ],
