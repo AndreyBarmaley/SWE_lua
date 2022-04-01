@@ -22,9 +22,9 @@ define({ "api": [
     "type": "",
     "url": "",
     "version": "0.0.0",
-    "filename": "./docs/main.js",
-    "group": "/opt/svn/my-projects/SDL/engine/lua/docs/main.js",
-    "groupTitle": "/opt/svn/my-projects/SDL/engine/lua/docs/main.js",
+    "filename": "./doc/main.js",
+    "group": "/opt/svn/github/AndreyBarmaley/sdl-window-engine/lua/doc/main.js",
+    "groupTitle": "/opt/svn/github/AndreyBarmaley/sdl-window-engine/lua/doc/main.js",
     "name": ""
   },
   {
@@ -8467,15 +8467,15 @@ define({ "api": [
     "groupTitle": "SWE.Terminal.Events"
   },
   {
-    "type": "terminal event: resize terminal font",
-    "url": "SWE.Terminal.FontResizeEvent()",
-    "title": "SWE.Terminal.FontResizeEvent",
+    "type": "terminal event: font changed",
+    "url": "SWE.Terminal.FontChangedEvent()",
+    "title": "SWE.Terminal.FontChangedEvent",
     "group": "SWE.Terminal.Events",
-    "name": "FontResizeEvent",
+    "name": "FontChangedEvent",
     "examples": [
       {
         "title": "usage",
-        "content": "term.FontResizeEvent = function()\n    print(\"font resized\")\nend",
+        "content": "term.FontChangedEvent = function()\n    print(\"font changed\")\nend",
         "type": "json"
       }
     ],
@@ -9070,11 +9070,31 @@ define({ "api": [
     "groupTitle": "SWE.Terminal.Events"
   },
   {
-    "type": "terminal event: resize terminal window",
-    "url": "SWE.Terminal.TerminalResizeEvent()",
-    "title": "SWE.Terminal.TerminalResizeEvent",
+    "type": "terminal event: resize terminal",
+    "url": "SWE.Terminal.TerminalResizeEvent(cols,",
+    "title": "rows) SWE.Terminal.TerminalResizeEvent",
     "group": "SWE.Terminal.Events",
     "name": "TerminalResizeEvent",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "cols",
+            "description": "<p>terminal columns</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "rows",
+            "description": "<p>terminal rows</p>"
+          }
+        ]
+      }
+    },
     "examples": [
       {
         "title": "usage",
@@ -16077,6 +16097,36 @@ define({ "api": [
         "type": "json"
       }
     ],
+    "version": "0.0.0",
+    "filename": "./api/apidoc_swe.js",
+    "groupTitle": "SWE"
+  },
+  {
+    "type": "display resize",
+    "url": "SWE.DisplayResize(width,height)",
+    "title": "SWE.DisplayResize",
+    "group": "SWE",
+    "name": "DisplayResize",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "width",
+            "description": "<p>new widht size</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "height",
+            "description": "<p>new height size</p>"
+          }
+        ]
+      }
+    },
     "version": "0.0.0",
     "filename": "./api/apidoc_swe.js",
     "groupTitle": "SWE"
