@@ -1,33 +1,5 @@
 define({ "api": [
   {
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "optional": false,
-            "field": "varname1",
-            "description": "<p>No type.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "varname2",
-            "description": "<p>With type.</p>"
-          }
-        ]
-      }
-    },
-    "type": "",
-    "url": "",
-    "version": "0.0.0",
-    "filename": "./doc/main.js",
-    "group": "/opt/svn/github/AndreyBarmaley/sdl-window-engine/lua/doc/main.js",
-    "groupTitle": "/opt/svn/github/AndreyBarmaley/sdl-window-engine/lua/doc/main.js",
-    "name": ""
-  },
-  {
     "type": "reset mixer",
     "url": "SWE.Audio.MixerReset()",
     "title": "SWE.Audio.MixerReset",
@@ -16833,8 +16805,8 @@ define({ "api": [
   },
   {
     "type": "make directory",
-    "url": "SWE.SystemMakeDirectory(directory)",
-    "title": "SWE.SystemMakeDirectory",
+    "url": "SWE.SystemMakeDirectory(directory,",
+    "title": "mode) SWE.SystemMakeDirectory",
     "group": "SWE",
     "name": "SystemMakeDirectory",
     "parameter": {
@@ -16846,6 +16818,13 @@ define({ "api": [
             "optional": false,
             "field": "directory",
             "description": "<p>path to directory</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "integer",
+            "optional": false,
+            "field": "mode",
+            "description": "<p>access mode (defaut: 0700)</p>"
           }
         ]
       }
